@@ -16,6 +16,8 @@ export default function WaitingRoomPage() {
   const [selectedMicrophone, setSelectedMicrophone] = useState<string>('');
   const [cameras, setCameras] = useState<MediaDeviceInfo[]>([]);
   const [microphones, setMicrophones] = useState<MediaDeviceInfo[]>([]);
+  const [isReady, setIsReady] = useState(false);
+  const [countdown, setCountdown] = useState<number | null>(null);
 
   // Simulate backend readiness (replace with actual API call later)
   useEffect(() => {
@@ -25,6 +27,23 @@ export default function WaitingRoomPage() {
 
     return () => clearTimeout(timer);
   }, []);
+
+  // Countdown timer
+  useEffect(() => {
+    if (countdown === null) return;
+
+    if (countdown === 0) {
+      // Navigate to interview page
+      router.push('/interview');
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      setCountdown(countdown - 1);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [countdown, router]);
 
   // Get available devices
   const getDevices = async () => {
@@ -107,41 +126,56 @@ export default function WaitingRoomPage() {
   }, [stream]);
 
   const handleStart = () => {
-    if (!isHostReady) return;
+    if (!isReady) return;
     
-    // TODO: Navigate to actual interview page
-    console.log('Starting interview...');
-    // router.push('/interview');
+    // Start countdown
+    setCountdown(3);
+  };
+
+  const handleReady = () => {
+    setIsReady(true);
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 py-12 px-4">
-      <div className="container mx-auto max-w-5xl">
-        {/* Header Status */}
-        <div className="mb-8 text-center">
-          <Link href="/topics" className="text-indigo-600 dark:text-indigo-400 hover:underline mb-4 inline-block">
-            ← Back
-          </Link>
-          
-          {!isHostReady ? (
-            <div className="flex items-center justify-center gap-3">
-              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-600"></div>
-              <h1 className="text-3xl font-bold text-gray-700 dark:text-gray-300">
-                Waiting for Host...
-              </h1>
-            </div>
-          ) : (
-            <div className="flex items-center justify-center gap-3">
-              <div className="h-3 w-3 bg-green-500 rounded-full animate-pulse"></div>
-              <h1 className="text-3xl font-bold text-green-600 dark:text-green-400">
-                Host has joined!
-              </h1>
-            </div>
-          )}
-        </div>
+      <div className="container mx-auto max-w-7xl">
+        <div className="flex items-center justify-center gap-25">
+          {/* Countdown Timer - Far Left */}
+          <div className="w-24 h-24 flex items-center justify-center flex-shrink-0">
+            {countdown !== null && (
+              <div className="text-6xl font-bold text-indigo-600 dark:text-indigo-400 animate-pulse">
+                {countdown}
+              </div>
+            )}
+          </div>
 
-        {/* Main Content */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl overflow-hidden">
+          {/* Main Content Card - Centered */}
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl overflow-hidden relative flex-shrink-0 w-full max-w-4xl">
+            {/* Back Button - Top Left */}
+            <div className="absolute top-4 left-4 z-10">
+              <Link href="/topics" className="text-indigo-600 dark:text-indigo-400 hover:underline text-sm">
+                ← Back
+              </Link>
+            </div>
+
+            {/* Header Status - Top Center */}
+            <div className="pt-12 pb-4 text-center">
+              {!isHostReady ? (
+                <div className="flex items-center justify-center gap-3">
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-indigo-600"></div>
+                  <h1 className="text-2xl font-bold text-gray-700 dark:text-gray-300">
+                    Waiting for Host...
+                  </h1>
+                </div>
+              ) : (
+                <div className="flex items-center justify-center gap-3">
+                  <div className="h-2.5 w-2.5 bg-green-500 rounded-full animate-pulse"></div>
+                  <h1 className="text-2xl font-bold text-green-600 dark:text-green-400">
+                    Host has joined!
+                  </h1>
+                </div>
+              )}
+            </div>
           {/* Video Preview */}
           <div className="relative bg-gray-900 aspect-video">
             {!cameraPermissionGranted ? (
@@ -292,14 +326,14 @@ export default function WaitingRoomPage() {
               </div>
             )}
 
-            {/* Start Button */}
-            <div className="pt-4">
+            {/* I'm Ready Button */}
+            <div className="pt-2">
               <button
-                onClick={handleStart}
-                disabled={!isHostReady || !cameraPermissionGranted}
-                className={`w-full text-xl font-bold py-6 rounded-full shadow-lg transition-all duration-200 ${
-                  isHostReady && cameraPermissionGranted
-                    ? 'bg-green-600 hover:bg-green-700 text-white transform hover:scale-105 cursor-pointer'
+                onClick={handleReady}
+                disabled={!isHostReady || !cameraPermissionGranted || isReady}
+                className={`w-full text-lg font-semibold py-4 rounded-xl transition-all duration-200 ${
+                  isHostReady && cameraPermissionGranted && !isReady
+                    ? 'bg-indigo-600 hover:bg-indigo-700 text-white'
                     : 'bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed'
                 }`}
               >
@@ -307,11 +341,29 @@ export default function WaitingRoomPage() {
                   ? 'Enable Camera to Continue'
                   : !isHostReady
                   ? 'Waiting for Host...'
-                  : 'START'}
+                  : isReady
+                  ? '✓ Ready'
+                  : "I'm Ready"}
               </button>
             </div>
           </div>
         </div>
+
+        {/* Start Button - Far Right */}
+        <div className="w-32 h-32 flex items-center justify-center flex-shrink-0">
+          <button
+            onClick={handleStart}
+            disabled={!isReady || countdown !== null}
+            className={`w-full h-full rounded-full text-xl font-bold transition-all duration-200 flex items-center justify-center ${
+              isReady && countdown === null
+                ? 'bg-green-600 hover:bg-green-700 text-white transform hover:scale-105 shadow-2xl'
+                : 'bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed'
+            }`}
+          >
+            START
+          </button>
+        </div>
+      </div>
       </div>
     </div>
   );

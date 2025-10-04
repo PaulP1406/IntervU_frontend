@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
@@ -14,7 +14,9 @@ export default function UploadPage() {
     jobDescription: '',
   });
   const [resumeFile, setResumeFile] = useState<File | null>(null);
+  const [resumeText, setResumeText] = useState<string>('');
   const [isDragging, setIsDragging] = useState(false);
+  const [isParsingPdf, setIsParsingPdf] = useState(false);
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -35,6 +37,7 @@ export default function UploadPage() {
       const file = files[0];
       if (file.type === 'application/pdf' || file.name.endsWith('.pdf')) {
         setResumeFile(file);
+        parsePdfToText(file);
       } else {
         alert('Please upload a PDF file');
       }
@@ -45,6 +48,44 @@ export default function UploadPage() {
     const files = e.target.files;
     if (files && files.length > 0) {
       setResumeFile(files[0]);
+      parsePdfToText(files[0]);
+    }
+  };
+
+  const parsePdfToText = async (file: File) => {
+    setIsParsingPdf(true);
+    try {
+      // Dynamically import PDF.js to avoid SSR issues
+      const pdfjsLib = await import('pdfjs-dist');
+      
+      // Set worker to use jsdelivr CDN (more reliable than unpkg)
+      pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
+      
+      const arrayBuffer = await file.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({ 
+        data: arrayBuffer,
+        useWorkerFetch: false,
+        isEvalSupported: false,
+      }).promise;
+      let fullText = '';
+
+      // Extract text from all pages
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const textContent = await page.getTextContent();
+        const pageText = textContent.items
+          .map((item: any) => item.str)
+          .join(' ');
+        fullText += pageText + '\n';
+      }
+
+      setResumeText(fullText.trim());
+      console.log('Parsed resume text:', fullText.trim());
+    } catch (error) {
+      console.error('Error parsing PDF:', error);
+      alert(`Failed to parse PDF: ${error instanceof Error ? error.message : 'Unknown error'}. Please try another file.`);
+    } finally {
+      setIsParsingPdf(false);
     }
   };
 
@@ -70,7 +111,11 @@ export default function UploadPage() {
     }
 
     // TODO: Handle form submission (upload resume, save data)
-    console.log('Form submitted:', { formData, resumeFile });
+    console.log('Form submitted:', { 
+      formData, 
+      resumeFile,
+      resumeText // This is the parsed PDF text as a single string
+    });
     
     // Navigate to next page (you can create this later)
     // router.push('/interview');
@@ -139,10 +184,20 @@ export default function UploadPage() {
               >
                 Choose File
               </label>
-              {resumeFile && (
+              {isParsingPdf && (
+                <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded">
+                  <p className="text-blue-700 dark:text-blue-300 font-medium">
+                    📄 Parsing PDF...
+                  </p>
+                </div>
+              )}
+              {resumeFile && !isParsingPdf && (
                 <div className="mt-4 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded">
                   <p className="text-green-700 dark:text-green-300 font-medium">
                     ✓ {resumeFile.name}
+                  </p>
+                  <p className="text-green-600 dark:text-green-400 text-sm mt-1">
+                    Parsed {resumeText.length} characters
                   </p>
                 </div>
               )}

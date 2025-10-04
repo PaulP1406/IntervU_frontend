@@ -65,12 +65,21 @@ const MOCK_QUESTIONS = [
 export default function InterviewPage() {
   const router = useRouter();
   const videoRef = useRef<HTMLVideoElement>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
+  
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [timeRemaining, setTimeRemaining] = useState(MOCK_QUESTIONS[0].timeLimit);
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [showHints, setShowHints] = useState(false);
+  const [questionTranscripts, setQuestionTranscripts] = useState<{
+    questionId: number;
+    question: string;
+    transcript: string;
+    audioBlob?: Blob;
+  }[]>([]);
 
   const currentQuestion = MOCK_QUESTIONS[currentQuestionIndex];
   const isLastQuestion = currentQuestionIndex === MOCK_QUESTIONS.length - 1;
@@ -120,17 +129,125 @@ export default function InterviewPage() {
   }, [isRecording, isPaused, currentQuestionIndex]);
 
   const handleStartRecording = () => {
+    if (!stream) return;
+
+    // Reset for this question
+    audioChunksRef.current = [];
+
+    // Start audio recording (audio only, not video)
+    const audioStream = new MediaStream(
+      stream.getAudioTracks()
+    );
+    
+    const mediaRecorder = new MediaRecorder(audioStream, {
+      mimeType: 'audio/webm'
+    });
+    
+    mediaRecorder.ondataavailable = (event) => {
+      if (event.data.size > 0) {
+        audioChunksRef.current.push(event.data);
+      }
+    };
+    
+    mediaRecorder.onstop = async () => {
+      const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+      
+      console.log('Audio recorded, sending to Whisper API for transcription...');
+      
+      // Send audio to backend for transcription
+      try {
+        const formData = new FormData();
+        formData.append('audio', audioBlob, 'answer.webm');
+        
+        const response = await fetch('/api/transcribe', {
+          method: 'POST',
+          body: formData,
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          const whisperTranscript = data.transcript;
+          
+          // Save transcript and audio for this question
+          setQuestionTranscripts(prev => [
+            ...prev,
+            {
+              questionId: currentQuestion.id,
+              question: currentQuestion.question,
+              transcript: whisperTranscript,
+              audioBlob: audioBlob
+            }
+          ]);
+          
+          console.log('Question answered:', {
+            questionId: currentQuestion.id,
+            transcript: whisperTranscript,
+            audioSize: audioBlob.size
+          });
+        } else {
+          console.error('Transcription failed:', data.error);
+          
+          // Save with empty transcript if transcription fails
+          setQuestionTranscripts(prev => [
+            ...prev,
+            {
+              questionId: currentQuestion.id,
+              question: currentQuestion.question,
+              transcript: '[Transcription failed - audio saved]',
+              audioBlob: audioBlob
+            }
+          ]);
+        }
+      } catch (error) {
+        console.error('Error calling transcription API:', error);
+        
+        // Save with empty transcript if API call fails
+        setQuestionTranscripts(prev => [
+          ...prev,
+          {
+            questionId: currentQuestion.id,
+            question: currentQuestion.question,
+            transcript: '[Transcription failed - audio saved]',
+            audioBlob: audioBlob
+          }
+        ]);
+      }
+    };
+    
+    mediaRecorder.start();
+    mediaRecorderRef.current = mediaRecorder;
+
     setIsRecording(true);
-    console.log('Started recording for question:', currentQuestion.id);
+    console.log('Started recording audio for question:', currentQuestion.id);
   };
 
   const handlePauseRecording = () => {
+    if (!mediaRecorderRef.current) return;
+
+    if (isPaused) {
+      // Resume
+      if (mediaRecorderRef.current.state === 'paused') {
+        mediaRecorderRef.current.resume();
+      }
+    } else {
+      // Pause
+      if (mediaRecorderRef.current.state === 'recording') {
+        mediaRecorderRef.current.pause();
+      }
+    }
+
     setIsPaused(!isPaused);
     console.log(isPaused ? 'Resumed recording' : 'Paused recording');
   };
 
   const handleNextQuestion = () => {
-    console.log('Moving to next question. Current answer recorded.');
+    // Stop recording
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+      mediaRecorderRef.current.stop();
+    }
+
+    console.log('Moving to next question. Current answer will be transcribed...');
     
     if (isLastQuestion) {
       handleSubmitInterview();
@@ -139,7 +256,7 @@ export default function InterviewPage() {
       setTimeRemaining(MOCK_QUESTIONS[currentQuestionIndex + 1].timeLimit);
       setIsRecording(false);
       setIsPaused(false);
-      setShowHints(false); // Reset hints for new question
+      setShowHints(false);
     }
   };
 
@@ -154,15 +271,23 @@ export default function InterviewPage() {
   };
 
   const handleSubmitInterview = () => {
+    // Stop any ongoing recording
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+      mediaRecorderRef.current.stop();
+    }
+
     console.log('Interview completed! Submitting all answers...');
-    // TODO: Send all recordings to backend
+    console.log('All transcripts:', questionTranscripts);
+    
+    // TODO: Send transcripts to backend for analysis
+    // Format: { questionId, question, transcript, audioBlob }
     
     // Cleanup
     if (stream) {
       stream.getTracks().forEach(track => track.stop());
     }
     
-    router.push('/results'); // Navigate to results page
+    router.push('/results');
   };
 
   const formatTime = (seconds: number) => {
@@ -304,6 +429,25 @@ export default function InterviewPage() {
                 </button>
               )}
             </div>
+
+            {/* Live Recording Status */}
+            {isRecording && (
+              <div className="mt-4 bg-gray-900 rounded-lg p-4 border border-indigo-500/30">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-2 h-2 bg-red-600 rounded-full animate-pulse"></div>
+                  <span className="text-gray-400 text-sm font-semibold">
+                    Recording Audio
+                  </span>
+                </div>
+                
+                <div className="text-gray-400 text-sm">
+                  <p className="mb-1">🎙️ Your answer is being recorded</p>
+                  <p className="text-xs text-gray-500">
+                    Audio will be transcribed using Whisper API when you finish
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 

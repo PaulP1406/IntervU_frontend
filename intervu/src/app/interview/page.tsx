@@ -9,31 +9,56 @@ const MOCK_QUESTIONS = [
     id: 1,
     question: "Tell me about a time when you had to work with a difficult team member. How did you handle the situation?",
     topic: "Workplace Behavior",
-    timeLimit: 120 // seconds
+    timeLimit: 120, // seconds
+    hints: [
+      "Use the STAR method: Situation, Task, Action, Result",
+      "Focus on your communication and conflict resolution skills",
+      "Highlight what you learned from the experience"
+    ]
   },
   {
     id: 2,
     question: "Describe a situation where you had to make a difficult decision with limited information. What was your approach?",
     topic: "Problem Solving",
-    timeLimit: 120
+    timeLimit: 120,
+    hints: [
+      "Explain your decision-making process step by step",
+      "Mention how you gathered available information",
+      "Discuss the outcome and what you'd do differently"
+    ]
   },
   {
     id: 3,
     question: "Can you share an example of when you had to adapt to a significant change at work? How did you manage it?",
     topic: "Adaptability",
-    timeLimit: 120
+    timeLimit: 120,
+    hints: [
+      "Show your flexibility and positive attitude",
+      "Describe specific actions you took to adapt",
+      "Emphasize the successful outcome"
+    ]
   },
   {
     id: 4,
     question: "Tell me about a time when you took initiative on a project. What motivated you and what was the outcome?",
     topic: "Leadership",
-    timeLimit: 120
+    timeLimit: 120,
+    hints: [
+      "Demonstrate your proactive nature",
+      "Explain your motivation and vision",
+      "Quantify the impact if possible"
+    ]
   },
   {
     id: 5,
     question: "Describe a situation where you received critical feedback. How did you respond and what did you learn?",
     topic: "Learning & Growth",
-    timeLimit: 120
+    timeLimit: 120,
+    hints: [
+      "Show emotional maturity and openness to feedback",
+      "Describe concrete actions you took to improve",
+      "Highlight the growth that resulted"
+    ]
   }
 ];
 
@@ -45,6 +70,7 @@ export default function InterviewPage() {
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [stream, setStream] = useState<MediaStream | null>(null);
+  const [showHints, setShowHints] = useState(false);
 
   const currentQuestion = MOCK_QUESTIONS[currentQuestionIndex];
   const isLastQuestion = currentQuestionIndex === MOCK_QUESTIONS.length - 1;
@@ -113,6 +139,7 @@ export default function InterviewPage() {
       setTimeRemaining(MOCK_QUESTIONS[currentQuestionIndex + 1].timeLimit);
       setIsRecording(false);
       setIsPaused(false);
+      setShowHints(false); // Reset hints for new question
     }
   };
 
@@ -122,6 +149,7 @@ export default function InterviewPage() {
       setTimeRemaining(MOCK_QUESTIONS[currentQuestionIndex - 1].timeLimit);
       setIsRecording(false);
       setIsPaused(false);
+      setShowHints(false); // Reset hints for new question
     }
   };
 
@@ -144,165 +172,257 @@ export default function InterviewPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 flex items-center justify-center p-8">
-      <div className="w-full max-w-6xl">
-        {/* Header */}
-        <div className="mb-8 flex items-center justify-between">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 p-6">
+      {/* Header */}
+      <div className="max-w-7xl mx-auto mb-6">
+        <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-white mb-2">
-              Mock Interview
+            <h1 className="text-xl font-bold text-white mb-1">
+              Mock Interview Session
             </h1>
-            <p className="text-gray-400">
+            <p className="text-gray-400 text-sm">
               Question {currentQuestionIndex + 1} of {MOCK_QUESTIONS.length} • {currentQuestion.topic}
             </p>
           </div>
           
           {/* Timer */}
           <div className="text-right">
-            <div className={`text-4xl font-bold ${timeRemaining < 30 ? 'text-red-400' : 'text-white'}`}>
+            <div className={`text-3xl font-bold ${timeRemaining < 30 ? 'text-red-400' : 'text-white'}`}>
               {formatTime(timeRemaining)}
             </div>
-            <p className="text-gray-400 text-sm mt-1">Time Remaining</p>
+            <p className="text-gray-400 text-xs mt-1">Time Remaining</p>
           </div>
         </div>
+      </div>
 
-        {/* Main Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left: Question */}
-          <div className="lg:col-span-2">
-            <div className="bg-gray-800 rounded-2xl p-8 shadow-xl border border-gray-700">
-              <div className="mb-6">
-                <span className="inline-block px-3 py-1 bg-indigo-600 text-white text-sm font-semibold rounded-full mb-4">
-                  {currentQuestion.topic}
-                </span>
-                <h2 className="text-2xl font-semibold text-white leading-relaxed">
-                  {currentQuestion.question}
-                </h2>
+      {/* Main Interview Area */}
+      <div className="max-w-7xl mx-auto">
+        {/* Video Grid - Interviewer and Candidate */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          {/* AI Interviewer */}
+          <div className="bg-gray-800 rounded-2xl p-6 shadow-xl border border-gray-700">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center">
+                <span className="text-white font-bold text-lg">AI</span>
               </div>
-
-              {/* Recording Controls */}
-              <div className="flex items-center gap-4 mt-8">
-                {!isRecording ? (
-                  <button
-                    onClick={handleStartRecording}
-                    className="px-8 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-colors flex items-center gap-2"
-                  >
-                    <div className="w-3 h-3 rounded-full bg-white"></div>
-                    Start Recording
-                  </button>
-                ) : (
-                  <>
-                    <button
-                      onClick={handlePauseRecording}
-                      className="px-8 py-3 bg-yellow-600 hover:bg-yellow-700 text-white font-semibold rounded-lg transition-colors"
-                    >
-                      {isPaused ? 'Resume' : 'Pause'}
-                    </button>
-                    <div className="flex items-center gap-2 text-red-400 animate-pulse">
-                      <div className="w-3 h-3 rounded-full bg-red-600"></div>
-                      <span className="font-semibold">Recording...</span>
-                    </div>
-                  </>
-                )}
-              </div>
-
-              {/* Navigation */}
-              <div className="flex items-center justify-between mt-8 pt-6 border-t border-gray-700">
-                <button
-                  onClick={handlePreviousQuestion}
-                  disabled={currentQuestionIndex === 0}
-                  className="px-6 py-2 text-gray-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                >
-                  ← Previous
-                </button>
-                
-                <button
-                  onClick={handleNextQuestion}
-                  disabled={!isRecording}
-                  className="px-8 py-3 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-30 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors"
-                >
-                  {isLastQuestion ? 'Submit Interview' : 'Next Question →'}
-                </button>
+              <div>
+                <h3 className="text-white font-semibold">InterviewBot</h3>
+                <p className="text-gray-400 text-sm">Your AI Interviewer</p>
               </div>
             </div>
-          </div>
-
-          {/* Right: Video Preview */}
-          <div className="lg:col-span-1">
-            <div className="bg-gray-800 rounded-2xl p-6 shadow-xl border border-gray-700 sticky top-8">
-              <h3 className="text-white font-semibold mb-4">Your Video</h3>
-              <div className="relative aspect-video bg-gray-900 rounded-lg overflow-hidden">
-                <video
-                  ref={videoRef}
-                  autoPlay
-                  playsInline
-                  muted
-                  className="w-full h-full object-cover"
-                />
+            
+            {/* Mascot/Avatar Area */}
+            <div className="relative aspect-video bg-gradient-to-br from-indigo-900 to-purple-900 rounded-lg overflow-hidden mb-4">
+              {/* Simple animated mascot */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="text-center">
+                  <div className="w-32 h-32 mx-auto bg-gradient-to-br from-indigo-400 to-purple-500 rounded-full flex items-center justify-center mb-4 shadow-lg">
+                    <span className="text-6xl">🤖</span>
+                  </div>
+                  <div className="space-y-2">
+                    <div className={`h-2 bg-indigo-400 rounded-full mx-auto transition-all duration-300 ${
+                      isRecording ? 'w-24 animate-pulse' : 'w-16'
+                    }`}></div>
+                    <div className={`h-2 bg-purple-400 rounded-full mx-auto transition-all duration-300 ${
+                      isRecording ? 'w-16 animate-pulse' : 'w-20'
+                    }`}></div>
+                    <div className={`h-2 bg-indigo-400 rounded-full mx-auto transition-all duration-300 ${
+                      isRecording ? 'w-20 animate-pulse' : 'w-12'
+                    }`}></div>
+                  </div>
+                </div>
               </div>
               
-              {/* Progress Indicator */}
-              <div className="mt-6">
-                <div className="flex justify-between text-sm text-gray-400 mb-2">
-                  <span>Progress</span>
-                  <span>{Math.round(((currentQuestionIndex + 1) / MOCK_QUESTIONS.length) * 100)}%</span>
+              {/* Recording indicator on interviewer side */}
+              {isRecording && (
+                <div className="absolute top-4 left-4 flex items-center gap-2 bg-red-600 px-3 py-1 rounded-full">
+                  <div className="w-2 h-2 rounded-full bg-white animate-pulse"></div>
+                  <span className="text-white text-xs font-semibold">LISTENING</span>
                 </div>
-                <div className="w-full bg-gray-700 rounded-full h-2">
-                  <div 
-                    className="bg-indigo-600 h-2 rounded-full transition-all duration-300"
-                    style={{ width: `${((currentQuestionIndex + 1) / MOCK_QUESTIONS.length) * 100}%` }}
-                  ></div>
+              )}
+            </div>
+
+            {/* Question Display */}
+            <div className="bg-gray-900 rounded-lg p-4">
+              <span className="inline-block px-2 py-1 bg-indigo-600 text-white text-xs font-semibold rounded mb-2">
+                {currentQuestion.topic}
+              </span>
+              <p className="text-white text-lg leading-relaxed">
+                {currentQuestion.question}
+              </p>
+            </div>
+          </div>
+
+          {/* Candidate Video */}
+          <div className="bg-gray-800 rounded-2xl p-6 shadow-xl border border-gray-700">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center">
+                  <span className="text-white font-bold text-lg">YOU</span>
+                </div>
+                <div>
+                  <h3 className="text-white font-semibold">You</h3>
+                  <p className="text-gray-400 text-sm">Candidate</p>
                 </div>
               </div>
 
-              {/* Question List */}
-              <div className="mt-6">
-                <h4 className="text-white font-semibold mb-3 text-sm">Questions</h4>
-                <div className="space-y-2">
-                  {MOCK_QUESTIONS.map((q, index) => (
-                    <div
-                      key={q.id}
-                      className={`flex items-center gap-2 text-sm ${
-                        index === currentQuestionIndex
-                          ? 'text-indigo-400 font-semibold'
-                          : index < currentQuestionIndex
-                          ? 'text-green-400'
-                          : 'text-gray-500'
-                      }`}
-                    >
-                      <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs ${
-                        index === currentQuestionIndex
-                          ? 'bg-indigo-600 text-white'
-                          : index < currentQuestionIndex
-                          ? 'bg-green-600 text-white'
-                          : 'bg-gray-700 text-gray-400'
-                      }`}>
-                        {index < currentQuestionIndex ? '✓' : index + 1}
-                      </div>
-                      <span className="truncate">{q.topic}</span>
-                    </div>
-                  ))}
+              {/* Recording status */}
+              {isRecording && (
+                <div className="flex items-center gap-2 bg-red-600 px-3 py-1 rounded-full">
+                  <div className="w-2 h-2 rounded-full bg-white animate-pulse"></div>
+                  <span className="text-white text-xs font-semibold">RECORDING</span>
                 </div>
-              </div>
+              )}
+            </div>
+            
+            <div className="relative aspect-video bg-gray-900 rounded-lg overflow-hidden">
+              <video
+                ref={videoRef}
+                autoPlay
+                playsInline
+                muted
+                className="w-full h-full object-cover"
+              />
+            </div>
+
+            {/* Recording Controls */}
+            <div className="flex items-center gap-3 mt-4">
+              {!isRecording ? (
+                <button
+                  onClick={handleStartRecording}
+                  className="flex-1 px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
+                >
+                  <div className="w-3 h-3 rounded-full bg-white"></div>
+                  Start Answer
+                </button>
+              ) : (
+                <button
+                  onClick={handlePauseRecording}
+                  className="flex-1 px-6 py-3 bg-yellow-600 hover:bg-yellow-700 text-white font-semibold rounded-lg transition-colors"
+                >
+                  {isPaused ? '▶ Resume' : '⏸ Pause'}
+                </button>
+              )}
             </div>
           </div>
         </div>
 
-        {/* Exit Interview */}
-        <div className="mt-6 text-center">
-          <button
-            onClick={() => {
-              if (confirm('Are you sure you want to exit the interview? Your progress will be lost.')) {
-                if (stream) {
-                  stream.getTracks().forEach(track => track.stop());
-                }
-                router.push('/waiting-room');
-              }
-            }}
-            className="text-gray-400 hover:text-white transition-colors text-sm"
-          >
-            Exit Interview
-          </button>
+        {/* Bottom Controls */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Hints Panel */}
+          <div className="lg:col-span-2 bg-gray-800 rounded-2xl p-6 shadow-xl border border-gray-700">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-white font-semibold">Need Help?</h3>
+              <button
+                onClick={() => setShowHints(!showHints)}
+                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg transition-colors flex items-center gap-2"
+              >
+                {showHints ? '👁 Hide Hints' : '💡 Show Hints'}
+              </button>
+            </div>
+
+            {showHints ? (
+              <div className="space-y-3">
+                {currentQuestion.hints.map((hint, index) => (
+                  <div
+                    key={index}
+                    className="flex items-start gap-3 bg-gray-900 rounded-lg p-4 border border-indigo-500/30"
+                  >
+                    <div className="w-6 h-6 bg-indigo-600 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <span className="text-white text-xs font-bold">{index + 1}</span>
+                    </div>
+                    <p className="text-gray-300 text-sm leading-relaxed">{hint}</p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <p className="text-gray-400 text-sm">
+                  Click "Show Hints" to get tips for answering this question
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Progress & Navigation */}
+          <div className="bg-gray-800 rounded-2xl p-6 shadow-xl border border-gray-700">
+            {/* Progress */}
+            <div className="mb-6">
+              <div className="flex justify-between text-sm text-gray-400 mb-2">
+                <span>Progress</span>
+                <span>{Math.round(((currentQuestionIndex + 1) / MOCK_QUESTIONS.length) * 100)}%</span>
+              </div>
+              <div className="w-full bg-gray-700 rounded-full h-2">
+                <div 
+                  className="bg-indigo-600 h-2 rounded-full transition-all duration-300"
+                  style={{ width: `${((currentQuestionIndex + 1) / MOCK_QUESTIONS.length) * 100}%` }}
+                ></div>
+              </div>
+            </div>
+
+            {/* Question List */}
+            <div className="mb-6">
+              <h4 className="text-white font-semibold mb-3 text-sm">Questions</h4>
+              <div className="space-y-2">
+                {MOCK_QUESTIONS.map((q, index) => (
+                  <div
+                    key={q.id}
+                    className={`flex items-center gap-2 text-sm ${
+                      index === currentQuestionIndex
+                        ? 'text-indigo-400 font-semibold'
+                        : index < currentQuestionIndex
+                        ? 'text-green-400'
+                        : 'text-gray-500'
+                    }`}
+                  >
+                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs flex-shrink-0 ${
+                      index === currentQuestionIndex
+                        ? 'bg-indigo-600 text-white'
+                        : index < currentQuestionIndex
+                        ? 'bg-green-600 text-white'
+                        : 'bg-gray-700 text-gray-400'
+                    }`}>
+                      {index < currentQuestionIndex ? '✓' : index + 1}
+                    </div>
+                    <span className="truncate">{q.topic}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Navigation */}
+            <div className="space-y-3">
+              <button
+                onClick={handleNextQuestion}
+                disabled={!isRecording}
+                className="w-full px-6 py-3 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-30 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors"
+              >
+                {isLastQuestion ? '✓ Submit Interview' : 'Next Question →'}
+              </button>
+              
+              <button
+                onClick={handlePreviousQuestion}
+                disabled={currentQuestionIndex === 0}
+                className="w-full px-6 py-2 text-gray-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors text-sm"
+              >
+                ← Previous Question
+              </button>
+
+              <button
+                onClick={() => {
+                  if (confirm('Are you sure you want to exit the interview? Your progress will be lost.')) {
+                    if (stream) {
+                      stream.getTracks().forEach(track => track.stop());
+                    }
+                    router.push('/waiting-room');
+                  }
+                }}
+                className="w-full px-6 py-2 text-gray-500 hover:text-gray-300 transition-colors text-sm"
+              >
+                Exit Interview
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

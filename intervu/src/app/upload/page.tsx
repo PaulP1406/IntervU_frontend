@@ -117,8 +117,8 @@ export default function UploadPage() {
       resumeText // This is the parsed PDF text as a single string
     });
     
-    // Navigate to next page (you can create this later)
-    // router.push('/interview');
+    // Navigate to topics selection page
+    router.push('/topics');
   };
 
   return (

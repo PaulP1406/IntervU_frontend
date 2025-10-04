@@ -1,0 +1,57 @@
+# Node
+node_modules/
+
+# Next.js build output
+.next/
+.next/**/cache/
+out/
+build/
+dist/
+
+# Local env files (but keep .env.example if present)
+.env*
+!.env.example
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# TypeScript
+*.tsbuildinfo
+
+# Coverage
+coverage/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDEs and editors
+.vscode/
+.idea/
+/.history/
+
+# Vercel/Netlify/Other platforms
+.vercel/
+.vercel_build_output/
+# Netlify cache
+.netlify/
+
+# Local caches
+.cache/
+.turbo/
+.parcel-cache/
+.next/cache/
+
+# Misc
+*.local
+*.env.local
+
+# Optional: lockfiles (usually you should commit lock files; uncomment to ignore)
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml

@@ -162,7 +162,7 @@ export default function InterviewPage() {
       stream.getTracks().forEach(track => track.stop());
     }
     
-    router.push('/thank-you'); // Will create this page next if needed
+    router.push('/results'); // Navigate to results page
   };
 
   const formatTime = (seconds: number) => {

@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import Editor from "@monaco-editor/react";
+import Image from "next/image";
 import Header from "@/components/Header";
 import {
     getTechnicalQuestion,
@@ -84,6 +85,7 @@ export default function TechnicalInterview() {
     const [audioChunks, setAudioChunks] = useState<Blob[]>([]);
     const [hasSuccessfulSubmission, setHasSuccessfulSubmission] = useState(false);
     const [isFinishing, setIsFinishing] = useState(false);
+    const [raccoonFrame, setRaccoonFrame] = useState<'silent' | 'speaking'>('silent');
 
     // Timer effect - start counting when component mounts
     useEffect(() => {
@@ -93,6 +95,20 @@ export default function TechnicalInterview() {
 
         return () => clearInterval(interval);
     }, []);
+
+    // Raccoon animation effect
+    useEffect(() => {
+        if (!isPlaying) {
+            setRaccoonFrame('silent');
+            return;
+        }
+
+        const interval = setInterval(() => {
+            setRaccoonFrame(prev => prev === 'silent' ? 'speaking' : 'silent');
+        }, 300);
+
+        return () => clearInterval(interval);
+    }, [isPlaying]);
 
     // Create session if one doesn't exist
     useEffect(() => {
@@ -571,9 +587,7 @@ export default function TechnicalInterview() {
 
     return (
         <div className="min-h-screen bg-[#0a0a0f] text-white">
-            <Header />
-            
-            <div className="h-screen bg-[#0a0a0f] flex flex-col relative pt-24">
+            <div className="h-screen bg-[#0a0a0f] flex flex-col relative">
             {/* Loading Overlay */}
             {(isLoading || isRunning || isGettingHint) && (
                 <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
@@ -597,30 +611,17 @@ export default function TechnicalInterview() {
                     />
                 </div>
             )}
-            {/* Header */}
-            <div className="bg-gray-800 border-b border-gray-700 px-4 py-3 flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                    
-                    <h1 className="text-white font-semibold text-lg">
-                        Technical Interview
-                    </h1>
-                </div>
-                <div className="flex items-center gap-3">
-                    <div className="px-4 py-2 bg-gray-700 text-white rounded-md text-sm font-mono">
-                        {Math.floor(timer / 60)
-                            .toString()
-                            .padStart(2, "0")}
-                        :{(timer % 60).toString().padStart(2, "0")}
-                    </div>
-                </div>
-            </div>
 
             {/* Main Content - Split Panel */}
             <div className="flex-1 flex overflow-visible">
                 {/* Left Panel - Problem Description */}
                 <div className="w-1/2 border-r border-gray-700 flex flex-col bg-gray-900 overflow-visible">
                     {/* Tabs */}
-                    <div className="flex border-b border-gray-700 bg-gray-800">
+                    <div className="flex items-center justify-between border-b border-gray-700 bg-gray-800 h-14">
+                        <h1 className="text-white font-extrabold text-lg px-4">
+                            Technical Interview
+                        </h1>
+                        <div className="flex">
                         <button
                             onClick={() => setSelectedTab("description")}
                             className={`px-4 py-3 text-sm font-medium transition-colors ${
@@ -673,6 +674,7 @@ export default function TechnicalInterview() {
                                 Hints ({previousHints.length})
                             </span>
                         </button>
+                        </div>
                     </div>
 
                     {/* Tab Content */}
@@ -692,23 +694,101 @@ export default function TechnicalInterview() {
                                 </div>
                             ) : problem ? (
                                 <div className="space-y-6">
-                                    {/* Title and Difficulty */}
-                                    <div>
-                                        <h2 className="text-2xl font-bold text-white mb-2">
-                                            {problem.question.question}
-                                        </h2>
-                                        <span
-                                            className={`text-sm font-semibold ${getDifficultyColor(
-                                                problem.difficulty
-                                            )}`}
-                                        >
-                                            {problem.difficulty}
-                                        </span>
-                                    </div>
+                                    {/* Top Section: Title/Description and AI Interviewer Side by Side */}
+                                    <div className="flex gap-6">
+                                        {/* Left: Title and Description */}
+                                        <div className="flex-1 space-y-4">
+                                            {/* Title and Difficulty */}
+                                            <div>
+                                                <h2 className="text-2xl font-bold text-white mb-2">
+                                                    {problem.question.question}
+                                                </h2>
+                                                <span
+                                                    className={`text-sm font-semibold ${getDifficultyColor(
+                                                        problem.difficulty
+                                                    )}`}
+                                                >
+                                                    {problem.difficulty}
+                                                </span>
+                                            </div>
 
-                                    {/* Description */}
-                                    <div className="text-gray-300 leading-relaxed text-xl whitespace-pre-line">
-                                        {problem.question.description}
+                                            {/* Description */}
+                                            <div className="text-gray-300 leading-relaxed text-lg whitespace-pre-line">
+                                                {problem.question.description}
+                                            </div>
+                                        </div>
+
+                                        {/* Right: AI Interviewer Section */}
+                                        <div className="w-64 flex-shrink-0">
+                                            <div className="bg-slate-800/50 rounded-2xl p-4 border border-slate-700/50 shadow-xl">
+                                                {/* Name */}
+                                                <h3 className="text-white font-semibold text-lg mb-3">
+                                                    Ryan the Raccoon
+                                                </h3>
+                                                
+                                                {/* Mascot/Avatar Area */}
+                                                <div className="relative bg-gradient-to-br from-indigo-500 to-purple-900 rounded-xl overflow-hidden mb-3 aspect-video border border-slate-700">
+                                                    <div className="absolute inset-0 flex items-center justify-center p-6">
+                                                        <div className="text-center">
+                                                            {/* Raccoon avatar */}
+                                                            <div className="w-16 h-16 mx-auto bg-gradient-to-br from-indigo-400 to-purple-500 rounded-full flex items-center justify-center shadow-lg">
+                                                                <Image
+                                                                    src={raccoonFrame === 'speaking' ? '/raccoonCircleEyesSpeaking 2.svg' : '/raccoonCircleEyesSilent 1.svg'}
+                                                                    alt="AI Interviewer"
+                                                                    width={48}
+                                                                    height={48}
+                                                                    className="transition-opacity duration-150 mt-5"
+                                                                />
+                                                            </div>
+                                                            
+                                                            {/* Animated bars */}
+                                                            <div className="space-y-1.5 mt-3">
+                                                                <div className={`h-1.5 bg-indigo-400 rounded-full mx-auto transition-all duration-300 ${isRecording ? "w-14 animate-pulse" : "w-10"}`}></div>
+                                                                <div className={`h-1.5 bg-purple-400 rounded-full mx-auto transition-all duration-300 ${isRecording ? "w-10 animate-pulse" : "w-12"}`}></div>
+                                                                <div className={`h-1.5 bg-indigo-400 rounded-full mx-auto transition-all duration-300 ${isRecording ? "w-12 animate-pulse" : "w-8"}`}></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    {/* Status badges */}
+                                                    {isRecording && (
+                                                        <div className="absolute top-2 left-2">
+                                                            <div className="bg-red-500 text-white text-xs px-2 py-1 rounded-full font-semibold shadow-lg">
+                                                                Recording
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                    {isPlaying && (
+                                                        <div className="absolute top-2 right-2">
+                                                            <div className="bg-green-500 text-white text-xs px-2 py-1 rounded-full font-semibold shadow-lg">
+                                                                Speaking
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </div>
+
+                                                {/* Talk to Interviewer Button */}
+                                                <button
+                                                    onClick={handleGetHint}
+                                                    disabled={
+                                                        isGettingHint ||
+                                                        isPlaying ||
+                                                        isCreatingSession
+                                                    }
+                                                    className="w-full px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-[32px] transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm shadow-lg"
+                                                >
+                                                    {isCreatingSession
+                                                        ? "Creating Session..."
+                                                        : isPlaying
+                                                        ? "AI Speaking..."
+                                                        : isGettingHint
+                                                        ? "Processing..."
+                                                        : isRecording
+                                                        ? "Recording..."
+                                                        : "Get a Hint"}
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
 
                                     {/* Test Cases */}
@@ -730,124 +810,22 @@ export default function TechnicalInterview() {
                                                             <span className="text-gray-400">
                                                                 Input:
                                                             </span>{" "}
-                                                            {testCase.input}
+                                                            <span className="font-mono">
+                                                                {testCase.input}
+                                                            </span>
                                                         </p>
                                                         <p className="text-gray-300">
                                                             <span className="text-gray-400">
                                                                 Expected Output:
                                                             </span>{" "}
-                                                            {
-                                                                testCase.expectedOutput
-                                                            }
+                                                            <span className="font-mono">
+                                                                {testCase.expectedOutput}
+                                                            </span>
                                                         </p>
                                                     </div>
                                                 </div>
                                             )
                                         )}
-                                    </div>
-
-                                    {/* AI Interviewer Section */}
-                                    <div className="space-y-4 mt-6 w-1/2">
-                                        <p className="text-white font-semibold text-lg">
-                                            AI Interviewer
-                                        </p>
-                                        <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
-                                            <div className="flex items-center gap-3 mb-4">
-                                                <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center">
-                                                    <span className="text-white font-bold text-lg">
-                                                        AI
-                                                    </span>
-                                                </div>
-                                                <div>
-                                                    <h3 className="text-white font-semibold">
-                                                        InterviewBot
-                                                    </h3>
-                                                    <p className="text-gray-400 text-sm">
-                                                        Your AI Interviewer
-                                                    </p>
-                                                </div>
-                                            </div>
-
-                                            {/* Mascot/Avatar Area */}
-                                            <div className="relative aspect-video bg-gradient-to-br from-indigo-900 to-purple-900 rounded-lg overflow-hidden mb-4">
-                                                {/* Simple animated mascot */}
-                                                <div className="absolute inset-0 flex items-center justify-center">
-                                                    <div className="text-center">
-                                                        <div className="w-32 h-32 mx-auto bg-gradient-to-br from-indigo-400 to-purple-500 rounded-full flex items-center justify-center mb-4 shadow-lg">
-                                                            <span className="text-6xl">
-                                                                🤖
-                                                            </span>
-                                                        </div>
-                                                        <div className="space-y-2">
-                                                            <div
-                                                                className={`h-2 bg-indigo-400 rounded-full mx-auto transition-all duration-300 ${
-                                                                    isRecording
-                                                                        ? "w-24 animate-pulse"
-                                                                        : "w-16"
-                                                                }`}
-                                                            ></div>
-                                                            <div
-                                                                className={`h-2 bg-purple-400 rounded-full mx-auto transition-all duration-300 ${
-                                                                    isRecording
-                                                                        ? "w-16 animate-pulse"
-                                                                        : "w-20"
-                                                                }`}
-                                                            ></div>
-                                                            <div
-                                                                className={`h-2 bg-indigo-400 rounded-full mx-auto transition-all duration-300 ${
-                                                                    isRecording
-                                                                        ? "w-20 animate-pulse"
-                                                                        : "w-12"
-                                                                }`}
-                                                            ></div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                {/* Recording indicator on interviewer side */}
-                                                {isRecording && (
-                                                    <div className="absolute top-4 left-4 flex items-center gap-2 bg-red-600 px-3 py-1 rounded-full">
-                                                        <div className="w-2 h-2 rounded-full bg-white animate-pulse"></div>
-                                                        <span className="text-white text-xs font-semibold">
-                                                            LISTENING
-                                                        </span>
-                                                    </div>
-                                                )}
-
-                                                {/* Speaking indicator */}
-                                                {isPlaying && (
-                                                    <div className="absolute top-4 right-4 flex items-center gap-2 bg-indigo-600 px-3 py-1 rounded-full">
-                                                        <div className="w-2 h-2 rounded-full bg-white animate-pulse"></div>
-                                                        <span className="text-white text-xs font-semibold">
-                                                            SPEAKING
-                                                        </span>
-                                                    </div>
-                                                )}
-                                            </div>
-
-                                            {/* Talk to Interviewer Button */}
-                                            <div className="flex justify-center">
-                                                <button
-                                                    onClick={handleGetHint}
-                                                    disabled={
-                                                        isGettingHint ||
-                                                        isPlaying ||
-                                                        isCreatingSession
-                                                    }
-                                                    className="px-6 py-3 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg transition-colors disabled:opacity-50 flex items-center gap-2"
-                                                >
-                                                    {isCreatingSession
-                                                        ? "Creating Session..."
-                                                        : isPlaying
-                                                        ? "AI Speaking..."
-                                                        : isGettingHint
-                                                        ? "Processing Answer..."
-                                                        : isRecording
-                                                        ? "Recording... (Click to Stop)"
-                                                        : "Talk to Interviewer"}
-                                                </button>
-                                            </div>
-                                        </div>
                                     </div>
                                 </div>
                             ) : (
@@ -981,7 +959,7 @@ export default function TechnicalInterview() {
                 {/* Right Panel - Code Editor */}
                 <div className="w-1/2 flex flex-col bg-gray-900">
                     {/* Language Selector and Actions */}
-                    <div className="flex items-center justify-between bg-gray-800 border-b border-gray-700 px-4 py-2">
+                    <div className="flex items-center justify-between bg-gray-800 border-b border-gray-700 px-4 h-14">
                         <select
                             value={language}
                             onChange={(e) =>
@@ -992,13 +970,19 @@ export default function TechnicalInterview() {
                             <option value="python">Python</option>
                             <option value="javascript">JavaScript</option>
                         </select>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-3 ml-auto">
                             <button
                                 onClick={handleReset}
                                 className="px-3 py-1.5 text-gray-400 hover:text-white text-sm transition-colors"
                             >
                                 Reset
                             </button>
+                            <div className="px-4 py-2 bg-gray-700 text-white rounded-md text-sm font-mono">
+                                {Math.floor(timer / 60)
+                                    .toString()
+                                    .padStart(2, "0")}
+                                :{(timer % 60).toString().padStart(2, "0")}
+                            </div>
                         </div>
                     </div>
 

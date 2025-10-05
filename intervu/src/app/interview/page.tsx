@@ -163,7 +163,7 @@ export default function InterviewPage() {
                     },
                     body: JSON.stringify({
                         text: currentQuestion.question,
-                        voiceId: INTERVIEWER_VOICE,
+                        voiceId: "alloy",
                     }),
                 });
 

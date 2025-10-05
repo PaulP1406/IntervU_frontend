@@ -262,10 +262,10 @@ export default function ResultsPage() {
 
         {isLoading ? (
           <div className="flex items-center justify-center py-32">
-            <LoadingSpinner 
-              message="Analyzing your interview responses..."
-              size="large"
-            />
+            <div className="text-center">
+              <div className="inline-block h-12 w-12 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent mb-4"></div>
+              <p className="text-white text-lg">Analyzing your interview responses...</p>
+            </div>
           </div>
         ) : (
           <>

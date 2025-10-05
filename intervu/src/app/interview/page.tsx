@@ -544,6 +544,16 @@ export default function InterviewPage() {
         </div>
       )}
       
+      {/* Loading Overlay for Submitting */}
+      {isSubmitting && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
+          <LoadingSpinner 
+            message="Submitting your interview for feedback..."
+            size="large"
+          />
+        </div>
+      )}
+      
       <div className="max-w-7xl mx-auto px-6 pt-32 pb-6">
       {/* Header */}
       <div className="mb-6">

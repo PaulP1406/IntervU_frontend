@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useInterview } from '@/context/InterviewContext';
 import { createInterviewSession, getInterviewQuestions } from '@/lib/api';
+import Header from '@/components/Header';
 
 // Define available interview topics
 const INTERVIEW_TOPICS = [
@@ -181,9 +182,10 @@ export default function TopicsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 py-12 px-4">
-      <div className="container mx-auto max-w-6xl">
-        {/* Header */}
+    <div className="min-h-screen bg-[#0a0a0f]">
+      <Header />
+      <div className="container mx-auto max-w-6xl py-12 px-4">
+        {/* Page Title */}
         <div className="mb-12 text-center">
           <Link href="/upload" className="text-indigo-600 dark:text-indigo-400 hover:underline mb-4 inline-block">
             ← Back

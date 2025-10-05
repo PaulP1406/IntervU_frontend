@@ -6,17 +6,10 @@ import Link from 'next/link';
 const Home = () => {
   return (
     <div className="min-h-screen bg-[#0a0a0f] text-white">
-      {/* Header */}
-      <header className="px-8 py-6 border-b border-slate-800">
-        <div className="flex items-center gap-2">
-          <h1 className="text-2xl font-bold">IntervU</h1>
-          <span className="text-2xl">🦝</span>
-          {/* Logo placeholder - replace emoji with actual logo */}
-        </div>
-      </header>
+      <Header />
 
       {/* Hero Section */}
-      <section className="flex flex-row w-full justify-center items-center gap-16 py-24 px-8 max-w-7xl mx-auto">
+      <section className="flex flex-row w-full justify-center items-center gap-16 py-16 px-8 max-w-7xl mx-auto">
         <div className='flex flex-col justify-center max-w-[600px] items-start gap-6'>
           <h2 className='text-6xl font-bold leading-tight'>
             Practice smarter,<br />not harder.
@@ -27,31 +20,29 @@ const Home = () => {
         </div>
         <div className="flex-shrink-0">
           <Image 
-            src="/ryanRaccoon.svg"
-            alt="Ryan the Raccoon mascot"
+            src="/raccoonWave.svg"
+            alt="Ryan the Raccoon mascot waving"
             width={300}
             height={300}
           />
         </div>
       </section>
 
-      {/* CTA Button */}
-      <section className="flex justify-center py-8">
-        <Link href="/instructions">
-          <button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-lg px-12 py-4 rounded-[32px] transition-colors duration-200">
-            Begin Practicing
-          </button>
-        </Link>
-      </section>
-
-      {/* Leaves Decoration */}
-      <section className="flex justify-between w-full">
+      {/* Leaves Decoration with CTA Button */}
+      <section className="flex justify-between items-center w-full relative">
         <img 
           src="/leavesLeft.svg"
           alt="Decorative leaves"
           className="h-auto"
           style={{ width: '40%' }}
         />
+        <div className="absolute left-1/2 transform -translate-x-1/2">
+          <Link href="/instructions">
+            <button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-lg px-12 py-4 rounded-[32px] transition-colors duration-200">
+              Begin Practicing
+            </button>
+          </Link>
+        </div>
         <img 
           src="/leavesRight.svg"
           alt="Decorative leaves"
@@ -117,6 +108,23 @@ const Home = () => {
             </p>
           </div>
         </div>
+      </section>
+
+      {/* Leaves Decoration Bottom */}
+      <section className="flex justify-between w-full">
+        <img 
+          src="/leavesRight.svg"
+          alt="Decorative leaves"
+          className="h-auto"
+          style={{ width: '40%' }}
+        />
+        <img 
+          src="/leavesLeft.svg"
+          alt="Decorative leaves"
+          className="h-auto"
+          style={{ width: '40%' }}
+        />
+        
       </section>
     </div>
   );

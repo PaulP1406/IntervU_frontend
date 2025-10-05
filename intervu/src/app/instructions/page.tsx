@@ -1,25 +1,24 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import Header from '@/components/Header';
 
 export default function InstructionsPage() {
   const router = useRouter();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 p-6">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
+    <div className="min-h-screen bg-[#0a0a0f]">
+      <Header />
+      <div className="max-w-4xl mx-auto p-6">
+        {/* Page Title */}
         <div className="text-center mb-8">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
             How IntervU Works
           </h1>
-          <p className="text-xl text-gray-300">
-            Your AI-powered interview preparation companion
-          </p>
         </div>
 
         {/* Main Instructions Card */}
-        <div className="bg-gray-800 rounded-2xl p-8 shadow-xl border border-gray-700 mb-6">
+        <div className="bg-gray-800 rounded-2xl p-8 px-8 shadow-xl border border-gray-700 mb-6">
           <div className="space-y-8">
             {/* Step 1 */}
             <div className="flex items-start gap-4">
@@ -153,17 +152,18 @@ export default function InstructionsPage() {
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <button
-            onClick={() => router.push('/upload')}
-            className="px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white text-lg font-semibold rounded-lg transition-colors shadow-lg"
-          >
-            Get Started →
-          </button>
-          <button
             onClick={() => router.push('/')}
-            className="px-8 py-4 bg-gray-700 hover:bg-gray-600 text-white text-lg font-semibold rounded-lg transition-colors"
+            className="px-12 py-4 bg-gray-700 hover:bg-gray-600 text-white text-lg font-semibold rounded-[32px] transition-colors duration-200"
           >
             ← Back to Home
           </button>
+          <button
+            onClick={() => router.push('/upload')}
+            className="px-12 py-4 bg-blue-600 hover:bg-blue-700 text-white text-lg font-semibold rounded-[32px] transition-colors duration-200"
+          >
+            Get Started →
+          </button>
+          
         </div>
 
         {/* Footer Note */}

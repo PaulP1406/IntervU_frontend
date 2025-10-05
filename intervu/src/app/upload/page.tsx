@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useInterview } from '@/context/InterviewContext';
+import Header from '@/components/Header';
 
 export default function UploadPage() {
   const router = useRouter();
@@ -136,26 +137,44 @@ export default function UploadPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 py-12 px-4">
-      <div className="container mx-auto max-w-6xl">
-        {/* Header */}
-        <div className="mb-8">
-          <Link href="/" className="text-indigo-600 dark:text-indigo-400 hover:underline mb-4 inline-block">
-            ← Back to Home
-          </Link>
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
+    <div className="min-h-screen bg-[#0a0a0f]">
+      <Header />
+
+      {/* Top Leaves Decoration with Title */}
+      <section className="flex justify-between items-center w-full relative">
+        <img 
+          src="/leavesLeft.svg"
+          alt="Decorative leaves"
+          className="h-auto"
+          style={{ width: '15%' }}
+        />
+        <div className="absolute left-1/2 transform -translate-x-1/2 text-center">
+          <h1 className="text-4xl font-bold text-white mb-2">
             Upload Resume
           </h1>
-          <p className="text-gray-600 dark:text-gray-300">
+          <p className="text-gray-300">
             Provide your resume and job details to get started
           </p>
         </div>
+        <img 
+          src="/leavesRight.svg"
+          alt="Decorative leaves"
+          className="h-auto"
+          style={{ width: '15%' }}
+        />
+      </section>
 
-        <form onSubmit={handleSubmit} className="grid md:grid-cols-2 gap-8">
+      <div className="container mx-auto max-w-6xl py-12 px-4">
+
+        <form onSubmit={handleSubmit}>
+          <div className="grid md:grid-cols-2 gap-8 mb-8 items-start">
           {/* Left Column - Resume Upload */}
-          <div>
+          <div className="flex flex-col h-full">
+            <label className="block text-sm font-medium text-gray-200 mb-2">
+              Resume <span className="text-red-500">*</span>
+            </label>
             <div
-              className={`border-2 border-dashed rounded-lg p-12 text-center transition-all ${
+              className={`flex-1 max-h-[580px] border-2 border-dashed rounded-lg p-6 text-center transition-all flex flex-col justify-center ${
                 isDragging
                   ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20'
                   : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800'
@@ -305,19 +324,36 @@ export default function UploadPage() {
                 placeholder="Paste the job description here..."
               />
             </div>
+          </div>
+          </div>
 
-            {/* Submit Button */}
-            <div className="pt-4">
-              <button
-                type="submit"
-                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white text-lg font-semibold px-8 py-4 rounded-lg shadow-lg transition-all duration-200 transform hover:scale-105"
-              >
-                Next →
-              </button>
-            </div>
+          {/* Submit Button - Centered Below Both Columns */}
+          <div className="flex justify-center pt-4">
+            <button
+              type="submit"
+              className="bg-blue-600 hover:bg-blue-700 text-white text-lg font-semibold px-12 py-4 rounded-[32px] transition-colors duration-200"
+            >
+              Continue →
+            </button>
           </div>
         </form>
       </div>
+
+      {/* Bottom Leaves Decoration */}
+      <section className="flex justify-between w-full mt-12">
+        <img 
+          src="/leavesLeft.svg"
+          alt="Decorative leaves"
+          className="h-auto"
+          style={{ width: '40%' }}
+        />
+        <img 
+          src="/leavesRight.svg"
+          alt="Decorative leaves"
+          className="h-auto"
+          style={{ width: '40%' }}
+        />
+      </section>
     </div>
   );
 }

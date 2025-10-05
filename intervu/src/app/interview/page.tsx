@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
 import { useInterview } from '@/context/InterviewContext';
 import { getInterviewFeedback } from '@/lib/api';
+import Header from '@/components/Header';
 
 // Mock questions - will be replaced with backend data
 const MOCK_QUESTIONS = [
@@ -504,9 +505,9 @@ export default function InterviewPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 p-6">
-      {/* Header */}
-      <div className="max-w-7xl mx-auto mb-6">
+    <div className="min-h-screen bg-[#0a0a0f]">
+      <Header />
+      <div className="max-w-7xl mx-auto p-6 mb-6">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-xl font-bold text-white mb-1">

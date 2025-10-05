@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import type { FeedbackResponse } from '@/lib/api';
 import { useInterview } from '@/context/InterviewContext';
+import Header from '@/components/Header';
 
 // Mock data - will be replaced with backend response
 const MOCK_RESULTS = {
@@ -248,9 +249,10 @@ export default function ResultsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 p-6">
-      <div className="max-w-6xl mx-auto">
-        {/* Header */}
+    <div className="min-h-screen bg-[#0a0a0f]">
+      <Header />
+      <div className="max-w-6xl mx-auto p-6">
+        {/* Page Title */}
         <div className="mb-8 text-center">
           <h1 className="text-4xl font-bold text-white mb-2">
             Interview Complete! 🎉

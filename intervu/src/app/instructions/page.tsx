@@ -155,13 +155,13 @@ export default function InstructionsPage() {
             onClick={() => router.push('/')}
             className="px-12 py-4 bg-gray-700 hover:bg-gray-600 text-white text-lg font-semibold rounded-[32px] transition-colors duration-200"
           >
-            ← Back to Home
+            Back to Home
           </button>
           <button
             onClick={() => router.push('/upload')}
             className="px-12 py-4 bg-blue-600 hover:bg-blue-700 text-white text-lg font-semibold rounded-[32px] transition-colors duration-200"
           >
-            Get Started →
+            Get Started
           </button>
           
         </div>

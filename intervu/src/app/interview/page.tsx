@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
 import { useInterview } from '@/context/InterviewContext';
 import { getInterviewFeedback } from '@/lib/api';
+import Header from '@/components/Header';
 
 // Mock questions - will be replaced with backend data
 const MOCK_QUESTIONS = [
@@ -591,33 +592,53 @@ export default function InterviewPage() {
     };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 p-6">
-      {/* Header */}
-      <div className="max-w-7xl mx-auto mb-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-xl font-bold text-white mb-1">
-              Mock Interview Session
-            </h1>
-            <p className="text-gray-400 text-sm">
-              Question {currentQuestionIndex + 1} of 3 • {currentQuestion.topic}
-            </p>
-          </div>
-          
-          {/* Timer */}
-          <div className="text-right">
-            <div className={`text-3xl font-bold ${timeRemaining < 30 ? 'text-red-400' : 'text-white'}`}>
-              {formatTime(timeRemaining)}
+    <div className="min-h-screen bg-[#0a0a0f] pt-24">
+      <Header />
+      
+      <div className="py-12 px-8 relative">
+        {/* Left Leaves */}
+        <img 
+          src="/leavesLeft.svg"
+          alt="Decorative leaves"
+          className="absolute left-0 top-0 h-auto pointer-events-none"
+          style={{ width: '15%' }}
+        />
+        
+        {/* Right Leaves */}
+        <img 
+          src="/leavesRight.svg"
+          alt="Decorative leaves"
+          className="absolute right-0 top-0 h-auto pointer-events-none"
+          style={{ width: '15%' }}
+        />
+        
+        <div className="max-w-7xl mx-auto relative z-10">
+          {/* Interview Header */}
+          <div className="mb-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-xl font-bold text-white mb-1">
+                  Mock Interview Session
+                </h1>
+                <p className="text-gray-400 text-sm">
+                  Question {currentQuestionIndex + 1} of 3 • {currentQuestion.topic}
+                </p>
+              </div>
+              
+              {/* Timer */}
+              <div className="text-right">
+                <div className={`text-3xl font-bold ${timeRemaining < 30 ? 'text-red-400' : 'text-white'}`}>
+                  {formatTime(timeRemaining)}
+                </div>
+                <p className="text-gray-400 text-xs mt-1">Time Remaining</p>
+              </div>
             </div>
-            <p className="text-gray-400 text-xs mt-1">Time Remaining</p>
           </div>
-        </div>
-      </div>
 
-            {/* Main Interview Area */}
-            <div className="max-w-7xl mx-auto">
-                {/* Video Grid - Interviewer and Candidate */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          {/* Main Interview Area */}
+          <div className="">
+            {/* Video Grid - Interviewer and Candidate */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                     {/* AI Interviewer */}
                     <div className="bg-gray-800 rounded-2xl p-6 shadow-xl border border-gray-700">
                         <div className="flex items-center gap-3 mb-4">
@@ -1004,5 +1025,7 @@ export default function InterviewPage() {
                 </div>
             </div>
         </div>
-    );
+      </div>
+    </div>
+  );
 }

@@ -151,23 +151,39 @@ export default function WaitingRoomPage() {
     <div className="min-h-screen bg-[#0a0a0f] pt-24">
       <Header />
       
-      <div className="py-12 px-8">
-        <div className="container mx-auto max-w-3xl">
+      <div className="py-12 px-8 relative">
+        {/* Left Leaves */}
+        <img 
+          src="/leavesLeft.svg"
+          alt="Decorative leaves"
+          className="absolute left-0 top-0 h-auto pointer-events-none"
+          style={{ width: '15%' }}
+        />
+        
+        {/* Right Leaves */}
+        <img 
+          src="/leavesRight.svg"
+          alt="Decorative leaves"
+          className="absolute right-0 top-0 h-auto pointer-events-none"
+          style={{ width: '15%' }}
+        />
+        
+        <div className="container mx-auto max-w-3xl relative z-10">
           {/* Main Card */}
           <div className="bg-gray-700 rounded-xl overflow-hidden shadow-xl">
             {/* Header Section with Logo and Title */}
             <div className="bg-gray-800 p-6 flex items-start gap-4">
-              {/* Placeholder Logo */}
-              <div className="w-24 h-16 bg-white rounded flex-shrink-0 flex items-center justify-center">
-                <span className="text-4xl">🦝</span>
+              {/* Logo */}
+              <div className="w-32 h-20 bg-white rounded flex-shrink-0 flex items-center justify-center">
+                <span className="text-3xl font-bold text-gray-900">IntervU</span>
               </div>
               
               {/* Title Section */}
               <div className="flex-1">
-                <h1 className="text-2xl font-bold text-white mb-2">
-                  {jobTitle || 'Job'} Interview
+                <h1 className="text-3xl font-bold text-white mb-4">
+                  {jobTitle ? jobTitle.charAt(0).toUpperCase() + jobTitle.slice(1) : 'Job'} Interview
                 </h1>
-                <p className="text-gray-300 text-sm">
+                <p className="text-gray-300 text-md">
                   {isHostReady 
                     ? 'Your host has joined the room and is ready to let you in. Good luck!' 
                     : 'Waiting for host to join...'}
@@ -241,7 +257,7 @@ export default function WaitingRoomPage() {
             </div>
 
             {/* Audio and Video Controls */}
-            <div className="p-6 bg-gray-700 flex justify-center gap-4">
+            <div className="p-3 bg-gray-700 flex justify-center gap-4">
               <button
                 onClick={toggleAudio}
                 disabled={!cameraPermissionGranted}

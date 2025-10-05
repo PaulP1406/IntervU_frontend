@@ -1,13 +1,11 @@
 "use client";
 
-
 import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import { useInterview } from "@/context/InterviewContext";
 import { getInterviewFeedback } from "@/lib/api";
 import { INTERVIEWER_VOICE } from "@/lib/constants";
-import LoadingSpinner from '@/components/LoadingSpinner';
-
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 // Mock questions - will be replaced with backend data
 const MOCK_QUESTIONS = [
@@ -593,120 +591,22 @@ export default function InterviewPage() {
         const secs = seconds % 60;
         return `${mins}:${secs.toString().padStart(2, "0")}`;
     };
-        router.push('/results');
-      } catch (error) {
-        console.error('Failed to get feedback:', error);
-        alert('Failed to get interview feedback. Please try again.');
-        setIsSubmitting(false);
-      }
-    } else {
-      console.warn('No session ID or transcripts available');
-      // Cleanup camera and microphone
-      if (stream) {
-        stream.getTracks().forEach(track => track.stop());
-        setStream(null);
-      }
-      router.push('/results');
-    }
-  };
-
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  };
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 p-6 relative">
-      {/* Loading Overlay */}
-      {(isTranscribing || isSubmitting) && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
-          <LoadingSpinner 
-            message={isSubmitting ? 'Submitting your interview...' : 'Transcribing your answer...'}
-            size="large"
-          />
-        </div>
-      )}
-
-      {/* Header */}
-      <div className="max-w-7xl mx-auto mb-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-xl font-bold text-white mb-1">
-              Mock Interview Session
-            </h1>
-            <p className="text-gray-400 text-sm">
-              Question {currentQuestionIndex + 1} of 3 • {currentQuestion.topic}
-            </p>
-          </div>
-          
-          {/* Timer */}
-          <div className="text-right">
-            <div className={`text-3xl font-bold ${timeRemaining < 30 ? 'text-red-400' : 'text-white'}`}>
-              {formatTime(timeRemaining)}
-            </div>
-            <p className="text-gray-400 text-xs mt-1">Time Remaining</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Interview Area */}
-      <div className="max-w-7xl mx-auto">
-        {/* Video Grid - Interviewer and Candidate */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          {/* AI Interviewer */}
-          <div className="bg-gray-800 rounded-2xl p-6 shadow-xl border border-gray-700">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center">
-                <span className="text-white font-bold text-lg">AI</span>
-              </div>
-              <div>
-                <h3 className="text-white font-semibold">InterviewBot</h3>
-                <p className="text-gray-400 text-sm">Your AI Interviewer</p>
-              </div>
-            </div>
-            
-            {/* Mascot/Avatar Area */}
-            <div className="relative aspect-video bg-gradient-to-br from-indigo-900 to-purple-900 rounded-lg overflow-hidden mb-4">
-              {/* Simple animated mascot */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center">
-                  <div className="w-32 h-32 mx-auto bg-gradient-to-br from-indigo-400 to-purple-500 rounded-full flex items-center justify-center mb-4 shadow-lg">
-                    <span className="text-6xl">🤖</span>
-                  </div>
-                  <div className="space-y-2">
-                    <div className={`h-2 bg-indigo-400 rounded-full mx-auto transition-all duration-300 ${
-                      isRecording ? 'w-24 animate-pulse' : 'w-16'
-                    }`}></div>
-                    <div className={`h-2 bg-purple-400 rounded-full mx-auto transition-all duration-300 ${
-                      isRecording ? 'w-16 animate-pulse' : 'w-20'
-                    }`}></div>
-                    <div className={`h-2 bg-indigo-400 rounded-full mx-auto transition-all duration-300 ${
-                      isRecording ? 'w-20 animate-pulse' : 'w-12'
-                    }`}></div>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Recording indicator on interviewer side */}
-              {isRecording && (
-                <div className="absolute top-4 left-4 flex items-center gap-2 bg-red-600 px-3 py-1 rounded-full">
-                  <div className="w-2 h-2 rounded-full bg-white animate-pulse"></div>
-                  <span className="text-white text-xs font-semibold">LISTENING</span>
-                </div>
-              )}
-              
-              {/* Speaking indicator */}
-              {isSpeaking && (
-                <div className="absolute top-4 right-4 flex items-center gap-2 bg-indigo-600 px-3 py-1 rounded-full">
-                  <div className="w-2 h-2 rounded-full bg-white animate-pulse"></div>
-                  <span className="text-white text-xs font-semibold">SPEAKING</span>
-                </div>
-              )}
-            </div>
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 p-6">
+        <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 p-6 relative">
+            {/* Loading Overlay */}
+            {(isTranscribing || isSubmitting) && (
+                <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
+                    <LoadingSpinner
+                        message={
+                            isSubmitting
+                                ? "Submitting your interview..."
+                                : "Transcribing your answer..."
+                        }
+                        size="large"
+                    />
+                </div>
+            )}
             {/* Header */}
             <div className="max-w-7xl mx-auto mb-6">
                 <div className="flex items-center justify-between">

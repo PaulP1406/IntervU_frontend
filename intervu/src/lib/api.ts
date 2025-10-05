@@ -50,6 +50,52 @@ export interface FeedbackResponse {
   overallFeedback?: string[];
 }
 
+// Technical Interview Types
+export interface TechnicalQuestion {
+  id: string;
+  difficulty: 'Easy' | 'Medium' | 'Hard';
+  question: {
+    question: string;
+    questionId: string;
+    description: string;
+    functionName: string;
+    testCases: {
+      input: string;
+      expectedOutput: string;
+    }[];
+  };
+}
+
+export interface ExecuteCodeRequest {
+  questionId: string;
+  code: string;
+  language: 'python' | 'javascript' | 'cpp' | 'java';
+}
+
+export interface ExecuteCodeResponse {
+  questionId: string;
+  code: string;
+  language: string;
+  output: string;
+  error: string;
+  executionTime: number;
+  success: boolean;
+}
+
+export interface HintRequest {
+  sessionId: string;
+  questionId: string;
+  previousHints: string[];
+  userCode: string;
+  userSpeech: string;
+}
+
+export interface HintResponse {
+  sessionId: string;
+  conversationalHint: string;
+  hintSummary: string;
+}
+
 // Create interview session
 export async function createInterviewSession(data: SessionData): Promise<{ sessionId: string }> {
   console.log('🚀 [API] Creating interview session...');
@@ -131,4 +177,75 @@ export async function healthCheck(): Promise<{ status: string; message: string }
   }
 
   return response.json();
+}
+
+// Technical Interview APIs
+
+// Get a random technical question by difficulty
+export async function getTechnicalQuestion(difficulty: 'Easy' | 'Medium' | 'Hard'): Promise<TechnicalQuestion> {
+  console.log('🚀 [API] Fetching technical question...');
+  console.log('📤 [REQUEST] GET /api/technical-question?difficulty=' + difficulty);
+  
+  const response = await fetch(`${API_BASE_URL}/api/technical-question?difficulty=${difficulty}`);
+
+  if (!response.ok) {
+    const error = await response.text();
+    console.error('❌ [ERROR] Failed to fetch technical question:', error);
+    throw new Error(error || 'Failed to fetch technical question');
+  }
+
+  const result = await response.json();
+  console.log('✅ [RESPONSE] Technical question received:', JSON.stringify(result, null, 2));
+  return result;
+}
+
+// Execute code against test cases
+export async function executeCode(data: ExecuteCodeRequest): Promise<ExecuteCodeResponse> {
+  console.log('🚀 [API] Executing code...');
+  console.log('📤 [REQUEST] POST /api/execute-code');
+  console.log('📦 [PAYLOAD]:', JSON.stringify({ ...data, code: data.code.substring(0, 100) + '...' }, null, 2));
+  
+  const response = await fetch(`${API_BASE_URL}/api/execute-code`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const error = await response.text();
+    console.error('❌ [ERROR] Code execution failed:', error);
+    throw new Error(error || 'Failed to execute code');
+  }
+
+  const result = await response.json();
+  console.log('✅ [RESPONSE] Execution result:', JSON.stringify(result, null, 2));
+  console.log('📊 [INFO] Success:', result.success, '| Execution time:', result.executionTime + 'ms');
+  return result;
+}
+
+// Get AI-powered hint
+export async function getHint(data: HintRequest): Promise<HintResponse> {
+  console.log('🚀 [API] Requesting hint...');
+  console.log('📤 [REQUEST] POST /api/hint');
+  console.log('📦 [PAYLOAD]:', JSON.stringify({ ...data, userCode: data.userCode.substring(0, 50) + '...' }, null, 2));
+  
+  const response = await fetch(`${API_BASE_URL}/api/hint`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const error = await response.text();
+    console.error('❌ [ERROR] Failed to get hint:', error);
+    throw new Error(error || 'Failed to get hint');
+  }
+
+  const result = await response.json();
+  console.log('✅ [RESPONSE] Hint received:', JSON.stringify(result, null, 2));
+  return result;
 }

@@ -100,13 +100,17 @@ const Home = () => {
       {/* How does it work Section */}
       <section className="max-w-7xl mx-auto px-4 md:px-8 py-12 md:py-20">
         <div className="grid md:grid-cols-2 gap-8 md:gap-16 items-center">
-          <div className="bg-slate-800/50 rounded-lg h-60 md:h-80 flex items-center justify-center">
-            <span className="text-slate-500">Process Diagram</span>
+          <div className="flex items-center justify-center">
+            <img 
+              src="/companies.svg" 
+              alt="Process Diagram"
+              className="w-full h-auto rounded-lg"
+            />
           </div>
           <div className="text-center md:text-left">
             <h3 className="text-3xl md:text-5xl font-bold mb-4 md:mb-6">How does it work?</h3>
             <p className="text-base md:text-lg text-slate-300 leading-relaxed">
-              Powered by Gemini and ElevenLabs, the tool delivers a hyper-realistic interview experience — generating smart, personalized questions from your resume and job description, evaluating your answers on the fly, and responding with lifelike voice for a truly immersive practice session.
+              IntervU is powered by cutting-edge AI from Gemini and ElevenLabs, giving you a truly immersive interview experience. Get custom questions, instant feedback, and real-time voice interaction—just like the real thing. Our backend runs on Render, and Vercel keeps everything lightning fast for Stormhacks 2025.
             </p>
           </div>
         </div>

@@ -465,7 +465,7 @@ export default function InterviewPage() {
     if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
       mediaRecorderRef.current.stop();
       // Wait for transcription to complete
-      console.log('⏳ [SUBMIT] Waiting for transcription to complete...');
+      console.log('[SUBMIT] Waiting for transcription to complete...');
       await new Promise(resolve => setTimeout(resolve, 3000));
     }
 
@@ -649,7 +649,6 @@ export default function InterviewPage() {
                 </span>
                 {isSpeaking && (
                   <span className="text-indigo-400 text-xs flex items-center gap-1">
-                    <span className="animate-pulse">🔊</span>
                     Reading question...
                   </span>
                 )}
@@ -724,7 +723,7 @@ export default function InterviewPage() {
                                     className="flex-1 px-6 py-3 bg-red-600 hover:bg-red-700 disabled:opacity-30 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors"
                                 >
                                     {isTranscribing
-                                        ? "⏳ Processing..."
+                                        ? "Processing..."
                                         : "⏹ Stop"}
                                 </button>
                             )}
@@ -734,7 +733,6 @@ export default function InterviewPage() {
             {showTimerWarning && !isRecording && !isReadyToAdvance && autoStartTimer > 0 && (
               <div className="mt-4 bg-yellow-900/30 border border-yellow-600/50 rounded-lg p-3">
                 <div className="flex items-center gap-2">
-                  <span className="text-yellow-400 text-xl">⏱️</span>
                   <div className="flex-1">
                     <p className="text-yellow-200 text-sm font-semibold">
                       Auto-starting in {autoStartTimer} second{autoStartTimer !== 1 ? 's' : ''}
@@ -758,7 +756,7 @@ export default function InterviewPage() {
                 </div>
                 
                 <div className="text-gray-400 text-sm">
-                  <p>🎙️ Your answer is being recorded</p>
+                  <p>Your answer is being recorded</p>
                 </div>
               </div>
             )}
@@ -909,7 +907,7 @@ export default function InterviewPage() {
                           ? 'bg-green-600 text-white'
                           : 'bg-gray-700 text-gray-400'
                       }`}>
-                        {index < currentQuestionIndex ? '✓' : index + 1}
+                        {index < currentQuestionIndex ? 'Done' : index + 1}
                       </div>
                       <span className="truncate">{q.topic}</span>
                     </div>
@@ -924,7 +922,7 @@ export default function InterviewPage() {
                   disabled={!isReadyToAdvance || isSubmitting}
                   className="w-full px-6 py-3 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-30 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors"
                 >
-                  {isSubmitting ? '🔄 Submitting Interview...' : isTranscribing ? '⏳ Processing Answer...' : isReadyToAdvance ? (isLastQuestion ? '✓ Submit Interview' : 'Next Question →') : (isLastQuestion ? '✓ Submit Interview' : 'Next Question →')}
+                  {isSubmitting ? 'Submitting Interview...' : isTranscribing ? 'Processing Answer...' : isReadyToAdvance ? (isLastQuestion ? 'Submit Interview' : 'Next Question') : (isLastQuestion ? 'Submit Interview' : 'Next Question →')}
                 </button>
 
               <button

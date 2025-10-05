@@ -102,9 +102,7 @@ const Home = () => {
           <div>
             <h3 className="text-5xl font-bold mb-6">How does it work?</h3>
             <p className="text-lg text-slate-300 leading-relaxed">
-              IntervU is an AI interview simulator that generates personalized behavioural and
-              technical questions based on your resume and job description, offering realistic practice
-              and feedback to help you prepare for real interviews.
+              Powered by Gemini and ElevenLabs, the tool delivers a hyper-realistic interview experience — generating smart, personalized questions from your resume and job description, evaluating your answers on the fly, and responding with lifelike voice for a truly immersive practice session.
             </p>
           </div>
         </div>

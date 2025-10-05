@@ -474,9 +474,10 @@ export default function InterviewPage() {
         // Store feedback in localStorage to pass to results page
         localStorage.setItem('interviewFeedback', JSON.stringify(feedback));
 
-        // Cleanup
+        // Cleanup camera and microphone
         if (stream) {
           stream.getTracks().forEach(track => track.stop());
+          setStream(null);
         }
 
         router.push('/results');
@@ -487,9 +488,10 @@ export default function InterviewPage() {
       }
     } else {
       console.warn('No session ID or transcripts available');
-      // Cleanup
+      // Cleanup camera and microphone
       if (stream) {
         stream.getTracks().forEach(track => track.stop());
+        setStream(null);
       }
       router.push('/results');
     }

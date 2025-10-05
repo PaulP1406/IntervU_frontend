@@ -180,7 +180,7 @@ export default function InterviewPage() {
         });
 
         if (!response.ok || !isActive) {
-          console.error('Failed to generate speech');
+          // console.error('Failed to generate speech');
           setIsSpeaking(false);
           setDisplayedQuestion(currentQuestion.question);
           return;
@@ -227,7 +227,7 @@ export default function InterviewPage() {
         };
 
         audio.onerror = () => {
-          console.error('Error playing audio');
+          // console.error('Error playing audio');
           if (isActive) {
             setIsSpeaking(false);
             setDisplayedQuestion(currentQuestion.question);
@@ -240,7 +240,7 @@ export default function InterviewPage() {
           await audio.play();
         }
       } catch (error) {
-        console.error('Error with text-to-speech:', error);
+        // console.error('Error with text-to-speech:', error);
         if (isActive) {
           setIsSpeaking(false);
           setDisplayedQuestion(currentQuestion.question);
@@ -690,7 +690,9 @@ export default function InterviewPage() {
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center">
-                  <span className="text-white font-bold text-lg">YOU</span>
+                  <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                  </svg>
                 </div>
                 <div>
                   <h3 className="text-white font-semibold">You</h3>

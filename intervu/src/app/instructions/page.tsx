@@ -117,7 +117,7 @@ export default function InstructionsPage() {
           height={350}
         />
       </div>
-      <div className="absolute top-40 right-0 pointer-events-none z-0">
+      <div className="absolute top-20 right-0 pointer-events-none z-0">
         <Image
           src="/leavesRight.svg"
           alt=""

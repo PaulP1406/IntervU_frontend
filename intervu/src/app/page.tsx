@@ -56,8 +56,14 @@ const Home = () => {
       {/* What is IntervU Section */}
       <section className="max-w-7xl mx-auto px-8 py-20">
         <div className="grid md:grid-cols-2 gap-16 items-center">
-          <div className="bg-slate-800/50 rounded-lg h-80 flex items-center justify-center">
-            <span className="text-slate-500">Demo Video</span>
+          <div className="bg-slate-800/50 rounded-lg h-80 flex items-center justify-center overflow-hidden border border-slate-700">
+            <Image
+              src="/whatIsIntervU.png"
+              alt="What is IntervU"
+              width={800}
+              height={600}
+              className="w-full h-full object-cover"
+            />
           </div>
           <div>
             <h3 className="text-5xl font-bold mb-6">What is IntervU?</h3>

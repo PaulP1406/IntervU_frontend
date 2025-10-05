@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useInterview } from '@/context/InterviewContext';
 import Link from 'next/link';
 import Header from '@/components/Header';
+import Image from 'next/image';
 
 export default function WaitingRoomPage() {
   const router = useRouter();
@@ -181,8 +182,14 @@ export default function WaitingRoomPage() {
             {/* Header Section with Logo and Title */}
             <div className="bg-gray-800 p-6 flex items-start gap-4">
               {/* Logo */}
-              <div className="w-32 h-20 bg-white rounded flex-shrink-0 flex items-center justify-center">
-                <span className="text-3xl font-bold text-gray-900">IntervU</span>
+              <div className="w-32 h-20 bg-gradient-to-br from-purple-500 to-indigo-600 rounded flex-shrink-0 flex items-end justify-center overflow-hidden">
+                <Image
+                  src="/raccoonWave1.svg"
+                  alt="IntervU Logo"
+                  width={80}
+                  height={80}
+                  className="object-contain"
+                />
               </div>
               
               {/* Title Section */}
@@ -327,7 +334,7 @@ export default function WaitingRoomPage() {
           <button
             onClick={handleStart}
             disabled={!isReady || countdown !== null}
-            className={`text-lg font-semibold px-12 py-4 rounded-[32px] transition-colors duration-200 ${
+            className={`text-lg font-semibold px-8 py-4 rounded-[32px] transition-colors duration-200 ${
               isReady && countdown === null
                 ? 'bg-green-600 hover:bg-green-700 text-white'
                 : 'bg-gray-600 text-gray-400 cursor-not-allowed'

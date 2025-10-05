@@ -717,9 +717,10 @@ export default function TechnicalInterview() {
                                                 {problem.question.description}
                                             </div>
                                         </div>
-
+                                        
                                         {/* Right: AI Interviewer Section */}
-                                        <div className="w-64 flex-shrink-0">
+                                        <div className="w-64 flex-shrink-0 flex flex-col gap-4">
+                                            {/* AI Assistant Card */}
                                             <div className="bg-slate-800/50 rounded-2xl p-4 border border-slate-700/50 shadow-xl">
                                                 {/* Name */}
                                                 <h3 className="text-white font-semibold text-lg mb-3">
@@ -788,8 +789,14 @@ export default function TechnicalInterview() {
                                                         : "Get a Hint"}
                                                 </button>
                                             </div>
+
+                                            {/* Hints Used Section */}
+                                            <h4 className="text-white font-semibold text-sm mb-3">
+                                                Hints Used: {previousHints.length}
+                                            </h4>
                                         </div>
                                     </div>
+                                        
 
                                     {/* Test Cases */}
                                     <div className="space-y-4">
@@ -1074,16 +1081,9 @@ export default function TechnicalInterview() {
 
                     {/* Action Buttons */}
                     <div className="flex items-center justify-between bg-gray-800 border-t border-gray-700 px-4 py-3">
-                        <div className="text-gray-400 text-sm">
-                            {previousHints.length > 0 && (
-                                <span>
-                                    Hints used: {previousHints.length}
-                                </span>
-                            )}
-                        </div>
                         <div className="flex w-full items-center justify-between">
                             <button
-                                onClick={() => router.push("/results")}
+                                onClick={() => router.push("/technical-results")}
                                 className="px-6 py-2 bg-white hover:bg-amber-50 text-black rounded-md transition-colors"
                             >
                                 Quit

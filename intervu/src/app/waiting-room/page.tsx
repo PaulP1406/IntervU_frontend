@@ -136,6 +136,13 @@ export default function WaitingRoomPage() {
     };
   }, [stream]);
 
+  // Auto-set ready when host is ready and camera is granted
+  useEffect(() => {
+    if (isHostReady && cameraPermissionGranted) {
+      setIsReady(true);
+    }
+  }, [isHostReady, cameraPermissionGranted]);
+
   const handleStart = () => {
     if (!isReady) return;
     
@@ -302,14 +309,6 @@ export default function WaitingRoomPage() {
           </div>
 
         {/* Countdown and Action Buttons */}
-        {countdown !== null && (
-          <div className="text-center mt-4">
-            <div className="text-6xl font-bold text-blue-400 animate-pulse">
-              {countdown}
-            </div>
-          </div>
-        )}
-
         <div className="flex justify-between items-center mt-4">
           <button
             onClick={() => router.push('/topics')}
@@ -317,6 +316,14 @@ export default function WaitingRoomPage() {
           >
             Go Back
           </button>
+          
+          {/* Countdown */}
+          {countdown !== null && (
+            <div className="text-6xl font-bold text-blue-400 animate-pulse">
+              {countdown}
+            </div>
+          )}
+          
           <button
             onClick={handleStart}
             disabled={!isReady || countdown !== null}
@@ -332,7 +339,7 @@ export default function WaitingRoomPage() {
               ? 'Enable Camera to Start'
               : isReady && countdown === null 
               ? 'Start Interview' 
-              : '✓ Ready'}
+              : 'Ready'}
           </button>
         </div>
       </div>

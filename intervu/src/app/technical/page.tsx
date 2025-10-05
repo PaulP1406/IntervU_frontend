@@ -56,7 +56,7 @@ export default function TechnicalInterview() {
         "description" | "submissions" | "notes" | "hints"
     >("description");
     const [language, setLanguage] = useState<
-        "python" | "javascript" | "cpp" | "java"
+        "python" | "javascript"
     >("python");
     const [code, setCode] = useState(getStarterCode("python", "solution"));
     const [problem, setProblem] = useState<TechnicalQuestion | null>(null);
@@ -181,7 +181,7 @@ export default function TechnicalInterview() {
     };
 
     const handleLanguageChange = (
-        newLang: "python" | "javascript" | "cpp" | "java"
+        newLang: "python" | "javascript"
     ) => {
         setLanguage(newLang);
         if (problem) {
@@ -995,8 +995,6 @@ export default function TechnicalInterview() {
                         >
                             <option value="python">Python</option>
                             <option value="javascript">JavaScript</option>
-                            <option value="cpp">C++</option>
-                            <option value="java">Java</option>
                         </select>
                         <div className="flex items-center gap-2">
                             <button

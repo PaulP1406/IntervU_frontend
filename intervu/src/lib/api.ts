@@ -69,7 +69,7 @@ export interface TechnicalQuestion {
 export interface ExecuteCodeRequest {
   questionId: string;
   code: string;
-  language: 'python' | 'javascript' | 'cpp' | 'java';
+  language: 'python' | 'javascript';
 }
 
 export interface ExecuteCodeResponse {
@@ -101,6 +101,8 @@ export async function createInterviewSession(data: SessionData): Promise<{ sessi
   console.log('🚀 [API] Creating interview session...');
   console.log('📤 [REQUEST] POST /api/interview/session');
   console.log('📦 [PAYLOAD]:', JSON.stringify(data, null, 2));
+
+  console.log('API_BASE_URL', API_BASE_URL);
   
   const response = await fetch(`${API_BASE_URL}/api/interview/session`, {
     method: 'POST',
@@ -201,16 +203,17 @@ export async function getTechnicalQuestion(difficulty: 'Easy' | 'Medium' | 'Hard
 
 // Execute code against test cases
 export async function executeCode(data: ExecuteCodeRequest): Promise<ExecuteCodeResponse> {
+  console.log('data.language', data.language);
   console.log('🚀 [API] Executing code...');
   console.log('📤 [REQUEST] POST /api/execute-code');
-  console.log('📦 [PAYLOAD]:', JSON.stringify({ ...data, code: data.code.substring(0, 100) + '...' }, null, 2));
+  console.log('📦 [PAYLOAD]:', JSON.stringify({ ...data, language: data.language === 'javascript' ? 'js' : 'python', code: data.code.substring(0, 100) + '...' }, null, 2));
   
   const response = await fetch(`${API_BASE_URL}/api/execute-code`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(data),
+    body: JSON.stringify({ ...data, language: data.language === 'javascript' ? 'js' : 'python' }),
   });
 
   if (!response.ok) {

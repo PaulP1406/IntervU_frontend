@@ -89,7 +89,7 @@ export default function InterviewPage() {
     const [timeRemaining, setTimeRemaining] = useState(120); // Default 2 minutes
     const [isRecording, setIsRecording] = useState(false);
     const [stream, setStream] = useState<MediaStream | null>(null);
-    const [showHints, setShowHints] = useState(false);
+    const [flippedHints, setFlippedHints] = useState<number[]>([]);
     const [questionTranscripts, setQuestionTranscripts] = useState<
         {
             question: string;
@@ -498,7 +498,7 @@ export default function InterviewPage() {
             console.log("📄 [NEXT] Moving to next question");
             setCurrentQuestionIndex((prev) => prev + 1);
             setTimeRemaining(120);
-            setShowHints(false);
+            setFlippedHints([]);
             setIsReadyToAdvance(false);
         }
     };
@@ -823,7 +823,7 @@ export default function InterviewPage() {
                                     {isReadyToAdvance
                                         ? "Answer Recorded"
                                         : isSpeaking
-                                        ? "AI Speaking..."
+                                        ? "Ryan is talking..."
                                         : "Start Answer"}
                                 </button>
                             ) : (
@@ -887,54 +887,92 @@ export default function InterviewPage() {
 
                 {/* Bottom Controls */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    {/* Hints Panel */}
+                    {/* Hints Panel - Flip Cards */}
                     <div className="lg:col-span-2 bg-gray-800 rounded-2xl p-6 shadow-xl border border-gray-700">
-                        <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-white font-semibold">
-                                Need Help?
+                        <div className="mb-4">
+                            <h3 className="text-white font-semibold mb-2">
+                                Interview Hints
                             </h3>
-                            <button
-                                onClick={() => setShowHints(!showHints)}
-                                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg transition-colors flex items-center gap-2"
-                            >
-                                {showHints ? "👁 Hide Hints" : "💡 Show Hints"}
-                            </button>
+                            <p className="text-gray-400 text-sm">
+                                Click on a card to reveal the hint
+                            </p>
                         </div>
 
-                        {showHints ? (
-                            <div className="space-y-3">
-                                {(currentQuestion as any).hints?.map(
-                                    (hint: string, index: number) => (
+                        <div className="space-y-3">
+                            {(currentQuestion as any).hints?.map(
+                                (hint: string, index: number) => {
+                                    const isFlipped = flippedHints.includes(index);
+                                    return (
                                         <div
                                             key={index}
-                                            className="flex items-start gap-3 bg-gray-900 rounded-lg p-4 border border-indigo-500/30"
+                                            onClick={() => {
+                                                if (isFlipped) {
+                                                    setFlippedHints(flippedHints.filter(i => i !== index));
+                                                } else {
+                                                    setFlippedHints([...flippedHints, index]);
+                                                }
+                                            }}
+                                            className="relative h-24 cursor-pointer perspective-1000"
+                                            style={{ perspective: '1000px' }}
                                         >
-                                            <div className="w-6 h-6 bg-indigo-600 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                                                <span className="text-white text-xs font-bold">
-                                                    {index + 1}
-                                                </span>
+                                            <div
+                                                className={`relative w-full h-full transition-transform duration-500 transform-style-3d ${
+                                                    isFlipped ? 'rotate-x-180' : ''
+                                                }`}
+                                                style={{
+                                                    transformStyle: 'preserve-3d',
+                                                    transform: isFlipped ? 'rotateX(180deg)' : 'rotateX(0deg)'
+                                                }}
+                                            >
+                                                {/* Front of card */}
+                                                <div
+                                                    className="absolute inset-0 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-lg p-4 flex items-center justify-center gap-3 backface-hidden border-2 border-indigo-500"
+                                                    style={{ backfaceVisibility: 'hidden' }}
+                                                >
+                                                    <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0">
+                                                        <span className="text-indigo-600 font-bold">
+                                                            {index + 1}
+                                                        </span>
+                                                    </div>
+                                                    <div className="flex-1 text-center">
+                                                        <p className="text-white font-semibold">
+                                                            Click to reveal hint {index + 1}
+                                                        </p>
+                                                        <p className="text-indigo-200 text-sm mt-1">
+                                                            Tap to flip
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                                {/* Back of card */}
+                                                <div
+                                                    className="absolute inset-0 bg-gray-900 rounded-lg p-4 flex items-start gap-3 border border-indigo-500/30 backface-hidden"
+                                                    style={{
+                                                        backfaceVisibility: 'hidden',
+                                                        transform: 'rotateX(180deg)'
+                                                    }}
+                                                >
+                                                    <div className="w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center flex-shrink-0">
+                                                        <span className="text-white font-bold text-sm">
+                                                            {index + 1}
+                                                        </span>
+                                                    </div>
+                                                    <p className="text-gray-300 text-sm leading-relaxed flex-1">
+                                                        {hint}
+                                                    </p>
+                                                </div>
                                             </div>
-                                            <p className="text-gray-300 text-sm leading-relaxed">
-                                                {hint}
-                                            </p>
                                         </div>
-                                    )
-                                ) || (
-                                    <div className="text-center py-4">
-                                        <p className="text-gray-400 text-sm">
-                                            No hints available for this question
-                                        </p>
-                                    </div>
-                                )}
-                            </div>
-                        ) : (
-                            <div className="text-center py-8">
-                                <p className="text-gray-400 text-sm">
-                                    Click "Show Hints" to get tips for answering
-                                    this question
-                                </p>
-                            </div>
-                        )}
+                                    );
+                                }
+                            ) || (
+                                <div className="text-center py-8">
+                                    <p className="text-gray-400 text-sm">
+                                        No hints available for this question
+                                    </p>
+                                </div>
+                            )}
+                        </div>
                     </div>
 
                     {/* Progress & Navigation */}

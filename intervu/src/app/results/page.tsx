@@ -290,7 +290,7 @@ export default function ResultsPage() {
         ) : (
           <>
             {/* Overall Score Card */}
-            <div className="bg-gradient-to-br from-blue-900/30 to-purple-900/30 rounded-3xl p-10 shadow-2xl border border-slate-700 mb-12 backdrop-blur-sm">
+            <div className="bg-gradient-to-br from-blue-900/30 to-purple-900/30 rounded-3xl p-10 shadow-2xl border border-slate-700 mb-6 backdrop-blur-sm">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                 {/* Left: Overall Score */}
                 <div className="text-center">
@@ -366,7 +366,7 @@ export default function ResultsPage() {
             </div>
 
             {/* Tabs */}
-            <div className="flex gap-4 mb-8">
+            <div className="flex gap-4 mb-4">
           <button
             onClick={() => setActiveTab('overview')}
             className={`flex-1 py-4 px-8 rounded-[32px] font-semibold text-lg transition-all duration-200 ${

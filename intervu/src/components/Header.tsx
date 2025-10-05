@@ -4,7 +4,7 @@ import Image from 'next/image';
 
 const Header = () => {
   return (
-    <header className="fixed top-0 left-0 right-0 px-16 py-1 bg-[#0a0a0f] z-50">
+    <header className="fixed top-0 left-0 right-0 px-16 bg-[#0a0a0f] z-50">
       <div className="flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2 w-fit hover:opacity-80 transition-opacity">
           <Image

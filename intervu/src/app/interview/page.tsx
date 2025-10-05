@@ -531,9 +531,23 @@ export default function InterviewPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 p-6">
+    <div className="min-h-screen bg-[#0a0a0f]">
+      <Header />
+      
+      {/* Loading Overlay for Transcription */}
+      {isTranscribing && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[100]">
+          <div className="bg-gray-800 rounded-2xl p-8 flex flex-col items-center gap-4">
+            <LoadingSpinner />
+            <div className="text-white text-xl font-semibold">Transcribing your answer...</div>
+            <div className="text-gray-400 text-sm">Please wait while we process your response</div>
+          </div>
+        </div>
+      )}
+      
+      <div className="max-w-7xl mx-auto px-6 pt-32 pb-6">
       {/* Header */}
-      <div className="max-w-7xl mx-auto mb-6">
+      <div className="mb-6">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-xl font-bold text-white mb-1">
@@ -907,7 +921,7 @@ export default function InterviewPage() {
                           ? 'bg-green-600 text-white'
                           : 'bg-gray-700 text-gray-400'
                       }`}>
-                        {index < currentQuestionIndex ? 'Done' : index + 1}
+                        {index < currentQuestionIndex ? '✓' : index + 1}
                       </div>
                       <span className="truncate">{q.topic}</span>
                     </div>
@@ -941,6 +955,7 @@ export default function InterviewPage() {
             </div>
           </div>
         </div>
+      </div>
       </div>
     </div>
   );

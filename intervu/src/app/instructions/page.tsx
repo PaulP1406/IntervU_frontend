@@ -11,6 +11,43 @@ export default function InstructionsPage() {
   const [raccoonFrame, setRaccoonFrame] = useState<'silent' | 'speaking'>('silent');
   const [isSpeaking, setIsSpeaking] = useState(false);
   const ttsAudioRef = useRef<HTMLAudioElement | null>(null);
+  const [currentStep, setCurrentStep] = useState(0);
+
+  const steps = [
+    {
+      number: 1,
+      title: "Upload Your Resume",
+      description: "Upload your resume in PDF format. Our AI analyzes your experience, skills, and background to create personalized interview questions tailored to your profile."
+    },
+    {
+      number: 2,
+      title: "Provide Job Details",
+      description: "Enter the job title, company name, and job description you're applying for. This helps us generate interview questions that are directly relevant to your target position."
+    },
+    {
+      number: 3,
+      title: "Select Interview Topics",
+      description: "Choose at least 3 focus areas such as Technical Skills, Leadership, Problem Solving, or Communication. This ensures a comprehensive practice session covering all important aspects."
+    },
+    {
+      number: 4,
+      title: "Practice Your Interview",
+      description: "Answer AI-generated questions via video recording. You have 2 minutes per question to provide thoughtful responses. Click \"Start Answer\" to begin and \"Stop\" when finished. Your answers are automatically transcribed and analyzed."
+    },
+    {
+      number: 5,
+      title: "Receive Detailed Feedback",
+      description: "After completing all questions, receive comprehensive feedback including your overall score, question-by-question analysis, strengths and areas for improvement, plus actionable tips to enhance your interview skills."
+    }
+  ];
+
+  const nextStep = () => {
+    setCurrentStep((prev) => (prev + 1) % steps.length);
+  };
+
+  const prevStep = () => {
+    setCurrentStep((prev) => (prev - 1 + steps.length) % steps.length);
+  };
 
   // Auto-play instructions audio on page load
   useEffect(() => {
@@ -128,7 +165,7 @@ export default function InstructionsPage() {
       
       <div className="max-w-4xl mx-auto p-6 relative z-10">
         {/* Page Title */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 flex items-center justify-center gap-3">
             How It Works
             {/* <Image
@@ -141,83 +178,74 @@ export default function InstructionsPage() {
           </h1>
         </div>
 
-        {/* Main Instructions Card */}
-        <div className="bg-gray-800 rounded-2xl p-8 px-8 shadow-xl border border-gray-700 mb-6">
-          <div className="space-y-8">
-            {/* Step 1 */}
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 bg-indigo-600 rounded-full flex items-center justify-center flex-shrink-0">
-                <span className="text-white font-bold text-xl">1</span>
-              </div>
-              <div>
-                <h3 className="text-2xl font-semibold text-white mb-2">
-                  Upload Your Resume
-                </h3>
-                <p className="text-gray-300 leading-relaxed">
-                  Upload your resume in PDF format. Our AI analyzes your experience, skills, and background to create personalized interview questions tailored to your profile.
-                </p>
-              </div>
+        {/* Carousel */}
+        <div className="mb-8 relative">
+          <div className="overflow-hidden">
+            <div 
+              className="flex transition-transform duration-500 ease-in-out"
+              style={{ transform: `translateX(-${currentStep * 100}%)` }}
+            >
+              {steps.map((step, index) => (
+                <div
+                  key={index}
+                  className="w-full flex-shrink-0 px-4"
+                >
+                  <div className="bg-gray-800 rounded-2xl p-12 shadow-xl border border-gray-700 min-h-[400px] flex flex-col items-center justify-center text-center">
+                    {/* Step Number */}
+                    <div className="w-20 h-20 bg-indigo-600 rounded-full flex items-center justify-center mb-6">
+                      <span className="text-white font-bold text-3xl">{step.number}</span>
+                    </div>
+                    
+                    {/* Step Title */}
+                    <h3 className="text-3xl font-semibold text-white mb-4">
+                      {step.title}
+                    </h3>
+                    
+                    {/* Step Description */}
+                    <p className="text-gray-300 text-lg leading-relaxed max-w-2xl">
+                      {step.description}
+                    </p>
+                  </div>
+                </div>
+              ))}
             </div>
+          </div>
 
-            {/* Step 2 */}
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 bg-indigo-600 rounded-full flex items-center justify-center flex-shrink-0">
-                <span className="text-white font-bold text-xl">2</span>
-              </div>
-              <div>
-                <h3 className="text-2xl font-semibold text-white mb-2">
-                  Provide Job Details
-                </h3>
-                <p className="text-gray-300 leading-relaxed">
-                  Enter the job title, company name, and job description you're applying for. This helps us generate interview questions that are directly relevant to your target position.
-                </p>
-              </div>
-            </div>
+          {/* Navigation Buttons */}
+          <button
+            onClick={prevStep}
+            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 md:-translate-x-12 bg-indigo-600 hover:bg-indigo-700 text-white w-12 h-12 rounded-full flex items-center justify-center transition-colors shadow-lg z-10"
+            aria-label="Previous step"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          
+          <button
+            onClick={nextStep}
+            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 md:translate-x-12 bg-indigo-600 hover:bg-indigo-700 text-white w-12 h-12 rounded-full flex items-center justify-center transition-colors shadow-lg z-10"
+            aria-label="Next step"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
 
-            {/* Step 3 */}
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 bg-indigo-600 rounded-full flex items-center justify-center flex-shrink-0">
-                <span className="text-white font-bold text-xl">3</span>
-              </div>
-              <div>
-                <h3 className="text-2xl font-semibold text-white mb-2">
-                  Select Interview Topics
-                </h3>
-                <p className="text-gray-300 leading-relaxed">
-                  Choose at least 3 focus areas such as Technical Skills, Leadership, Problem Solving, or Communication. This ensures a comprehensive practice session covering all important aspects.
-                </p>
-              </div>
-            </div>
-
-            {/* Step 4 */}
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 bg-indigo-600 rounded-full flex items-center justify-center flex-shrink-0">
-                <span className="text-white font-bold text-xl">4</span>
-              </div>
-              <div>
-                <h3 className="text-2xl font-semibold text-white mb-2">
-                  Practice Your Interview
-                </h3>
-                <p className="text-gray-300 leading-relaxed">
-                  Answer AI-generated questions via video recording. You have 2 minutes per question to provide thoughtful responses. Click "Start Answer" to begin and "Stop" when finished. Your answers are automatically transcribed and analyzed.
-                </p>
-              </div>
-            </div>
-
-            {/* Step 5 */}
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 bg-indigo-600 rounded-full flex items-center justify-center flex-shrink-0">
-                <span className="text-white font-bold text-xl">5</span>
-              </div>
-              <div>
-                <h3 className="text-2xl font-semibold text-white mb-2">
-                  Receive Detailed Feedback
-                </h3>
-                <p className="text-gray-300 leading-relaxed">
-                  After completing all questions, receive comprehensive feedback including your overall score, question-by-question analysis, strengths and areas for improvement, plus actionable tips to enhance your interview skills.
-                </p>
-              </div>
-            </div>
+          {/* Dots Indicator */}
+          <div className="flex justify-center gap-2 mt-6">
+            {steps.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentStep(index)}
+                className={`w-3 h-3 rounded-full transition-all ${
+                  index === currentStep
+                    ? 'bg-indigo-600 w-8'
+                    : 'bg-gray-600 hover:bg-gray-500'
+                }`}
+                aria-label={`Go to step ${index + 1}`}
+              />
+            ))}
           </div>
         </div>
 

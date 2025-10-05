@@ -1,10 +1,108 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { useState, useEffect, useRef } from 'react';
 import Header from '@/components/Header';
+import Image from 'next/image';
+import { INTERVIEWER_VOICE } from '@/lib/constants';
 
 export default function InstructionsPage() {
   const router = useRouter();
+  const [raccoonFrame, setRaccoonFrame] = useState<'silent' | 'speaking'>('silent');
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const ttsAudioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Auto-play instructions audio on page load
+  useEffect(() => {
+    let isActive = true;
+
+    const speakInstructions = async () => {
+      // Check if API key is available
+      const apiKey = process.env.NEXT_PUBLIC_ELEVENLABS_API_KEY;
+      if (!apiKey) {
+        console.warn('ElevenLabs API key not configured - skipping audio');
+        return;
+      }
+
+      try {
+        setIsSpeaking(true);
+
+        const response = await fetch(
+          `https://api.elevenlabs.io/v1/text-to-speech/${INTERVIEWER_VOICE}`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'xi-api-key': apiKey,
+            },
+            body: JSON.stringify({
+              text: "Welcome to IntervU! Let me walk you through how our AI-powered interview practice works. First, upload your resume. Then provide job details. Select interview topics you want to focus on. Practice your interview with AI-generated questions. And finally, receive detailed feedback to improve your skills. Good luck with your preparation!",
+              model_id: 'eleven_monolingual_v1',
+              voice_settings: {
+                stability: 0.5,
+                similarity_boost: 0.75,
+              },
+            }),
+          }
+        );
+
+        if (!response.ok) {
+          console.warn('Failed to generate speech:', response.status, response.statusText);
+          setIsSpeaking(false);
+          return;
+        }
+
+        const audioBlob = await response.blob();
+        const audioUrl = URL.createObjectURL(audioBlob);
+
+        if (!isActive) {
+          URL.revokeObjectURL(audioUrl);
+          return;
+        }
+
+        const audio = new Audio(audioUrl);
+        ttsAudioRef.current = audio;
+
+        audio.onended = () => {
+          if (isActive) {
+            setIsSpeaking(false);
+          }
+          URL.revokeObjectURL(audioUrl);
+        };
+
+        await audio.play();
+      } catch (error) {
+        console.error('Error with text-to-speech:', error);
+        if (isActive) {
+          setIsSpeaking(false);
+        }
+      }
+    };
+
+    speakInstructions();
+
+    return () => {
+      isActive = false;
+      if (ttsAudioRef.current) {
+        ttsAudioRef.current.pause();
+        ttsAudioRef.current = null;
+      }
+    };
+  }, []);
+
+  // Animate raccoon when speaking
+  useEffect(() => {
+    if (!isSpeaking) {
+      setRaccoonFrame('silent');
+      return;
+    }
+
+    const interval = setInterval(() => {
+      setRaccoonFrame(prev => prev === 'silent' ? 'speaking' : 'silent');
+    }, 300);
+
+    return () => clearInterval(interval);
+  }, [isSpeaking]);
 
   return (
     <div className="min-h-screen bg-[#0a0a0f] pt-24">
@@ -27,7 +125,7 @@ export default function InstructionsPage() {
               </div>
               <div>
                 <h3 className="text-2xl font-semibold text-white mb-2">
-                  📄 Upload Your Resume
+                  Upload Your Resume
                 </h3>
                 <p className="text-gray-300 leading-relaxed">
                   Start by uploading your resume in PDF format. Our AI will analyze your experience, 
@@ -43,7 +141,7 @@ export default function InstructionsPage() {
               </div>
               <div>
                 <h3 className="text-2xl font-semibold text-white mb-2">
-                  🎯 Provide Job Details
+                  Provide Job Details
                 </h3>
                 <p className="text-gray-300 leading-relaxed">
                   Enter the job title, company name, and job description you're applying for. 
@@ -59,7 +157,7 @@ export default function InstructionsPage() {
               </div>
               <div>
                 <h3 className="text-2xl font-semibold text-white mb-2">
-                  📋 Select Interview Topics
+                  Select Interview Topics
                 </h3>
                 <p className="text-gray-300 leading-relaxed">
                   Choose the areas you want to focus on, such as Technical Skills, Leadership, 
@@ -75,7 +173,7 @@ export default function InstructionsPage() {
               </div>
               <div>
                 <h3 className="text-2xl font-semibold text-white mb-2">
-                  🎤 Practice Your Interview
+                  Practice Your Interview
                 </h3>
                 <p className="text-gray-300 leading-relaxed">
                   Answer AI-generated questions via video recording. You'll have 2 minutes per question. 
@@ -92,26 +190,26 @@ export default function InstructionsPage() {
               </div>
               <div>
                 <h3 className="text-2xl font-semibold text-white mb-2">
-                  📊 Receive Detailed Feedback
+                  Receive Detailed Feedback
                 </h3>
                 <p className="text-gray-300 leading-relaxed">
                   After completing all questions, you'll receive comprehensive feedback including:
                 </p>
                 <ul className="mt-3 space-y-2 text-gray-300">
                   <li className="flex items-start gap-2">
-                    <span className="text-green-400">✓</span>
+                    <span className="text-green-400 font-bold">•</span>
                     <span><strong>Overall Score:</strong> Your hiring probability and performance rating</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-green-400">✓</span>
+                    <span className="text-green-400 font-bold">•</span>
                     <span><strong>Question-by-Question Analysis:</strong> Detailed breakdown of each answer</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-green-400">✓</span>
+                    <span className="text-green-400 font-bold">•</span>
                     <span><strong>Strengths & Areas for Improvement:</strong> Personalized recommendations</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-green-400">✓</span>
+                    <span className="text-green-400 font-bold">•</span>
                     <span><strong>Key Takeaways:</strong> Actionable tips to improve your interview skills</span>
                   </li>
                 </ul>
@@ -169,9 +267,20 @@ export default function InstructionsPage() {
         {/* Footer Note */}
         <div className="mt-8 text-center">
           <p className="text-gray-400 text-sm">
-            🔒 Your data is secure and private. We use AI to provide feedback, but your information is never shared.
+            Your data is secure and private. We use AI to provide feedback, but your information is never shared.
           </p>
         </div>
+      </div>
+
+      {/* Fixed Raccoon Mascot - Bottom Right */}
+      <div className="hidden md:block fixed bottom-0 right-6 z-50">
+        <Image
+          src="/raccoonWave1.svg"
+          alt="IntervU Mascot"
+          width={300}
+          height={300}
+          className="drop-shadow-2xl"
+        />
       </div>
     </div>
   );

@@ -315,6 +315,7 @@ export default function TechnicalInterview() {
                 hintsUsed: previousHints.length,
                 code: code,
                 language: language,
+                isCompleted: hasSuccessfulSubmission,
             }));
 
             // Navigate to results page
@@ -322,6 +323,72 @@ export default function TechnicalInterview() {
         } catch (error) {
             console.error('Failed to finish interview:', error);
             alert('Failed to submit feedback. Please try again.');
+        } finally {
+            setIsFinishing(false);
+        }
+    };
+
+    const handleQuitInterview = async () => {
+        if (!problem || !sessionId) {
+            // If no session/problem, just navigate
+            router.push('/technical-results');
+            return;
+        }
+
+        try {
+            setIsFinishing(true);
+
+            // Call technical feedback API with current state (even if incomplete)
+            const payload = {
+                sessionId,
+                questionId: problem.id,
+                userCode: code,
+                hintsUsed: previousHints.length,
+                isCompleted: hasSuccessfulSubmission,
+                timeTaken: timer,
+            };
+
+            console.log('📤 Sending technical feedback request (quit):');
+            console.log('📦 Payload:', JSON.stringify(payload, null, 2));
+
+            const response = await fetch('/api/technical-feedback', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+                console.error('❌ Technical feedback API error:', response.status, errorData);
+                
+                // Still navigate even if feedback fails
+                router.push('/technical-results');
+                return;
+            }
+
+            const feedbackData = await response.json();
+            console.log('📊 Technical feedback received:', feedbackData);
+
+            // Store feedback in localStorage for results page
+            localStorage.setItem('technicalFeedback', JSON.stringify({
+                ...feedbackData,
+                questionTitle: problem.question.question,
+                difficulty: problem.difficulty,
+                timeTaken: timer,
+                hintsUsed: previousHints.length,
+                code: code,
+                language: language,
+                isCompleted: hasSuccessfulSubmission,
+            }));
+
+            // Navigate to results page
+            router.push('/technical-results');
+        } catch (error) {
+            console.error('Failed to get feedback on quit:', error);
+            // Still navigate even if there's an error
+            router.push('/technical-results');
         } finally {
             setIsFinishing(false);
         }
@@ -1083,10 +1150,11 @@ export default function TechnicalInterview() {
                     <div className="flex items-center justify-between bg-gray-800 border-t border-gray-700 px-4 py-3">
                         <div className="flex w-full items-center justify-between">
                             <button
-                                onClick={() => router.push("/technical-results")}
-                                className="px-6 py-2 bg-white hover:bg-amber-50 text-black rounded-md transition-colors"
+                                onClick={handleQuitInterview}
+                                disabled={isFinishing}
+                                className="px-6 py-2 bg-white hover:bg-amber-50 text-black rounded-md transition-colors disabled:opacity-50"
                             >
-                                Quit
+                                {isFinishing ? 'Quitting...' : 'Quit'}
                             </button>
                     <       div className="flex gap-3">
                                 <button

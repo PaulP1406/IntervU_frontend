@@ -325,7 +325,7 @@ export default function UploadPage() {
             {/* Job Description */}
             <div className="space-y-0">
               <label htmlFor="jobDescription" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-                Job Description
+                Job Description<span className="text-red-500">*</span>
               </label>
               <textarea
                 id="jobDescription"
@@ -341,7 +341,7 @@ export default function UploadPage() {
             {/* Additional Info */}
             <div className="space-y-0">
               <label htmlFor="additionalInfo" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-                Additional Info
+                Additional Info<span className="text-red-500">*</span>
               </label>
               <textarea
                 id="additionalInfo"

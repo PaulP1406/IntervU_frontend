@@ -692,11 +692,11 @@ export default function TechnicalInterview() {
             </div>
 
             {/* Main Content - Split Panel */}
-            <div className="flex-1 flex overflow-visible relative">
+            <div className="flex-1 flex flex-col lg:flex-row overflow-visible relative">
                 {/* Left Panel - Problem Description */}
                 <div 
-                    className="border-r border-gray-700 flex flex-col bg-gray-900 overflow-visible"
-                    style={{ width: `${leftPanelWidth}%` }}
+                    className="w-full lg:border-r border-gray-700 flex flex-col bg-gray-900 overflow-visible"
+                    style={{ width: window.innerWidth >= 1024 ? `${leftPanelWidth}%` : '100%' }}
                 >
                     {/* Tabs */}
                     <div className="flex border-b border-gray-700 bg-gray-800">
@@ -1110,7 +1110,7 @@ export default function TechnicalInterview() {
                 {/* Draggable Divider */}
                 <div
                     onMouseDown={handleMouseDown}
-                    className={`w-1 bg-gray-700 hover:bg-blue-500 cursor-col-resize transition-colors relative z-10 ${
+                    className={`hidden lg:block w-1 bg-gray-700 hover:bg-blue-500 cursor-col-resize transition-colors relative z-10 ${
                         isDragging ? 'bg-blue-500' : ''
                     }`}
                     style={{ minWidth: '4px' }}
@@ -1119,7 +1119,7 @@ export default function TechnicalInterview() {
                 </div>
 
                 {/* Right Panel - Code Editor */}
-                <div className="flex-1 flex flex-col bg-gray-900">
+                <div className="w-full lg:flex-1 flex flex-col bg-gray-900">
                     {/* Language Selector and Actions */}
                     <div className="flex items-center justify-between bg-gray-800 border-b border-gray-700 px-4 py-2">
                         <select

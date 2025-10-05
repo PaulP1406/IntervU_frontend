@@ -79,6 +79,8 @@ export default function TechnicalInterview() {
     );
     const [timer, setTimer] = useState(0); // Timer in seconds
     const [showHintNotification, setShowHintNotification] = useState(false);
+    const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
+    const [audioChunks, setAudioChunks] = useState<Blob[]>([]);
 
     // Timer effect - start counting when component mounts
     useEffect(() => {
@@ -152,8 +154,16 @@ export default function TechnicalInterview() {
     const loadQuestion = async () => {
         setIsLoading(true);
         try {
-            // Use difficulty from context (selected in upload form)
-            const question = await getTechnicalQuestion(technicalDifficulty);
+            // Use difficulty from context (selected in upload form), default to Medium
+            const difficultyMap: Record<string, "Easy" | "Medium" | "Hard"> = {
+                easy: "Easy",
+                medium: "Medium",
+                hard: "Hard",
+            };
+            const selectedDifficulty = technicalDifficulty?.toLowerCase() || "medium";
+            const question = await getTechnicalQuestion(
+                difficultyMap[selectedDifficulty] || "Medium"
+            );
             setProblem(question);
             setCode(getStarterCode(language, question.question.functionName));
             setTestResults(null);
@@ -231,51 +241,108 @@ export default function TechnicalInterview() {
             return;
         }
 
-        if (isRecording) {
-            // Stop recording
+        // If currently recording, stop and process
+        if (isRecording && mediaRecorder) {
+            console.log("🛑 Stopping recording...");
+            mediaRecorder.stop();
             setIsRecording(false);
             return;
         }
 
+        // Start recording
         try {
-            // Start speech recognition
+            console.log("🎤 Starting audio recording for hint...");
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            
+            const recorder = new MediaRecorder(stream);
+            const chunks: Blob[] = [];
+
+            recorder.ondataavailable = (e) => {
+                if (e.data.size > 0) {
+                    chunks.push(e.data);
+                }
+            };
+
+            recorder.onstop = async () => {
+                console.log("🎤 Recording stopped, processing...");
+                stream.getTracks().forEach(track => track.stop());
+                
+                const audioBlob = new Blob(chunks, { type: 'audio/webm' });
+                
+                try {
+                    setIsGettingHint(true);
+                    
+                    // Transcribe using Whisper
+                    const formData = new FormData();
+                    formData.append('audio', audioBlob, 'hint-question.webm');
+                    
+                    console.log("🔄 Transcribing with Whisper...");
+                    const transcribeResponse = await fetch('/api/transcribe', {
+                        method: 'POST',
+                        body: formData,
+                    });
+
+                    if (!transcribeResponse.ok) {
+                        const errorText = await transcribeResponse.text();
+                        console.error("❌ Transcription failed:", errorText);
+                        throw new Error('Failed to transcribe audio');
+                    }
+
+                    const transcribeData = await transcribeResponse.json();
+                    console.log("📝 Transcribe response:", transcribeData);
+                    
+                    const speechText = transcribeData.text || transcribeData.transcript || '';
+                    console.log("✅ Transcribed text:", speechText);
+
+                    if (!speechText || !speechText.trim()) {
+                        alert("No speech detected. Please try again.");
+                        setIsGettingHint(false);
+                        return;
+                    }
+
+                    // Call the hint API with the transcribed speech
+                    const hint = await getHint({
+                        sessionId,
+                        questionId: problem.id,
+                        previousHints,
+                        userCode: code,
+                        userSpeech: speechText,
+                    });
+
+                    setPreviousHints([...previousHints, hint.hintSummary]);
+                    setConversationalHints([
+                        ...conversationalHints,
+                        hint.conversationalHint,
+                    ]);
+
+                    // Trigger hint notification animation
+                    setShowHintNotification(true);
+                    setTimeout(() => setShowHintNotification(false), 2000);
+
+                    setIsGettingHint(false);
+
+                    // Convert the conversational hint to speech
+                    try {
+                        await speakText(hint.conversationalHint);
+                    } catch (ttsError) {
+                        console.error("Text-to-speech failed:", ttsError);
+                        alert(`Hint: ${hint.conversationalHint}`);
+                    }
+                } catch (error) {
+                    console.error("Failed to process hint:", error);
+                    alert("Failed to process your question. Please try again.");
+                    setIsGettingHint(false);
+                }
+            };
+
+            recorder.start();
+            setMediaRecorder(recorder);
             setIsRecording(true);
-            const speechText = await startSpeechRecognition();
-
-            if (!speechText.trim()) {
-                alert("No speech detected. Please try again.");
-                return;
-            }
-
-            setIsGettingHint(true);
-
-            // Call the hint API with the transcribed speech
-            const hint = await getHint({
-                sessionId,
-                questionId: problem.id,
-                previousHints,
-                userCode: code,
-                userSpeech: speechText,
-            });
-
-            setPreviousHints([...previousHints, hint.hintSummary]);
-            setConversationalHints([
-                ...conversationalHints,
-                hint.conversationalHint,
-            ]);
-
-            // Trigger hint notification animation
-            setShowHintNotification(true);
-            setTimeout(() => setShowHintNotification(false), 2000); // Hide after 2 seconds
-
-            // Convert the conversational hint to speech
-            await speakText(hint.conversationalHint);
+            console.log("🎤 Recording started...");
+            
         } catch (error) {
-            console.error("Failed to process speech or get hint:", error);
-            alert("Failed to process your speech. Please try again.");
-        } finally {
-            setIsRecording(false);
-            setIsGettingHint(false);
+            console.error("Failed to access microphone:", error);
+            alert("Failed to access microphone. Please check your permissions and try again.");
         }
     };
 
@@ -284,41 +351,6 @@ export default function TechnicalInterview() {
             setCode(getStarterCode(language, problem.question.functionName));
         }
         setTestResults(null);
-    };
-
-    const startSpeechRecognition = (): Promise<string> => {
-        return new Promise((resolve, reject) => {
-            if (
-                !("webkitSpeechRecognition" in window) &&
-                !("SpeechRecognition" in window)
-            ) {
-                reject(new Error("Speech recognition not supported"));
-                return;
-            }
-
-            const SpeechRecognition =
-                window.SpeechRecognition || window.webkitSpeechRecognition;
-            const recognition = new SpeechRecognition();
-
-            recognition.continuous = false;
-            recognition.interimResults = false;
-            recognition.lang = "en-US";
-
-            recognition.onresult = (event: any) => {
-                const transcript = event.results[0][0].transcript;
-                resolve(transcript);
-            };
-
-            recognition.onerror = (event: any) => {
-                reject(new Error(`Speech recognition error: ${event.error}`));
-            };
-
-            recognition.onend = () => {
-                setIsRecording(false);
-            };
-
-            recognition.start();
-        });
     };
 
     const playHint = async (hintText: string): Promise<void> => {
@@ -725,11 +757,11 @@ export default function TechnicalInterview() {
                                                     {isCreatingSession
                                                         ? "Creating Session..."
                                                         : isPlaying
-                                                        ? "Speaking..."
+                                                        ? "AI Speaking..."
                                                         : isGettingHint
-                                                        ? "Processing..."
+                                                        ? "Processing Answer..."
                                                         : isRecording
-                                                        ? "Recording..."
+                                                        ? "🔴 Recording... (Click to Stop)"
                                                         : "Talk to Interviewer"}
                                                 </button>
                                             </div>

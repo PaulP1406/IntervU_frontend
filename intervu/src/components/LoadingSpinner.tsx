@@ -36,24 +36,24 @@ export default function LoadingSpinner({
   };
 
   const spinnerSizeClasses = {
-    small: 'w-20 h-20',
-    medium: 'w-40 h-40',
-    large: 'w-56 h-56'
+    small: 'w-25 h-25',
+    medium: 'w-45 h-45',
+    large: 'w-61 h-61'
   };
 
   const imageSizeMap = {
-    small: 64,
-    medium: 128,
-    large: 192
+    small: 58,
+    medium: 115,
+    large: 173
   };
 
   return (
-    <div className="flex flex-col items-center justify-center gap-6">
+    <div className="flex flex-col items-center justify-center gap-8">
       {/* Loading animation container */}
-      <div className="relative flex items-center justify-center">
+      <div className={`relative ${spinnerSizeClasses[size]} flex items-center justify-center`}>
         {/* Spinning circle */}
-        <div className={`absolute ${spinnerSizeClasses[size]}`}>
-          <svg className="animate-spin" viewBox="0 0 100 100">
+        <div className="absolute inset-0">
+          <svg className="animate-spin w-full h-full" viewBox="0 0 100 100">
             <circle
               cx="50"
               cy="50"
@@ -74,8 +74,8 @@ export default function LoadingSpinner({
           </svg>
         </div>
 
-        {/* Animated trash can frames */}
-        <div className={`relative ${sizeClasses[size]}`}>
+        {/* Animated trash can frames - centered */}
+        <div className="relative z-10">
           <Image
             src={frames[frameIndex]}
             alt="Loading..."
@@ -83,11 +83,12 @@ export default function LoadingSpinner({
             height={imageSizeMap[size]}
             priority
             key={frameIndex}
+            className="object-contain"
           />
         </div>
       </div>
 
-      {/* Loading message */}
+      {/* Loading message - moved further down to avoid overlap */}
       {message && (
         <div className="text-center">
           <p className="text-slate-300 text-lg font-medium animate-pulse">

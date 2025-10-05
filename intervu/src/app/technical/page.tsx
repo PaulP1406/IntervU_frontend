@@ -81,6 +81,8 @@ export default function TechnicalInterview() {
     const [showHintNotification, setShowHintNotification] = useState(false);
     const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
     const [audioChunks, setAudioChunks] = useState<Blob[]>([]);
+    const [hasSuccessfulSubmission, setHasSuccessfulSubmission] = useState(false);
+    const [isFinishing, setIsFinishing] = useState(false);
 
     // Timer effect - start counting when component mounts
     useEffect(() => {
@@ -220,7 +222,8 @@ export default function TechnicalInterview() {
             setTestResults(result);
 
             if (result.success) {
-                alert("✅ All test cases passed! Great job!");
+                setHasSuccessfulSubmission(true);
+                alert("✅ All test cases passed! Great job! You can now finish the interview.");
                 setSelectedTab("submissions");
             } else {
                 alert("❌ Some test cases failed. Check the results below.");
@@ -230,6 +233,80 @@ export default function TechnicalInterview() {
             alert("Failed to submit code. Please try again.");
         } finally {
             setIsRunning(false);
+        }
+    };
+
+    const handleFinishInterview = async () => {
+        if (!problem || !sessionId) {
+            alert("Session not available.");
+            return;
+        }
+
+        if (!hasSuccessfulSubmission) {
+            alert("Please complete at least one successful submission before finishing the interview.");
+            return;
+        }
+
+        try {
+            setIsFinishing(true);
+
+            // Call technical feedback API via Next.js route
+            const payload = {
+                sessionId,
+                questionId: problem.id,
+                userCode: code,
+                hintsUsed: previousHints.length,
+                isCompleted: hasSuccessfulSubmission,
+                timeTaken: timer,
+            };
+
+            console.log('📤 Sending technical feedback request:');
+            console.log('📦 Payload:', JSON.stringify(payload, null, 2));
+
+            const response = await fetch('/api/technical-feedback', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+                console.error('❌ Technical feedback API error:', response.status, errorData);
+                
+                // Show user-friendly error message
+                if (response.status === 503 || response.status === 502) {
+                    alert(`Backend server is starting up or unavailable.\n\n${errorData.details}\n\nPlease try again in a few moments.`);
+                } else {
+                    alert(`Failed to generate feedback: ${errorData.error}\n\n${errorData.details || ''}`);
+                }
+                
+                setIsFinishing(false);
+                return;
+            }
+
+            const feedbackData = await response.json();
+            console.log('📊 Technical feedback received:', feedbackData);
+
+            // Store feedback in context or localStorage for results page
+            localStorage.setItem('technicalFeedback', JSON.stringify({
+                ...feedbackData,
+                questionTitle: problem.question.question,
+                difficulty: problem.difficulty,
+                timeTaken: timer,
+                hintsUsed: previousHints.length,
+                code: code,
+                language: language,
+            }));
+
+            // Navigate to results page
+            router.push('/technical-results');
+        } catch (error) {
+            console.error('Failed to finish interview:', error);
+            alert('Failed to submit feedback. Please try again.');
+        } finally {
+            setIsFinishing(false);
         }
     };
 
@@ -504,6 +581,14 @@ export default function TechnicalInterview() {
                                 ? "Executing your code..."
                                 : "Getting hint..."
                         }
+                        size="large"
+                    />
+                </div>
+            )}
+            {isFinishing && (
+                <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
+                    <LoadingSpinner 
+                        message="Generating your technical feedback..."
                         size="large"
                     />
                 </div>
@@ -1032,6 +1117,18 @@ export default function TechnicalInterview() {
                                 className="px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-md transition-colors disabled:opacity-50"
                             >
                                 Submit
+                            </button>
+                            <button
+                                onClick={handleFinishInterview}
+                                disabled={!hasSuccessfulSubmission || isFinishing}
+                                className={`px-6 py-2 font-semibold rounded-md transition-colors ${
+                                    hasSuccessfulSubmission
+                                        ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                                        : 'bg-gray-600 text-gray-400 cursor-not-allowed'
+                                } disabled:opacity-50`}
+                                title={!hasSuccessfulSubmission ? 'Complete at least one successful submission first' : 'Finish interview and see results'}
+                            >
+                                {isFinishing ? '⏳ Finishing...' : '✓ Finish Interview'}
                             </button>
                         </div>
                     </div>

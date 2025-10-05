@@ -4,6 +4,10 @@ import { useRouter } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
 import { useInterview } from '@/context/InterviewContext';
 import { getInterviewFeedback } from '@/lib/api';
+import Header from '@/components/Header';
+import { INTERVIEWER_VOICE } from '@/lib/constants';
+import LoadingSpinner from '@/components/LoadingSpinner';
+import Image from 'next/image';
 
 // Mock questions - will be replaced with backend data
 const MOCK_QUESTIONS = [
@@ -65,35 +69,58 @@ const MOCK_QUESTIONS = [
 ];
 
 export default function InterviewPage() {
-  const router = useRouter();
-  const { sessionId, questions: contextQuestions, setTranscripts: setContextTranscripts } = useInterview();
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const audioChunksRef = useRef<Blob[]>([]);
-  const transcriptsRef = useRef<{ question: string; answer: string }[]>([]);
-  const ttsAudioRef = useRef<HTMLAudioElement | null>(null);
-  
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [timeRemaining, setTimeRemaining] = useState(120); // Default 2 minutes
-  const [isRecording, setIsRecording] = useState(false);
-  const [stream, setStream] = useState<MediaStream | null>(null);
-  const [showHints, setShowHints] = useState(false);
-  const [questionTranscripts, setQuestionTranscripts] = useState<{
-    question: string;
-    answer: string;
-  }[]>([]);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isTranscribing, setIsTranscribing] = useState(false);
-  const [isReadyToAdvance, setIsReadyToAdvance] = useState(false);
-  const [isSpeaking, setIsSpeaking] = useState(false);
-  const [displayedQuestion, setDisplayedQuestion] = useState('');
-  const [autoStartTimer, setAutoStartTimer] = useState(10);
-  const [showTimerWarning, setShowTimerWarning] = useState(false);
+    const router = useRouter();
+    const {
+        sessionId,
+        questions: contextQuestions,
+        setTranscripts: setContextTranscripts,
+    } = useInterview();
+    const videoRef = useRef<HTMLVideoElement>(null);
+    const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+    const audioChunksRef = useRef<Blob[]>([]);
+    const transcriptsRef = useRef<{ question: string; answer: string }[]>([]);
+    const ttsAudioRef = useRef<HTMLAudioElement | null>(null);
 
-  // Use questions from context if available, otherwise use mock
-  const questions = contextQuestions.length > 0 ? contextQuestions : MOCK_QUESTIONS;
-  const currentQuestion = questions[currentQuestionIndex];
-  const isLastQuestion = currentQuestionIndex === questions.length - 1;
+    const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+    const [timeRemaining, setTimeRemaining] = useState(120); // Default 2 minutes
+    const [isRecording, setIsRecording] = useState(false);
+    const [stream, setStream] = useState<MediaStream | null>(null);
+    const [flippedHints, setFlippedHints] = useState<number[]>([]);
+    const [questionTranscripts, setQuestionTranscripts] = useState<
+        {
+            question: string;
+            answer: string;
+        }[]
+    >([]);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isTranscribing, setIsTranscribing] = useState(false);
+    const [isReadyToAdvance, setIsReadyToAdvance] = useState(false);
+    const [isSpeaking, setIsSpeaking] = useState(false);
+    const [displayedQuestion, setDisplayedQuestion] = useState("");
+    const [autoStartTimer, setAutoStartTimer] = useState(10);
+    const [showTimerWarning, setShowTimerWarning] = useState(false);
+    const [raccoonFrame, setRaccoonFrame] = useState<'silent' | 'speaking'>('silent');
+
+    // Use questions from context if available, otherwise use mock
+    const questions =
+        contextQuestions.length > 0 ? contextQuestions : MOCK_QUESTIONS;
+    const currentQuestion = questions[currentQuestionIndex];
+    const isLastQuestion = currentQuestionIndex === questions.length - 1;
+
+    // Animate raccoon when speaking
+    useEffect(() => {
+        if (!isSpeaking) {
+            setRaccoonFrame('silent');
+            return;
+        }
+
+        // Alternate between silent and speaking frames every 300ms
+        const interval = setInterval(() => {
+            setRaccoonFrame(prev => prev === 'silent' ? 'speaking' : 'silent');
+        }, 300);
+
+        return () => clearInterval(interval);
+    }, [isSpeaking]);
 
   // Initialize camera
   useEffect(() => {
@@ -414,24 +441,24 @@ export default function InterviewPage() {
     setIsRecording(false);
   };
 
-  const handleNextQuestion = async () => {
-    if (!isReadyToAdvance) return;
-    
-    console.log('➡️ [NEXT] User clicked next/submit button');
-    
-    if (isLastQuestion) {
-      // Submit interview
-      console.log('🏁 [SUBMIT] Last question - submitting interview');
-      await handleSubmitInterview();
-    } else {
-      // Go to next question
-      console.log('📄 [NEXT] Moving to next question');
-      setCurrentQuestionIndex(prev => prev + 1);
-      setTimeRemaining(120);
-      setShowHints(false);
-      setIsReadyToAdvance(false);
-    }
-  };
+    const handleNextQuestion = async () => {
+        if (!isReadyToAdvance) return;
+
+        console.log("➡️ [NEXT] User clicked next/submit button");
+
+        if (isLastQuestion) {
+            // Submit interview
+            console.log("🏁 [SUBMIT] Last question - submitting interview");
+            await handleSubmitInterview();
+        } else {
+            // Go to next question
+            console.log("📄 [NEXT] Moving to next question");
+            setCurrentQuestionIndex((prev) => prev + 1);
+            setTimeRemaining(120);
+            setFlippedHints([]);
+            setIsReadyToAdvance(false);
+        }
+    };
 
   const handleSubmitInterview = async () => {
     // Stop any ongoing recording
@@ -527,60 +554,92 @@ export default function InterviewPage() {
         </div>
       </div>
 
-      {/* Main Interview Area */}
-      <div className="max-w-7xl mx-auto">
-        {/* Video Grid - Interviewer and Candidate */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          {/* AI Interviewer */}
-          <div className="bg-gray-800 rounded-2xl p-6 shadow-xl border border-gray-700">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center">
-                <span className="text-white font-bold text-lg">AI</span>
-              </div>
-              <div>
-                <h3 className="text-white font-semibold">InterviewBot</h3>
-                <p className="text-gray-400 text-sm">Your AI Interviewer</p>
-              </div>
-            </div>
-            
-            {/* Mascot/Avatar Area */}
-            <div className="relative aspect-video bg-gradient-to-br from-indigo-900 to-purple-900 rounded-lg overflow-hidden mb-4">
-              {/* Simple animated mascot */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center">
-                  <div className="w-32 h-32 mx-auto bg-gradient-to-br from-indigo-400 to-purple-500 rounded-full flex items-center justify-center mb-4 shadow-lg">
-                    <span className="text-6xl">🤖</span>
-                  </div>
-                  <div className="space-y-2">
-                    <div className={`h-2 bg-indigo-400 rounded-full mx-auto transition-all duration-300 ${
-                      isRecording ? 'w-24 animate-pulse' : 'w-16'
-                    }`}></div>
-                    <div className={`h-2 bg-purple-400 rounded-full mx-auto transition-all duration-300 ${
-                      isRecording ? 'w-16 animate-pulse' : 'w-20'
-                    }`}></div>
-                    <div className={`h-2 bg-indigo-400 rounded-full mx-auto transition-all duration-300 ${
-                      isRecording ? 'w-20 animate-pulse' : 'w-12'
-                    }`}></div>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Recording indicator on interviewer side */}
-              {isRecording && (
-                <div className="absolute top-4 left-4 flex items-center gap-2 bg-red-600 px-3 py-1 rounded-full">
-                  <div className="w-2 h-2 rounded-full bg-white animate-pulse"></div>
-                  <span className="text-white text-xs font-semibold">LISTENING</span>
-                </div>
-              )}
-              
-              {/* Speaking indicator */}
-              {isSpeaking && (
-                <div className="absolute top-4 right-4 flex items-center gap-2 bg-indigo-600 px-3 py-1 rounded-full">
-                  <div className="w-2 h-2 rounded-full bg-white animate-pulse"></div>
-                  <span className="text-white text-xs font-semibold">SPEAKING</span>
-                </div>
-              )}
-            </div>
+          {/* Main Interview Area */}
+          <div className="">
+            {/* Video Grid - Interviewer and Candidate */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    {/* AI Interviewer */}
+                    <div className="bg-gray-800 rounded-2xl p-6 shadow-xl border border-gray-700">
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-amber-900 rounded-full flex items-center justify-center overflow-hidden">
+                                <Image
+                                    src="/raccoonSmile.svg"
+                                    alt="InterviewBot"
+                                    width={30}
+                                    height={30}
+                                    className='mt-3'
+                                />
+                            </div>
+                            <div>
+                                <h3 className="text-white font-semibold">
+                                    Ryan the raccoon
+                                </h3>
+                                <p className="text-gray-400 text-sm">
+                                    Your AI Interviewer
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Mascot/Avatar Area */}
+                        <div className="relative aspect-video bg-gradient-to-br from-indigo-500 to-purple-900 rounded-lg overflow-hidden mb-4">
+                            {/* Simple animated mascot */}
+                            <div className="absolute inset-0 flex items-center justify-center">
+                                <div className="text-center">
+                                    <div className="w-32 h-32 mx-auto bg-gradient-to-br from-indigo-400 to-purple-500 rounded-full flex items-center justify-center mb-4 shadow-lg">
+                                        <Image
+                                            src={raccoonFrame === 'speaking' ? '/raccoonCircleEyesSpeaking 2.svg' : '/raccoonCircleEyesSilent 1.svg'}
+                                            alt="AI Interviewer"
+                                            width={96}
+                                            height={96}
+                                            className="transition-opacity duration-150 mt-8"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <div
+                                            className={`h-2 bg-indigo-400 rounded-full mx-auto transition-all duration-300 ${
+                                                isRecording
+                                                    ? "w-24 animate-pulse"
+                                                    : "w-16"
+                                            }`}
+                                        ></div>
+                                        <div
+                                            className={`h-2 bg-purple-400 rounded-full mx-auto transition-all duration-300 ${
+                                                isRecording
+                                                    ? "w-16 animate-pulse"
+                                                    : "w-20"
+                                            }`}
+                                        ></div>
+                                        <div
+                                            className={`h-2 bg-indigo-400 rounded-full mx-auto transition-all duration-300 ${
+                                                isRecording
+                                                    ? "w-20 animate-pulse"
+                                                    : "w-12"
+                                            }`}
+                                        ></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Recording indicator on interviewer side */}
+                            {isRecording && (
+                                <div className="absolute top-4 left-4 flex items-center gap-2 bg-red-600 px-3 py-1 rounded-full">
+                                    <div className="w-2 h-2 rounded-full bg-white animate-pulse"></div>
+                                    <span className="text-white text-xs font-semibold">
+                                        LISTENING
+                                    </span>
+                                </div>
+                            )}
+
+                            {/* Speaking indicator */}
+                            {isSpeaking && (
+                                <div className="absolute top-4 right-4 flex items-center gap-2 bg-indigo-600 px-3 py-1 rounded-full">
+                                    <div className="w-2 h-2 rounded-full bg-white animate-pulse"></div>
+                                    <span className="text-white text-xs font-semibold">
+                                        SPEAKING
+                                    </span>
+                                </div>
+                            )}
+                        </div>
 
             {/* Question Display */}
             <div className="bg-gray-900 rounded-lg p-4">
@@ -636,30 +695,40 @@ export default function InterviewPage() {
               />
             </div>
 
-            {/* Recording Controls */}
-            <div className="flex items-center gap-3 mt-4">
-              {!isRecording ? (
-                <button
-                  onClick={() => {
-                    handleStartRecording();
-                    setShowTimerWarning(false); // Hide timer when manually starting
-                  }}
-                  disabled={isTranscribing || isReadyToAdvance || isSpeaking}
-                  className="flex-1 px-6 py-3 bg-red-600 hover:bg-red-700 disabled:opacity-30 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
-                >
-                  <div className="w-3 h-3 rounded-full bg-white"></div>
-                  {isReadyToAdvance ? '✓ Answer Recorded' : isSpeaking ? 'AI Speaking...' : 'Start Answer'}
-                </button>
-              ) : (
-                <button
-                  onClick={handleStopRecording}
-                  disabled={isTranscribing}
-                  className="flex-1 px-6 py-3 bg-red-600 hover:bg-red-700 disabled:opacity-30 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors"
-                >
-                  {isTranscribing ? '⏳ Processing...' : '⏹ Stop'}
-                </button>
-              )}
-            </div>
+                        {/* Recording Controls */}
+                        <div className="flex items-center gap-3 mt-4">
+                            {!isRecording ? (
+                                <button
+                                    onClick={() => {
+                                        handleStartRecording();
+                                        setShowTimerWarning(false); // Hide timer when manually starting
+                                    }}
+                                    disabled={
+                                        isTranscribing ||
+                                        isReadyToAdvance ||
+                                        isSpeaking
+                                    }
+                                    className="flex-1 px-6 py-3 bg-red-600 hover:bg-red-700 disabled:opacity-30 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
+                                >
+                                    <div className="w-3 h-3 rounded-full bg-white"></div>
+                                    {isReadyToAdvance
+                                        ? "Answer Recorded"
+                                        : isSpeaking
+                                        ? "Ryan is talking..."
+                                        : "Start Answer"}
+                                </button>
+                            ) : (
+                                <button
+                                    onClick={handleStopRecording}
+                                    disabled={isTranscribing}
+                                    className="flex-1 px-6 py-3 bg-red-600 hover:bg-red-700 disabled:opacity-30 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors"
+                                >
+                                    {isTranscribing
+                                        ? "⏳ Processing..."
+                                        : "⏹ Stop"}
+                                </button>
+                            )}
+                        </div>
 
             {/* Auto-start timer warning - only shows after TTS completes */}
             {showTimerWarning && !isRecording && !isReadyToAdvance && autoStartTimer > 0 && (
@@ -696,46 +765,111 @@ export default function InterviewPage() {
           </div>
         </div>
 
-        {/* Bottom Controls */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Hints Panel */}
-          <div className="lg:col-span-2 bg-gray-800 rounded-2xl p-6 shadow-xl border border-gray-700">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-white font-semibold">Need Help?</h3>
-              <button
-                onClick={() => setShowHints(!showHints)}
-                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg transition-colors flex items-center gap-2"
-              >
-                {showHints ? '👁 Hide Hints' : '💡 Show Hints'}
-              </button>
-            </div>
+                {/* Bottom Controls */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    {/* Hints Panel - Flip Cards */}
+                    <div className="lg:col-span-2 bg-gray-800 rounded-2xl p-6 shadow-xl border border-gray-700">
+                        <div className="mb-4">
+                            <h3 className="text-white font-semibold mb-2">
+                                Interview Hints
+                            </h3>
+                            <p className="text-gray-400 text-sm">
+                                Click on a card to reveal the hint
+                            </p>
+                        </div>
 
-            {showHints ? (
-              <div className="space-y-3">
-                {(currentQuestion as any).hints?.map((hint: string, index: number) => (
-                  <div
-                    key={index}
-                    className="flex items-start gap-3 bg-gray-900 rounded-lg p-4 border border-indigo-500/30"
-                  >
-                    <div className="w-6 h-6 bg-indigo-600 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <span className="text-white text-xs font-bold">{index + 1}</span>
+                        <div className="space-y-3">
+                            {(currentQuestion as any).hints?.map(
+                                (hint: string, index: number) => {
+                                    const isFlipped = flippedHints.includes(index);
+                                    return (
+                                        <div
+                                            key={index}
+                                            onClick={() => {
+                                                if (isFlipped) {
+                                                    setFlippedHints(flippedHints.filter(i => i !== index));
+                                                } else {
+                                                    setFlippedHints([...flippedHints, index]);
+                                                }
+                                            }}
+                                            className="relative h-24 cursor-pointer perspective-1000"
+                                            style={{ perspective: '1000px' }}
+                                        >
+                                            <div
+                                                className={`relative w-full h-full transition-transform duration-500 transform-style-3d ${
+                                                    isFlipped ? 'rotate-x-180' : ''
+                                                }`}
+                                                style={{
+                                                    transformStyle: 'preserve-3d',
+                                                    transform: isFlipped ? 'rotateX(180deg)' : 'rotateX(0deg)'
+                                                }}
+                                            >
+                                                {/* Front of card */}
+                                                <div
+                                                    className="absolute inset-0 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-lg p-4 flex items-center justify-center gap-3 backface-hidden border-2 border-indigo-500"
+                                                    style={{ backfaceVisibility: 'hidden' }}
+                                                >
+                                                    <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center flex-shrink-0">
+                                                        <span className="text-indigo-600 font-bold">
+                                                            {index + 1}
+                                                        </span>
+                                                    </div>
+                                                    <div className="flex-1 text-center">
+                                                        <p className="text-white font-semibold">
+                                                            Click to reveal hint {index + 1}
+                                                        </p>
+                                                        <p className="text-indigo-200 text-sm mt-1">
+                                                            Tap to flip
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                                {/* Back of card */}
+                                                <div
+                                                    className="absolute inset-0 bg-gray-900 rounded-lg p-6 flex items-center gap-4 border border-indigo-500/30 backface-hidden overflow-hidden"
+                                                    style={{
+                                                        backfaceVisibility: 'hidden',
+                                                        transform: 'rotateX(180deg)'
+                                                    }}
+                                                >
+                                                    {/* Decorative leaves on back */}
+                                                    <Image
+                                                        src="/leavesLeft.svg"
+                                                        alt=""
+                                                        width={70}
+                                                        height={70}
+                                                        className="absolute left-1 top-1 opacity-20"
+                                                    />
+                                                    <Image
+                                                        src="/leavesRight.svg"
+                                                        alt=""
+                                                        width={70}
+                                                        height={70}
+                                                        className="absolute right-1 bottom-1 opacity-20"
+                                                    />
+                                                    
+                                                    <div className="w-10 h-10 bg-indigo-600 rounded-full flex items-center justify-center flex-shrink-0 z-10">
+                                                        <span className="text-white font-bold text-base">
+                                                            {index + 1}
+                                                        </span>
+                                                    </div>
+                                                    <p className="text-white text-base font-semibold leading-relaxed flex-1 z-10">
+                                                        {hint}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    );
+                                }
+                            ) || (
+                                <div className="text-center py-8">
+                                    <p className="text-gray-400 text-sm">
+                                        No hints available for this question
+                                    </p>
+                                </div>
+                            )}
+                        </div>
                     </div>
-                    <p className="text-gray-300 text-sm leading-relaxed">{hint}</p>
-                  </div>
-                )) || (
-                  <div className="text-center py-4">
-                    <p className="text-gray-400 text-sm">No hints available for this question</p>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div className="text-center py-8">
-                <p className="text-gray-400 text-sm">
-                  Click "Show Hints" to get tips for answering this question
-                </p>
-              </div>
-            )}
-          </div>
 
             {/* Progress & Navigation */}
             <div className="bg-gray-800 rounded-2xl p-6 shadow-xl border border-gray-700">

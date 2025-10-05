@@ -78,7 +78,7 @@ const Home = () => {
       {/* Meet the Team Section */}
       <section className="max-w-7xl mx-auto px-4 md:px-8 py-12 md:py-20">
         <div className="grid md:grid-cols-2 gap-8 md:gap-16 items-center">
-          <div className="text-center md:text-left order-2 md:order-1">
+          <div className="text-center md:text-left">
             <h3 className="text-3xl md:text-5xl font-bold mb-4 md:mb-6">Meet the Team</h3>
             <p className="text-base md:text-lg text-slate-300 leading-relaxed">
               Brandon, Eric, Mark and Paul, are all Computing Science students at Simon
@@ -87,14 +87,13 @@ const Home = () => {
               success.
             </p>
           </div>
-          <div className="flex justify-center order-1 md:order-2">
-            <div className="bg-slate-800/50 rounded-lg w-60 h-60 md:w-80 md:h-80 flex items-center justify-center relative">
-              <span className="text-slate-500">Team Image</span>
-              <div className="absolute bottom-4 right-4">
-                <div className="text-4xl md:text-6xl">🦝</div>
-              </div>
-            </div>
-          </div>
+          <Image
+              src="/carryingMark.jpg"
+              alt="Team Photo"
+              width={800}
+              height={600}
+              className="w-full h-full object-cover rounded-lg border border-slate-700"
+            />
         </div>
       </section>
 

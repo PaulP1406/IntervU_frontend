@@ -821,7 +821,7 @@ export default function InterviewPage() {
                                 >
                                     <div className="w-3 h-3 rounded-full bg-white"></div>
                                     {isReadyToAdvance
-                                        ? "✓ Answer Recorded"
+                                        ? "Answer Recorded"
                                         : isSpeaking
                                         ? "AI Speaking..."
                                         : "Start Answer"}

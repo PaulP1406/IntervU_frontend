@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import type { FeedbackResponse } from '@/lib/api';
 import { useInterview } from '@/context/InterviewContext';
+import Header from '@/components/Header';
 
 // Mock data - will be replaced with backend response
 const MOCK_RESULTS = {
@@ -248,17 +249,36 @@ export default function ResultsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 p-6">
-      <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="mb-8 text-center">
-          <h1 className="text-4xl font-bold text-white mb-2">
-            Interview Complete! 🎉
-          </h1>
-          <p className="text-xl text-slate-300">
-            {isLoading ? 'Loading your results...' : 'Here\'s your performance analysis and insights'}
-          </p>
-        </div>
+    <div className="min-h-screen bg-[#0a0a0f] pt-24">
+      <Header />
+      
+      <div className="py-12 px-8 relative">
+        {/* Left Leaves */}
+        <img 
+          src="/leavesLeft.svg"
+          alt="Decorative leaves"
+          className="absolute left-0 top-0 h-auto pointer-events-none"
+          style={{ width: '15%' }}
+        />
+        
+        {/* Right Leaves */}
+        <img 
+          src="/leavesRight.svg"
+          alt="Decorative leaves"
+          className="absolute right-0 top-0 h-auto pointer-events-none"
+          style={{ width: '15%' }}
+        />
+        
+        <div className="max-w-6xl mx-auto relative z-10">
+          {/* Header */}
+          <div className="mb-8 text-center">
+            <h1 className="text-4xl font-bold text-white mb-2">
+              Interview Complete!
+            </h1>
+            <p className="text-xl text-slate-300">
+              {isLoading ? 'Loading your results...' : 'Here\'s your performance analysis and insights'}
+            </p>
+          </div>
 
         {isLoading ? (
           <div className="flex items-center justify-center py-32">
@@ -355,7 +375,7 @@ export default function ResultsPage() {
                 : 'bg-slate-800/50 text-slate-400 hover:text-white hover:bg-slate-800'
             }`}
           >
-            📊 Overview
+            Overview
           </button>
           <button
             onClick={() => setActiveTab('detailed')}
@@ -365,7 +385,7 @@ export default function ResultsPage() {
                 : 'bg-slate-800/50 text-slate-400 hover:text-white hover:bg-slate-800'
             }`}
           >
-            📝 Detailed Feedback
+            Detailed Feedback
           </button>
         </div>
 
@@ -376,7 +396,6 @@ export default function ResultsPage() {
             {/* Key Takeaways */}
             <div className="bg-slate-800/30 rounded-3xl p-8 shadow-2xl border border-slate-700 backdrop-blur-sm">
               <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
-                <span className="text-3xl">🎯</span>
                 Key Takeaways
               </h3>
               <div className="space-y-4">
@@ -404,14 +423,19 @@ export default function ResultsPage() {
                 ) : (
                   <>
                     <div className="bg-blue-900/20 border border-blue-700/40 rounded-xl p-5 backdrop-blur-sm">
-                      <p className="text-slate-300 text-base leading-relaxed">
-                        Practice using the STAR method consistently across all answers and work on reducing filler words.
-                      </p>
+                      <div className="flex items-start gap-4 text-slate-300">
+                        <span className="text-blue-400 font-bold text-xl mt-1">1.</span>
+                        <p className="text-base leading-relaxed">
+                          Practice using the STAR method consistently across all answers and work on reducing filler words.
+                        </p>
+                      </div>
                     </div>
                     {MOCK_RESULTS.areasForImprovement.slice(0, 3).map((area, index) => (
-                      <div key={index} className="flex items-start gap-4 text-slate-300">
-                        <span className="text-blue-400 font-bold text-xl mt-1">{index + 1}.</span>
-                        <span className="text-base">{area.suggestions[0]}</span>
+                      <div key={index} className="bg-blue-900/20 border border-blue-700/40 rounded-xl p-5 backdrop-blur-sm">
+                        <div className="flex items-start gap-4 text-slate-300">
+                          <span className="text-blue-400 font-bold text-xl mt-1">{index + 2}.</span>
+                          <p className="text-base leading-relaxed">{area.suggestions[0]}</p>
+                        </div>
                       </div>
                     ))}
                   </>
@@ -480,7 +504,6 @@ export default function ResultsPage() {
                           {(results || hasAnswer) && (
                             <div>
                               <h5 className="text-white font-semibold mb-3 flex items-center gap-2 text-lg">
-                                <span className="text-xl">💬</span>
                                 You Said
                               </h5>
                               <div className="bg-slate-800/50 rounded-xl p-5 border-l-4 border-blue-600">
@@ -496,7 +519,6 @@ export default function ResultsPage() {
                             {/* Strengths */}
                             <div className="bg-green-900/20 border border-green-700/40 rounded-xl p-5 backdrop-blur-sm">
                               <h5 className="text-green-400 font-semibold mb-4 flex items-center gap-2 text-lg">
-                                <span>✅</span>
                                 What You Did Well
                               </h5>
                               {strengths.length > 0 && strengths[0] !== "No strengths demonstrated - the response was inappropriate." ? (
@@ -516,7 +538,6 @@ export default function ResultsPage() {
                             {/* Areas for Improvement */}
                             <div className="bg-yellow-900/20 border border-yellow-700/40 rounded-xl p-5 backdrop-blur-sm">
                               <h5 className="text-yellow-400 font-semibold mb-4 flex items-center gap-2 text-lg">
-                                <span>💡</span>
                                 Areas to Improve
                               </h5>
                               {improvements.length > 0 ? (
@@ -538,7 +559,6 @@ export default function ResultsPage() {
                           {!results && (item as any).suggestions && (item as any).suggestions.length > 0 && (
                             <div className="bg-blue-900/20 border border-blue-700/40 rounded-xl p-5 backdrop-blur-sm">
                               <h5 className="text-blue-400 font-semibold mb-4 flex items-center gap-2 text-lg">
-                                <span>🎯</span>
                                 How to Improve This Answer
                               </h5>
                               <ul className="space-y-3">
@@ -562,7 +582,6 @@ export default function ResultsPage() {
             {/* Overall Summary at Bottom */}
             <div className="bg-gray-800 rounded-2xl p-6 shadow-xl border border-gray-700">
               <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                <span>📋</span>
                 Overall Summary
               </h3>
               {results ? (
@@ -598,30 +617,32 @@ export default function ResultsPage() {
             </div>
           </div>
         )}
-
+          
             {/* Action Buttons */}
             <div className="mt-12 flex flex-col sm:flex-row gap-6 justify-center">
+              <button
+              onClick={() => router.push('/')}
+              className="px-10 py-4 bg-slate-700 hover:bg-slate-600 text-white font-semibold text-lg rounded-[32px] transition-all duration-200"
+            >
+              Back to Home
+          </button>
           <button
             onClick={() => router.push('/technical')}
-            className="px-10 py-4 bg-green-600 hover:bg-green-700 text-white font-semibold text-lg rounded-[32px] transition-all duration-200 shadow-lg shadow-green-600/30 hover:shadow-green-600/50 flex items-center justify-center gap-2"
+            className="px-10 py-4 bg-purple-600 hover:bg-purple-700 text-white font-semibold text-lg rounded-[32px] transition-all duration-200 shadow-lg shadow-green-600/30 hover:shadow-green-600/50 flex items-center justify-center gap-2"
           >
-            💻 Start Technical Interview
+            Start Technical Interview
           </button>
           <button
             onClick={() => router.push('/upload')}
             className="px-10 py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-lg rounded-[32px] transition-all duration-200 shadow-lg shadow-blue-600/30 hover:shadow-blue-600/50 flex items-center justify-center gap-2"
           >
-            🔄 Try Another Interview
+            Try Another Interview
           </button>
-          <button
-            onClick={() => router.push('/')}
-            className="px-10 py-4 bg-slate-700 hover:bg-slate-600 text-white font-semibold text-lg rounded-[32px] transition-all duration-200"
-          >
-            🏠 Back to Home
-          </button>
+          
         </div>
           </>
         )}
+        </div>
       </div>
     </div>
   );

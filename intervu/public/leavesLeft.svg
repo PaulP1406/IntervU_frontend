@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 513.35 184.92">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: url(#linear-gradient-15);
+      }
+
+      .cls-2 {
+        fill: url(#linear-gradient-13);
+      }
+
+      .cls-3 {
+        fill: url(#Gold_Dust-23);
+      }
+
+      .cls-4 {
+        fill: url(#linear-gradient-2);
+      }
+
+      .cls-5 {
+        fill: url(#Gold_Dust-4);
+      }
+
+      .cls-6 {
+        fill: url(#linear-gradient-10);
+      }
+
+      .cls-7 {
+        fill: url(#linear-gradient-12);
+      }
+
+      .cls-8 {
+        fill: url(#Gold_Dust-22);
+      }
+
+      .cls-9 {
+        fill: url(#Gold_Dust-18);
+      }
+
+      .cls-10 {
+        fill: url(#Gold_Dust-6);
+      }
+
+      .cls-11 {
+        fill: url(#Gold_Dust-15);
+      }
+
+      .cls-12 {
+        fill: url(#Gold_Dust-12);
+      }
+
+      .cls-13 {
+        fill: url(#Gold_Dust-14);
+      }
+
+      .cls-14 {
+        fill: url(#linear-gradient-4);
+      }
+
+      .cls-15 {
+        fill: url(#Gold_Dust-21);
+      }
+
+      .cls-16 {
+        fill: url(#Gold_Dust-5);
+      }
+
+      .cls-17 {
+        fill: url(#Gold_Dust-24);
+      }
+
+      .cls-18 {
+        fill: url(#Gold_Dust-26);
+      }
+
+      .cls-19 {
+        fill: url(#linear-gradient-3);
+      }
+
+      .cls-20 {
+        fill: url(#linear-gradient-5);
+      }
+
+      .cls-21 {
+        fill: url(#Gold_Dust-16);
+      }
+
+      .cls-22 {
+        fill: url(#linear-gradient-8);
+      }
+
+      .cls-23 {
+        fill: url(#Gold_Dust-10);
+      }
+
+      .cls-24 {
+        fill: url(#Gold_Dust-7);
+      }
+
+      .cls-25 {
+        fill: url(#linear-gradient-14);
+      }
+
+      .cls-26 {
+        fill: url(#Gold_Dust-2);
+      }
+
+      .cls-27 {
+        fill: url(#linear-gradient-17);
+      }
+
+      .cls-28 {
+        fill: url(#linear-gradient-7);
+      }
+
+      .cls-29 {
+        fill: url(#linear-gradient-9);
+      }
+
+      .cls-30 {
+        fill: url(#Gold_Dust-11);
+      }
+
+      .cls-31 {
+        fill: url(#linear-gradient-11);
+      }
+
+      .cls-32 {
+        fill: url(#Gold_Dust-19);
+      }
+
+      .cls-33 {
+        fill: url(#linear-gradient-6);
+      }
+
+      .cls-34 {
+        fill: url(#Gold_Dust-20);
+      }
+
+      .cls-35 {
+        fill: url(#Gold_Dust-3);
+      }
+
+      .cls-36 {
+        fill: url(#Gold_Dust);
+      }
+
+      .cls-37 {
+        fill: url(#Gold_Dust-8);
+      }
+
+      .cls-38 {
+        fill: url(#Gold_Dust-9);
+      }
+
+      .cls-39 {
+        fill: url(#linear-gradient-16);
+      }
+
+      .cls-40 {
+        fill: url(#linear-gradient);
+      }
+
+      .cls-41 {
+        fill: url(#Gold_Dust-13);
+      }
+
+      .cls-42 {
+        fill: url(#Gold_Dust-17);
+      }
+
+      .cls-43 {
+        fill: url(#Gold_Dust-25);
+      }
+    </style>
+    <linearGradient id="linear-gradient" x1="-196" y1="-221.52" x2="-157.03" y2="-221.52" gradientTransform="translate(230.96 -167.87) rotate(-110.56)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#9f2a00"/>
+      <stop offset=".1" stop-color="#a82b00"/>
+      <stop offset=".25" stop-color="#c12f01"/>
+      <stop offset=".43" stop-color="#e53603"/>
+      <stop offset=".66" stop-color="#e57a00"/>
+      <stop offset="1" stop-color="#ffea9f"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient-2" x1="14.33" y1="-738.45" x2="53.3" y2="-738.45" gradientTransform="translate(910.59 77.15) rotate(90.12) scale(1 -1)" xlink:href="#linear-gradient"/>
+    <linearGradient id="linear-gradient-3" x1="-334.03" y1="-187.49" x2="-295.06" y2="-187.49" gradientTransform="translate(337.75 -180.72) rotate(-82.09)" xlink:href="#linear-gradient"/>
+    <linearGradient id="linear-gradient-4" x1="-277.72" y1="-13.45" x2="-257.2" y2="-13.45" gradientTransform="translate(189.81 -183.12) rotate(-77.48)" xlink:href="#linear-gradient"/>
+    <linearGradient id="linear-gradient-5" x1="442.5" y1="34.92" x2="463.02" y2="34.92" gradientTransform="translate(295.39 -298.28) rotate(106.72)" xlink:href="#linear-gradient"/>
+    <linearGradient id="Gold_Dust" data-name="Gold Dust" x1="-173.98" y1="-146.92" x2="-149.22" y2="-146.92" gradientTransform="translate(168.4 -168.35) rotate(-114.39)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ff7300"/>
+      <stop offset=".18" stop-color="#f97c00"/>
+      <stop offset=".47" stop-color="#ea9502"/>
+      <stop offset=".55" stop-color="#e59e03"/>
+      <stop offset=".87" stop-color="#e5c500"/>
+      <stop offset=".99" stop-color="#bf6f00"/>
+    </linearGradient>
+    <linearGradient id="Gold_Dust-2" data-name="Gold Dust" x1="-55.14" y1="-282.06" x2="-30.38" y2="-282.06" gradientTransform="translate(-115.99 -166.25) rotate(-41.81) scale(1 -1)" xlink:href="#Gold_Dust"/>
+    <linearGradient id="Gold_Dust-3" data-name="Gold Dust" x1="-257.5" y1="-134.74" x2="-232.74" y2="-134.74" xlink:href="#Gold_Dust"/>
+    <linearGradient id="Gold_Dust-4" data-name="Gold Dust" x1="-231.03" y1="-40.04" x2="-215.17" y2="-40.04" gradientTransform="translate(281.74 -77.97) rotate(-74.47)" xlink:href="#Gold_Dust"/>
+    <linearGradient id="Gold_Dust-5" data-name="Gold Dust" x1="-180.14" y1="-28.24" x2="-155.38" y2="-28.24" gradientTransform="translate(159.33 -104.64) rotate(-58.76)" xlink:href="#Gold_Dust"/>
+    <linearGradient id="linear-gradient-6" x1="-272.9" y1="-51.97" x2="-233.93" y2="-51.97" gradientTransform="translate(260.88 -69.93) rotate(-33.39)" xlink:href="#linear-gradient"/>
+    <linearGradient id="Gold_Dust-6" data-name="Gold Dust" x1="-81.54" y1="-302.49" x2="-12.36" y2="-302.49" gradientTransform="translate(215.64 -212.54) rotate(-139.63)" xlink:href="#Gold_Dust"/>
+    <linearGradient id="Gold_Dust-7" data-name="Gold Dust" x1="-297.97" y1="-295.43" x2="-265.08" y2="-295.43" gradientTransform="translate(546.77 158.18) rotate(55.84) scale(1 -1)" xlink:href="#Gold_Dust"/>
+    <linearGradient id="Gold_Dust-8" data-name="Gold Dust" x1="-750.52" y1="-283.09" x2="-717.63" y2="-283.09" gradientTransform="translate(721.58 -455.62) rotate(-21.08) scale(1 -1)" xlink:href="#Gold_Dust"/>
+    <linearGradient id="linear-gradient-7" x1="-281.54" y1="-117.55" x2="-242.57" y2="-117.55" gradientTransform="translate(172.35 -157.04) rotate(-123.56)" xlink:href="#linear-gradient"/>
+    <linearGradient id="linear-gradient-8" x1="57.62" y1="-610.97" x2="96.59" y2="-610.97" gradientTransform="translate(889.68 -71.07) rotate(77.13) scale(1 -1)" xlink:href="#linear-gradient"/>
+    <linearGradient id="linear-gradient-9" x1="-359.65" y1="-55.31" x2="-320.68" y2="-55.31" gradientTransform="translate(273.52 -193.57) rotate(-95.08)" xlink:href="#linear-gradient"/>
+    <linearGradient id="linear-gradient-10" x1="-292.64" y1="120.36" x2="-272.13" y2="120.36" gradientTransform="translate(128.83 -162.65) rotate(-90.47)" xlink:href="#linear-gradient"/>
+    <linearGradient id="linear-gradient-11" x1="447.59" y1="-99.62" x2="468.1" y2="-99.62" gradientTransform="translate(205.82 -298.59) rotate(93.73)" xlink:href="#linear-gradient"/>
+    <linearGradient id="Gold_Dust-9" data-name="Gold Dust" x1="-266.28" y1="-48.89" x2="-241.51" y2="-48.89" gradientTransform="translate(111.29 -143.44) rotate(-127.38)" xlink:href="#Gold_Dust"/>
+    <linearGradient id="Gold_Dust-10" data-name="Gold Dust" x1="10.76" y1="-399.46" x2="35.53" y2="-399.46" gradientTransform="translate(-165.35 -77.47) rotate(-54.8) scale(1 -1)" xlink:href="#Gold_Dust"/>
+    <linearGradient id="Gold_Dust-11" data-name="Gold Dust" x1="-349.8" y1="-36.72" x2="-325.03" y2="-36.72" gradientTransform="translate(111.29 -143.44) rotate(-127.38)" xlink:href="#Gold_Dust"/>
+    <linearGradient id="Gold_Dust-12" data-name="Gold Dust" x1="-238.91" y1="94.37" x2="-223.05" y2="94.37" gradientTransform="translate(242.05 -80.86) rotate(-87.46)" xlink:href="#Gold_Dust"/>
+    <linearGradient id="Gold_Dust-13" data-name="Gold Dust" x1="-151.33" y1="103.28" x2="-126.56" y2="103.28" gradientTransform="translate(116.77 -79.33) rotate(-71.75)" xlink:href="#Gold_Dust"/>
+    <linearGradient id="linear-gradient-12" x1="-190.52" y1="54.53" x2="-151.55" y2="54.53" gradientTransform="translate(223.53 -68.33) rotate(-46.38)" xlink:href="#linear-gradient"/>
+    <linearGradient id="Gold_Dust-14" data-name="Gold Dust" x1="-206.82" y1="-253.18" x2="-137.65" y2="-253.18" gradientTransform="translate(147.38 -197.12) rotate(-152.62)" xlink:href="#Gold_Dust"/>
+    <linearGradient id="Gold_Dust-15" data-name="Gold Dust" x1="-190.39" y1="-214.47" x2="-157.5" y2="-214.47" gradientTransform="translate(553.38 89.67) rotate(42.85) scale(1 -1)" xlink:href="#Gold_Dust"/>
+    <linearGradient id="Gold_Dust-16" data-name="Gold Dust" x1="-647.33" y1="-369.57" x2="-614.44" y2="-369.57" gradientTransform="translate(585.74 -547.72) rotate(-34.07) scale(1 -1)" xlink:href="#Gold_Dust"/>
+    <linearGradient id="Gold_Dust-17" data-name="Gold Dust" x1="-369.14" y1="-187.46" x2="-299.96" y2="-187.46" gradientTransform="translate(53.59 -109.71) rotate(-171.87)" xlink:href="#Gold_Dust"/>
+    <linearGradient id="Gold_Dust-18" data-name="Gold Dust" x1="-410.09" y1="26.15" x2="-385.33" y2="26.15" gradientTransform="translate(268.75 -240.39) rotate(-100.57)" xlink:href="#Gold_Dust"/>
+    <linearGradient id="linear-gradient-13" x1="-471.7" y1="170.23" x2="-432.73" y2="170.23" gradientTransform="translate(625.41 -282.29) rotate(-33.34)" xlink:href="#linear-gradient"/>
+    <linearGradient id="Gold_Dust-19" data-name="Gold Dust" x1="-641.59" y1="-117.17" x2="-616.82" y2="-117.17" gradientTransform="translate(448.67 -395.42) rotate(-72.78)" xlink:href="#Gold_Dust"/>
+    <linearGradient id="linear-gradient-14" x1="-361.67" y1="345.62" x2="-341.15" y2="345.62" gradientTransform="translate(451.01 -387.75) rotate(-38.97)" xlink:href="#linear-gradient"/>
+    <linearGradient id="Gold_Dust-20" data-name="Gold Dust" x1="-254.41" y1="133.31" x2="-229.64" y2="133.31" gradientTransform="translate(158.24 200.56) rotate(-171.4)" xlink:href="#Gold_Dust"/>
+    <linearGradient id="Gold_Dust-21" data-name="Gold Dust" x1="-513.11" y1="-354.04" x2="-480.21" y2="-354.04" gradientTransform="translate(497.91 -429.78) rotate(-50.26) scale(1 -.81)" xlink:href="#Gold_Dust"/>
+    <linearGradient id="linear-gradient-15" x1="-263.67" y1="254.4" x2="-243.16" y2="254.4" gradientTransform="translate(84.93 -50.19) rotate(-105.11) scale(.97 1)" xlink:href="#linear-gradient"/>
+    <linearGradient id="Gold_Dust-22" data-name="Gold Dust" x1="-610.09" y1="-310.84" x2="-577.2" y2="-310.84" gradientTransform="translate(585.74 658.37) rotate(34.07)" xlink:href="#Gold_Dust"/>
+    <linearGradient id="Gold_Dust-23" data-name="Gold Dust" x1="-339.38" y1="-52.65" x2="-270.2" y2="-52.65" gradientTransform="translate(704.85 277.86) rotate(27.38)" xlink:href="#Gold_Dust"/>
+    <linearGradient id="linear-gradient-16" x1="-305.16" y1="206.39" x2="-284.65" y2="206.39" gradientTransform="translate(233.62 346.68) rotate(173.44)" xlink:href="#linear-gradient"/>
+    <linearGradient id="Gold_Dust-24" data-name="Gold Dust" x1="-321.38" y1="259.2" x2="-296.62" y2="259.2" gradientTransform="translate(250.69 -221.95) rotate(-83.87)" xlink:href="#Gold_Dust"/>
+    <linearGradient id="Gold_Dust-25" data-name="Gold Dust" x1="-479.53" y1="-433.04" x2="-446.63" y2="-433.04" gradientTransform="translate(90.86 -487.21) rotate(-76.6) scale(1 -1)" xlink:href="#Gold_Dust"/>
+    <linearGradient id="linear-gradient-17" x1="-266.22" y1="295.77" x2="-245.7" y2="295.77" gradientTransform="translate(288.38 -247.53) rotate(-61.91) scale(.97 1)" xlink:href="#linear-gradient"/>
+    <linearGradient id="Gold_Dust-26" data-name="Gold Dust" x1="149.17" y1="63.31" x2="165.03" y2="63.31" gradientTransform="translate(50.77 -122.66) rotate(39.7)" xlink:href="#Gold_Dust"/>
+  </defs>
+  <g id="Layer_5" data-name="Layer 5">
+    <path class="cls-40" d="M62.36,71.64c3.46-14.2,29.12-18.28,29.12-18.28,19.73.53,17.59-4.67,17.59-4.67-19.6,27.66-40.61,33.03-40.61,33.03,0,0,14.66.93,38.28-24.78,0,0,2.54,45.44-30.48,37.33,0,0-6.69-.82-20.05-8.07,0,0,3.7-4.56,6.14-14.57Z"/>
+    <path class="cls-4" d="M151.58,120.8c8.2,12.1,33.67,6.95,33.67,6.95,18.31-7.39,18.11-1.77,18.11-1.77-28.03-19.08-49.58-16.77-49.58-16.77,0,0,13.41-6,44.53,9.85,0,0-13.49-43.47-41.6-24.33,0,0-5.98,3.1-15.97,14.56,0,0,5.06,2.98,10.84,11.5Z"/>
+    <path class="cls-19" d="M90.06,90.82c9.81-10.83,34.31-2.18,34.31-2.18,17.09,9.87,17.69,4.29,17.69,4.29-30.42,14.97-51.44,9.67-51.44,9.67,0,0,12.44,7.81,45.47-3.53,0,0-19.43,41.16-44.59,18.28,0,0-5.49-3.91-13.78-16.65,0,0,5.43-2.24,12.34-9.88Z"/>
+    <path class="cls-14" d="M109.5,66.82c5.61-5.27,18.1.31,18.1.31,8.55,5.9,9.1,3,9.1,3-16.6,6.57-27.4,2.9-27.4,2.9,0,0,6.2,4.63,24.01.07,0,0-11.94,20.77-24.17,7.71,0,0-2.72-2.28-6.52-9.32,0,0,2.94-.95,6.89-4.66Z"/>
+    <path class="cls-20" d="M140.27,134.19c-5.98,4.85-18.03-1.63-18.03-1.63-8.1-6.51-8.86-3.66-8.86-3.66,17.03-5.34,27.54-.89,27.54-.89,0,0-5.84-5.07-23.94-1.83,0,0,13.43-19.84,24.67-5.91,0,0,2.54,2.48,5.82,9.77,0,0-3.01.73-7.22,4.14Z"/>
+  </g>
+  <g id="Layer_4" data-name="Layer 4">
+    <path class="cls-36" d="M119.03,42.13s-13.77,8.23-27.97-2.03c0,0,16.23,5.97,22.15,1.49,0,0-5.34-6.52-20.47-7.42,0,0-8.55,5.27-10.22.26,0,0,5.64,13.75,11.71,16.17,0,0,13.44,4.64,24.8-8.46Z"/>
+    <path class="cls-26" d="M22.9,67.76s9.27,13.09,26.41,9.42c0,0-17.25-1.09-20.87-7.58,0,0,7.52-3.81,21.72,1.47,0,0,5.7,8.27,9.25,4.36,0,0-10.71,10.3-17.23,10.07,0,0-14.17-1.18-19.27-17.75Z"/>
+    <path class="cls-35" d="M164.61,113.17s-13.77,8.23-27.97-2.03c0,0,16.23,5.97,22.15,1.49,0,0-5.34-6.52-20.47-7.42,0,0-8.55,5.27-10.22.26,0,0,5.64,13.75,11.71,16.17,0,0,13.44,4.64,24.8-8.46Z"/>
+    <path class="cls-5" d="M191.06,134.84s-10.14-1.61-12.9-12.49c0,0,5.52,9.6,10.27,9.83,0,0,.06-5.4-7-12.06,0,0-6.36-.93-5.13-4.07,0,0-2.88,9.07-.89,12.75,0,0,4.69,7.8,15.66,6.03Z"/>
+    <path class="cls-16" d="M56.01,40.25s-14.57-6.72-14.11-24.23c0,0,4.24,16.76,11.28,19.12,0,0,2.37-8.09-5.43-21.08,0,0-9.17-4.08-5.99-8.29,0,0-8.17,12.42-6.74,18.79,0,0,3.75,13.71,20.98,15.69Z"/>
+  </g>
+  <g id="Layer_9" data-name="Layer 9">
+    <path class="cls-33" d="M19.03,2.75c14.61.22,24.28,24.34,24.28,24.34,3.87,19.36,8.46,16.12,8.46,16.12C20.44,30.24,10.54,10.95,10.54,10.95c0,0,2.35,14.5,32.66,31.83C43.21,42.77-.53,55.34.04,21.34.04,21.34-.64,14.64,3.46,0c0,0,5.27,2.6,15.57,2.75Z"/>
+    <g id="Layer_3" data-name="Layer 3">
+      <path class="cls-10" d="M32.93,42.16s37.68,19.43,64.31,10.46c0,0-9.34,2.04-13.89-6.58s-22.7-26.43-41.97-13.81c0,0-12.84,11.19-17.48-.13,0,0,9.97,35.81,20.42,36.37,0,0,22.89,11.38,42.27-11.13,0,0-14.49,6.7-53.65-15.18Z"/>
+      <path class="cls-24" d="M146,102.06s-7.25-18.81-1.64-30.94c0,0-1.45,4.31,2.4,6.91s11.32,12.09,4.37,20.55c0,0-5.95,5.49-.84,8.27,0,0-16.41-6.55-16.14-11.52,0,0-4.2-11.41,7.44-19.41,0,0-3.91,6.5,4.42,26.14Z"/>
+      <path class="cls-37" d="M149.57,73.35s-19.96,2.8-30.51-5.4c0,0,3.87,2.38,7.27-.77s14.34-8.3,21.01.39c0,0,4.01,7.04,7.87,2.69,0,0-10.1,14.51-14.88,13.12,0,0-12.06,1.51-17.22-11.63,0,0,5.45,5.28,26.46,1.61Z"/>
+      <path class="cls-28" d="M195.84,128.06c.18-14.62,24.27-24.35,24.27-24.35,19.35-3.92,16.09-8.5,16.09-8.5-12.88,31.36-32.14,41.31-32.14,41.31,0,0,14.5-2.39,31.73-32.75,0,0,12.69,43.71-21.31,43.23,0,0-6.7.71-21.35-3.36,0,0,2.58-5.28,2.71-15.57Z"/>
+      <path class="cls-22" d="M293.83,155.91c10.71,9.95,34.37-.79,34.37-.79,16.18-11.31,17.25-5.8,17.25-5.8-31.6-12.29-52.09-5.19-52.09-5.19,0,0,11.72-8.86,45.6-.41,0,0-22.91-39.32-46.01-14.36,0,0-5.13,4.37-12.29,17.78,0,0,5.6,1.77,13.15,8.77Z"/>
+      <path class="cls-29" d="M227.14,140.53c7.12-12.76,32.94-9.84,32.94-9.84,18.88,5.78,18.2.2,18.2.2-26.28,21.43-47.95,20.99-47.95,20.99,0,0,13.88,4.81,43.51-13.66,0,0-9.68,44.47-39.34,27.84,0,0-6.23-2.57-17.17-13.13,0,0,4.79-3.41,9.81-12.4Z"/>
+      <path class="cls-6" d="M240.69,112.77c4.28-6.4,17.7-3.77,17.7-3.77,9.66,3.83,9.54.87,9.54.87-14.69,10.13-26.05,8.99-26.05,8.99,0,0,7.08,3.11,23.41-5.33,0,0-6.96,22.93-21.82,12.94,0,0-3.16-1.61-8.45-7.62,0,0,2.66-1.59,5.67-6.09Z"/>
+      <path class="cls-31" d="M285.82,171.5c-4.73,6.07-17.93,2.46-17.93,2.46-9.35-4.53-9.45-1.57-9.45-1.57,15.4-9.03,26.64-7.05,26.64-7.05,0,0-6.83-3.62-23.74,3.6,0,0,8.62-22.36,22.71-11.31,0,0,3.03,1.84,7.87,8.21,0,0-2.77,1.39-6.1,5.66Z"/>
+      <path class="cls-38" d="M244.43,86.57s-11.56,11.11-27.71,4.3c0,0,17.15,2.16,21.92-3.53,0,0-6.67-5.16-21.61-2.63,0,0-7.14,7.05-9.9,2.55,0,0,8.58,12.13,15.04,13.12,0,0,14.14,1.5,22.26-13.82Z"/>
+      <path class="cls-23" d="M156.52,133.15s11.98,10.67,27.85,3.25c0,0-17.06,2.82-22.04-2.69,0,0,6.47-5.41,21.5-3.45,0,0,7.41,6.78,9.99,2.17,0,0-8.12,12.45-14.53,13.69,0,0-14.07,2.04-22.77-12.96Z"/>
+      <path class="cls-30" d="M304.81,145.55s-11.56,11.11-27.71,4.3c0,0,17.15,2.16,21.92-3.53,0,0-6.67-5.16-21.61-2.63,0,0-7.14,7.05-9.9,2.55,0,0,8.58,12.13,15.04,13.12,0,0,14.14,1.5,22.26-13.82Z"/>
+      <path class="cls-12" d="M335.45,160.71s-10.25.71-15.38-9.27c0,0,7.53,8.11,12.21,7.27,0,0-1.16-5.28-9.53-10.17,0,0-6.41.53-5.91-2.82,0,0-.77,9.48,1.99,12.63,0,0,6.33,6.55,16.61,2.36Z"/>
+      <path class="cls-41" d="M182.6,98.9s-15.7-3.27-19.19-20.44c0,0,7.9,15.38,15.29,16.1,0,0,.49-8.42-10.03-19.32,0,0-9.86-1.92-7.7-6.73,0,0-5.17,13.93-2.34,19.82,0,0,6.74,12.52,23.97,10.57Z"/>
+      <path class="cls-7" d="M138.13,70.68c14.29-3.07,29.13,18.25,29.13,18.25,8.12,17.99,11.86,13.8,11.86,13.8-33.44-5.6-47.42-22.17-47.42-22.17,0,0,5.55,13.61,38.98,23.67,0,0-39.8,22.08-46.88-11.18,0,0-2.18-6.38-1.47-21.56,0,0,5.72,1.35,15.79-.82Z"/>
+      <path class="cls-13" d="M160.54,105.95s41.08,10.46,65.02-4.26c0,0-8.64,4.09-15.02-3.29-6.38-7.38-28.06-20.65-44.01-4.03,0,0-10,13.79-17.06,3.81,0,0,17.76,32.65,28.07,30.85,0,0,24.86,5.94,38.68-20.35,0,0-12.61,9.78-55.69-2.73Z"/>
+      <path class="cls-11" d="M284.17,138.91s-11.29-16.7-8.55-29.78c0,0-.44,4.53,3.89,6.19s13.75,9.23,8.88,19.04c0,0-4.56,6.69,1.04,8.25,0,0-17.47-2.7-18.32-7.6,0,0-6.66-10.17,2.88-20.58,0,0-2.35,7.22,10.18,24.48Z"/>
+      <path class="cls-21" d="M281.2,110.12s-18.82,7.22-30.94,1.59c0,0,4.31,1.45,6.91-2.39,2.6-3.84,12.1-11.31,20.56-4.34,0,0,5.49,5.96,8.27.85,0,0-6.58,16.4-11.55,16.13,0,0-11.41,4.18-19.39-7.46,0,0,6.5,3.92,26.15-4.38Z"/>
+      <path class="cls-42" d="M335.89,129.99s42.23-3.66,59.98-25.46c0,0-6.81,6.71-15.26,1.84-8.45-4.87-33.29-10.24-42.87,10.71,0,0-4.89,16.31-14.85,9.22,0,0,27.53,24.97,36.68,19.87,0,0,25.43-2.59,29.81-31.96,0,0-8.68,13.39-53.48,15.78Z"/>
+      <path class="cls-9" d="M383.95,152.57s-15.33,4.7-26.67-8.66c0,0,14.33,9.67,21.15,6.74,0,0-3.63-7.61-18.1-12.1,0,0-9.56,3.07-9.99-2.19,0,0,2.19,14.7,7.5,18.5,0,0,11.94,7.72,26.1-2.29Z"/>
+      <path class="cls-2" d="M339.54,85.06c14.61.23,24.26,24.36,24.26,24.36,3.85,19.36,8.44,16.12,8.44,16.12-31.31-13-41.19-32.3-41.19-32.3,0,0,2.33,14.51,32.64,31.86,0,0-43.75,12.53-43.15-21.47,0,0-.68-6.71,3.44-21.34,0,0,5.27,2.6,15.56,2.77Z"/>
+      <path class="cls-32" d="M162.02,184.64s-15.76-2.99-19.56-20.09c0,0,8.17,15.23,15.57,15.82,0,0,.34-8.43-10.37-19.14,0,0-9.89-1.74-7.82-6.59,0,0-4.91,14.02-1.98,19.86,0,0,6.97,12.4,24.16,10.14Z"/>
+      <path class="cls-25" d="M393.12,89.8c7.67-.63,13.97,11.51,13.97,11.51,3.02,9.94,5.26,8.01,5.26,8.01-17.08-5.19-23.25-14.79-23.25-14.79,0,0,1.97,7.48,18.74,15,0,0-22.28,8.82-23.71-9.02,0,0-.7-3.48.7-11.36,0,0,2.89,1.09,8.3.65Z"/>
+      <path class="cls-34" d="M429.32,91.51s-.59,16.03-16.93,22.35c0,0,13.84-10.36,13.31-17.77,0,0-8.38.93-17.37,13.13,0,0-.24,10.04-5.35,8.72,0,0,14.6,2.76,19.93-1.02,0,0,11.21-8.74,6.41-25.41Z"/>
+      <path class="cls-15" d="M409.84,129.78s-15.39,12.74-26.91,12.12c0,0,4.01-.25,5.69-4.45,1.68-4.2,8.85-13.92,17.37-10.87,0,0,5.75,3.21,7.39-2.14,0,0-3.2,16.37-7.61,17.86,0,0-9.36,7.56-18.19.33,0,0,6.32,1.11,22.27-12.84Z"/>
+      <path class="cls-1" d="M382.5,117.21c2.58-7.07,16.21-8.01,16.21-8.01,10.28,1.14,9.44-1.6,9.44-1.6-11.74,13.2-23.01,15-23.01,15,0,0,7.61,1.12,21.35-10.91,0,0-1.14,23.21-17.95,17.63,0,0-3.45-.71-10.04-4.99,0,0,2.18-2.16,4-7.13Z"/>
+      <path class="cls-8" d="M279.14,70.05s-18.82-7.22-30.94-1.59c0,0,4.31-1.45,6.91,2.39,2.6,3.84,12.1,11.31,20.56,4.34,0,0,5.49-5.96,8.27-.85,0,0-6.58-16.4-11.55-16.13,0,0-11.41-4.18-19.39,7.46,0,0,6.5-3.92,26.15,4.38Z"/>
+      <path class="cls-3" d="M481.77,91.9s-41.08-10.46-65.02,4.26c0,0,8.64-4.09,15.02,3.29,6.38,7.38,28.06,20.65,44.01,4.03,0,0,10-13.79,17.06-3.81,0,0-17.76-32.65-28.07-30.85,0,0-24.86-5.94-38.68,20.35,0,0,12.61-9.78,55.69,2.73Z"/>
+      <path class="cls-39" d="M498.23,119.33c-6.81-3.58-5.63-17.2-5.63-17.2,2.78-10.01-.14-9.58-.14-9.58,11.63,13.54,11.7,24.95,11.7,24.95,0,0,2.34-7.37-7.78-22.71,0,0,23.54,4.49,15.19,20.33,0,0-1.27,3.31-6.68,9.21,0,0-1.86-2.47-6.66-4.99Z"/>
+      <path class="cls-17" d="M489.36,124.21s-16.04.1-23.06-15.95c0,0,10.95,13.38,18.33,12.53,0,0-1.29-8.33-13.86-16.79,0,0-10.04.2-8.94-4.97,0,0-2.12,14.71,1.87,19.87,0,0,9.22,10.83,25.66,5.3Z"/>
+      <path class="cls-43" d="M411.7,54.92s-8.99,18.04-21.73,22.09c0,0,4.16-1.84,3.48-6.43-.68-4.59,1.28-16.51,12.22-17.09,0,0,8.07.68,6.67-4.96,0,0,6.24,16.53,2.39,19.69,0,0-5.58,10.8-19.34,7.61,0,0,7.44-1.5,16.31-20.9Z"/>
+      <path class="cls-27" d="M425.98,99.87c6.72-3.39,17.29,5.26,17.29,5.26,6.71,7.87,7.98,5.3,7.98,5.3-17.6,1.58-27.04-4.82-27.04-4.82,0,0,4.78,6.03,23.03,6.66,0,0-16.72,16.14-25.16.56,0,0-2.03-2.88-3.9-10.51,0,0,3.07-.08,7.8-2.46Z"/>
+      <path class="cls-18" d="M120.26,29.84s5.63-8.59,16.68-6.65c0,0-11.02,1.1-13.18,5.34,0,0,4.9,2.26,13.87-1.45,0,0,3.45-5.43,5.82-3.01,0,0-7.09-6.34-11.27-6.04,0,0-9.04,1.09-11.92,11.81Z"/>
+    </g>
+  </g>
+</svg>

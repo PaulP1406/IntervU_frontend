@@ -1,6 +1,7 @@
 import React from 'react';
 import Header from '@/components/Header'
 import Image from 'next/image';
+import Link from 'next/link';
 
 const Home = () => {
   return (
@@ -33,6 +34,33 @@ const Home = () => {
           />
         </div>
       </section>
+
+      {/* CTA Button */}
+      <section className="flex justify-center py-8">
+        <Link href="/instructions">
+          <button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-lg px-12 py-4 rounded-[32px] transition-colors duration-200">
+            Begin Practicing
+          </button>
+        </Link>
+      </section>
+
+      {/* Leaves Decoration */}
+      <section className="flex justify-between w-full">
+        <img 
+          src="/leavesLeft.svg"
+          alt="Decorative leaves"
+          className="h-auto"
+          style={{ width: '40%' }}
+        />
+        <img 
+          src="/leavesRight.svg"
+          alt="Decorative leaves"
+          className="h-auto"
+          style={{ width: '40%' }}
+        />
+      </section>
+
+      
 
       {/* What is IntervU Section */}
       <section className="max-w-7xl mx-auto px-8 py-20">

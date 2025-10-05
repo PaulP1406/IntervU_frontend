@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import type { FeedbackResponse } from '@/lib/api';
+import { useInterview } from '@/context/InterviewContext';
 
 // Mock data - will be replaced with backend response
 const MOCK_RESULTS = {
@@ -176,6 +177,7 @@ const MOCK_RESULTS = {
 
 export default function ResultsPage() {
   const router = useRouter();
+  const { transcripts } = useInterview();
   const [activeTab, setActiveTab] = useState<'overview' | 'detailed'>('overview');
   const [expandedQuestions, setExpandedQuestions] = useState<number[]>([]);
   const [feedbackData, setFeedbackData] = useState<FeedbackResponse | null>(null);
@@ -572,8 +574,8 @@ export default function ResultsPage() {
                       {/* Expanded Content */}
                       {isExpanded && (
                         <div className="border-t border-gray-700 p-6 space-y-6">
-                          {/* You Said - Show transcribed answer from backend */}
-                          {results && results.interviewQuestionFeedback[index] && (
+                          {/* You Said - Show transcribed answer from context */}
+                          {(results || hasAnswer) && (
                             <div>
                               <h5 className="text-white font-semibold mb-3 flex items-center gap-2">
                                 <span className="text-lg">💬</span>
@@ -581,22 +583,7 @@ export default function ResultsPage() {
                               </h5>
                               <div className="bg-gray-800 rounded-lg p-4 border-l-4 border-indigo-600">
                                 <p className="text-gray-300 leading-relaxed italic">
-                                  "{results.interviewQuestionFeedback[index].userAnswer || 'No answer recorded'}"
-                                </p>
-                              </div>
-                            </div>
-                          )}
-                          
-                          {/* Your Answer - Only show if we have it (mock data) */}
-                          {hasAnswer && (
-                            <div>
-                              <h5 className="text-white font-semibold mb-3 flex items-center gap-2">
-                                <span className="text-lg">💬</span>
-                                Your Answer
-                              </h5>
-                              <div className="bg-gray-800 rounded-lg p-4 border-l-4 border-indigo-600">
-                                <p className="text-gray-300 leading-relaxed italic">
-                                  "{(item as any).yourAnswer}"
+                                  "{transcripts[index]?.answer || (item as any).yourAnswer || 'No answer recorded'}"
                                 </p>
                               </div>
                             </div>

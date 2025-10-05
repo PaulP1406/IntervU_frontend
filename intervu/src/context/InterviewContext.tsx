@@ -35,7 +35,7 @@ interface InterviewContextType {
   setTranscripts: (transcripts: Array<{ question: string; answer: string }>) => void;
 
   technicalDifficulty: string;
-  
+  setTechnicalDifficulty: (difficulty: string) => void;
 }
 
 const InterviewContext = createContext<InterviewContextType | undefined>(undefined);
@@ -51,6 +51,7 @@ export function InterviewProvider({ children }: { children: ReactNode }) {
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
   const [questions, setQuestions] = useState<InterviewQuestion[]>([]);
   const [transcripts, setTranscripts] = useState<Array<{ question: string; answer: string }>>([]);
+  const [technicalDifficulty, setTechnicalDifficulty] = useState<string>('Medium');
 
   return (
     <InterviewContext.Provider
@@ -75,6 +76,8 @@ export function InterviewProvider({ children }: { children: ReactNode }) {
         setQuestions,
         transcripts,
         setTranscripts,
+        technicalDifficulty,
+        setTechnicalDifficulty,
       }}
     >
       {children}

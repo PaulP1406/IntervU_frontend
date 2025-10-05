@@ -973,18 +973,34 @@ export default function InterviewPage() {
 
                                                 {/* Back of card */}
                                                 <div
-                                                    className="absolute inset-0 bg-gray-900 rounded-lg p-4 flex items-start gap-3 border border-indigo-500/30 backface-hidden"
+                                                    className="absolute inset-0 bg-gray-900 rounded-lg p-6 flex items-center gap-4 border border-indigo-500/30 backface-hidden overflow-hidden"
                                                     style={{
                                                         backfaceVisibility: 'hidden',
                                                         transform: 'rotateX(180deg)'
                                                     }}
                                                 >
-                                                    <div className="w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center flex-shrink-0">
-                                                        <span className="text-white font-bold text-sm">
+                                                    {/* Decorative leaves on back */}
+                                                    <Image
+                                                        src="/leavesLeft.svg"
+                                                        alt=""
+                                                        width={70}
+                                                        height={70}
+                                                        className="absolute left-1 top-1 opacity-20"
+                                                    />
+                                                    <Image
+                                                        src="/leavesRight.svg"
+                                                        alt=""
+                                                        width={70}
+                                                        height={70}
+                                                        className="absolute right-1 bottom-1 opacity-20"
+                                                    />
+                                                    
+                                                    <div className="w-10 h-10 bg-indigo-600 rounded-full flex items-center justify-center flex-shrink-0 z-10">
+                                                        <span className="text-white font-bold text-base">
                                                             {index + 1}
                                                         </span>
                                                     </div>
-                                                    <p className="text-gray-300 text-sm leading-relaxed flex-1">
+                                                    <p className="text-white text-base font-semibold leading-relaxed flex-1 z-10">
                                                         {hint}
                                                     </p>
                                                 </div>

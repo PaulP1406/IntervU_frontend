@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import Editor from "@monaco-editor/react";
+import Image from "next/image";
 import {
     getTechnicalQuestion,
     executeCode,
@@ -83,6 +84,11 @@ export default function TechnicalInterview() {
     const [audioChunks, setAudioChunks] = useState<Blob[]>([]);
     const [hasSuccessfulSubmission, setHasSuccessfulSubmission] = useState(false);
     const [isFinishing, setIsFinishing] = useState(false);
+    const [leftPanelWidth, setLeftPanelWidth] = useState(50); // Percentage
+    const [isDragging, setIsDragging] = useState(false);
+    const [isDraggingModule, setIsDraggingModule] = useState(false);
+    const [modulePosition, setModulePosition] = useState({ x: 0, y: 0 });
+    const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
 
     // Timer effect - start counting when component mounts
     useEffect(() => {
@@ -92,6 +98,74 @@ export default function TechnicalInterview() {
 
         return () => clearInterval(interval);
     }, []);
+
+    // Handle panel resizing
+    const handleMouseDown = () => {
+        setIsDragging(true);
+    };
+
+    useEffect(() => {
+        const handleMouseMove = (e: MouseEvent) => {
+            if (!isDragging) return;
+            
+            const containerWidth = window.innerWidth;
+            const newWidth = (e.clientX / containerWidth) * 100;
+            
+            // Constrain between 30% and 70%
+            if (newWidth >= 30 && newWidth <= 70) {
+                setLeftPanelWidth(newWidth);
+            }
+        };
+
+        const handleMouseUp = () => {
+            setIsDragging(false);
+        };
+
+        if (isDragging) {
+            document.addEventListener('mousemove', handleMouseMove);
+            document.addEventListener('mouseup', handleMouseUp);
+        }
+
+        return () => {
+            document.removeEventListener('mousemove', handleMouseMove);
+            document.removeEventListener('mouseup', handleMouseUp);
+        };
+    }, [isDragging]);
+
+    // Handle AI Interviewer module dragging
+    const handleModuleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+        const rect = e.currentTarget.getBoundingClientRect();
+        setDragOffset({
+            x: e.clientX - rect.left,
+            y: e.clientY - rect.top
+        });
+        setIsDraggingModule(true);
+    };
+
+    useEffect(() => {
+        const handleModuleMouseMove = (e: MouseEvent) => {
+            if (!isDraggingModule) return;
+            
+            setModulePosition({
+                x: e.clientX - dragOffset.x,
+                y: e.clientY - dragOffset.y
+            });
+        };
+
+        const handleModuleMouseUp = () => {
+            setIsDraggingModule(false);
+        };
+
+        if (isDraggingModule) {
+            document.addEventListener('mousemove', handleModuleMouseMove);
+            document.addEventListener('mouseup', handleModuleMouseUp);
+        }
+
+        return () => {
+            document.removeEventListener('mousemove', handleModuleMouseMove);
+            document.removeEventListener('mouseup', handleModuleMouseUp);
+        };
+    }, [isDraggingModule, dragOffset]);
 
     // Create session if one doesn't exist
     useEffect(() => {
@@ -618,9 +692,12 @@ export default function TechnicalInterview() {
             </div>
 
             {/* Main Content - Split Panel */}
-            <div className="flex-1 flex overflow-visible">
+            <div className="flex-1 flex overflow-visible relative">
                 {/* Left Panel - Problem Description */}
-                <div className="w-1/2 border-r border-gray-700 flex flex-col bg-gray-900 overflow-visible">
+                <div 
+                    className="border-r border-gray-700 flex flex-col bg-gray-900 overflow-visible"
+                    style={{ width: `${leftPanelWidth}%` }}
+                >
                     {/* Tabs */}
                     <div className="flex border-b border-gray-700 bg-gray-800">
                         <button
@@ -678,7 +755,30 @@ export default function TechnicalInterview() {
                     </div>
 
                     {/* Tab Content */}
-                    <div className="flex-1 overflow-y-auto p-6">
+                    <div className="flex-1 overflow-y-auto p-6 relative">
+                        {/* Decorative leaves for description */}
+                        {selectedTab === "description" && (
+                            <>
+                                <div className="absolute left-2 top-2 opacity-20 pointer-events-none z-0">
+                                    <Image
+                                        src="/leavesLeft.svg"
+                                        alt=""
+                                        width={120}
+                                        height={120}
+                                    />
+                                </div>
+                                <div className="absolute right-2 bottom-2 opacity-20 pointer-events-none z-0">
+                                    <Image
+                                        src="/leavesRight.svg"
+                                        alt=""
+                                        width={120}
+                                        height={120}
+                                    />
+                                </div>
+                            </>
+                        )}
+                        
+                        <div className="relative z-10">
                         {selectedTab === "description" &&
                             (isCreatingSession ? (
                                 <div className="text-center py-12">
@@ -749,23 +849,28 @@ export default function TechnicalInterview() {
                                     </div>
 
                                     {/* AI Interviewer Section */}
-                                    <div className="space-y-4 mt-6 w-1/2">
-                                        <p className="text-white font-semibold text-lg">
-                                            AI Interviewer
-                                        </p>
-                                        <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
+                                    <div 
+                                        className="fixed z-50 cursor-move shadow-2xl"
+                                        style={{
+                                            left: `${modulePosition.x}px`,
+                                            top: `${modulePosition.y}px`,
+                                            width: '400px'
+                                        }}
+                                        onMouseDown={handleModuleMouseDown}
+                                    >
+                                        <div className="bg-gray-800 rounded-lg p-4 border-2 border-orange-500/50">
                                             <div className="flex items-center gap-3 mb-4">
-                                                <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center">
+                                                <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-amber-600 rounded-full flex items-center justify-center">
                                                     <span className="text-white font-bold text-lg">
                                                         AI
                                                     </span>
                                                 </div>
-                                                <div>
+                                                <div className="flex-1">
                                                     <h3 className="text-white font-semibold">
                                                         InterviewBot
                                                     </h3>
                                                     <p className="text-gray-400 text-sm">
-                                                        Your AI Interviewer
+                                                        Drag to move
                                                     </p>
                                                 </div>
                                             </div>
@@ -836,7 +941,8 @@ export default function TechnicalInterview() {
                                                         isPlaying ||
                                                         isCreatingSession
                                                     }
-                                                    className="px-6 py-3 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg transition-colors disabled:opacity-50 flex items-center gap-2"
+                                                    className="px-6 py-3 bg-gradient-to-br from-orange-500 to-amber-900 hover:from-orange-600 hover:to-amber-950 text-white rounded-lg transition-all disabled:opacity-50 flex items-center gap-2"
+                                                    onMouseDown={(e) => e.stopPropagation()}
                                                 >
                                                     🎤{" "}
                                                     {isCreatingSession
@@ -885,7 +991,7 @@ export default function TechnicalInterview() {
                         {selectedTab === "hints" && (
                             <div className="space-y-4">
                                 <h3 className="text-xl font-bold text-white mb-4">
-                                    💡 Interviewer Hints
+                                    Interviewer Hints
                                 </h3>
                                 {previousHints.length === 0 ? (
                                     <div className="text-center py-12">
@@ -902,15 +1008,33 @@ export default function TechnicalInterview() {
                                         {previousHints.map((hint, index) => (
                                             <div
                                                 key={index}
-                                                className="bg-gray-800 rounded-lg p-4 border border-gray-700 hover:border-green-500 transition-colors"
+                                                className="relative bg-gray-800 rounded-lg p-6 border border-indigo-500/30 hover:border-indigo-500 transition-colors overflow-hidden"
                                             >
-                                                <div className="flex items-start gap-3">
-                                                    <div className="flex-shrink-0 w-8 h-8 bg-yellow-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                                                {/* Decorative leaves */}
+                                                <div className="absolute left-0 top-0 opacity-15 pointer-events-none">
+                                                    <Image
+                                                        src="/leavesLeft.svg"
+                                                        alt=""
+                                                        width={80}
+                                                        height={80}
+                                                    />
+                                                </div>
+                                                <div className="absolute right-0 bottom-0 opacity-15 pointer-events-none">
+                                                    <Image
+                                                        src="/leavesRight.svg"
+                                                        alt=""
+                                                        width={80}
+                                                        height={80}
+                                                    />
+                                                </div>
+                                                
+                                                <div className="flex items-start gap-4 relative z-10">
+                                                    <div className="flex-shrink-0 w-10 h-10 bg-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-base">
                                                         {index + 1}
                                                     </div>
                                                     <div className="flex-1">
                                                         {/* Summary Hint */}
-                                                        <p className="text-gray-300 leading-relaxed mb-3">
+                                                        <p className="text-white font-semibold text-base leading-relaxed mb-3">
                                                             {hint}
                                                         </p>
 
@@ -920,7 +1044,7 @@ export default function TechnicalInterview() {
                                                         ] && (
                                                             <div className="bg-gray-900 rounded-lg p-3 mb-3">
                                                                 <p className="text-gray-400 text-sm mb-2">
-                                                                    💬 Full
+                                                                    Full
                                                                     Response:
                                                                 </p>
                                                                 <p className="text-gray-200 leading-relaxed text-sm">
@@ -979,11 +1103,23 @@ export default function TechnicalInterview() {
                                 )}
                             </div>
                         )}
+                        </div>
                     </div>
                 </div>
 
+                {/* Draggable Divider */}
+                <div
+                    onMouseDown={handleMouseDown}
+                    className={`w-1 bg-gray-700 hover:bg-blue-500 cursor-col-resize transition-colors relative z-10 ${
+                        isDragging ? 'bg-blue-500' : ''
+                    }`}
+                    style={{ minWidth: '4px' }}
+                >
+                    <div className="absolute inset-y-0 -left-1 -right-1" />
+                </div>
+
                 {/* Right Panel - Code Editor */}
-                <div className="w-1/2 flex flex-col bg-gray-900">
+                <div className="flex-1 flex flex-col bg-gray-900">
                     {/* Language Selector and Actions */}
                     <div className="flex items-center justify-between bg-gray-800 border-b border-gray-700 px-4 py-2">
                         <select
@@ -1107,23 +1243,23 @@ export default function TechnicalInterview() {
                             <button
                                 onClick={handleRunCode}
                                 disabled={isRunning || !problem}
-                                className="px-6 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-md transition-colors disabled:opacity-50"
+                                className="px-6 py-2 bg-gradient-to-br from-orange-500 to-amber-900 hover:from-orange-600 hover:to-amber-950 text-white rounded-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {isRunning ? "Running..." : "▶ Run"}
                             </button>
                             <button
                                 onClick={handleSubmit}
                                 disabled={isRunning || !problem}
-                                className="px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-md transition-colors disabled:opacity-50"
+                                className="px-6 py-2 bg-gradient-to-br from-orange-500 to-amber-900 hover:from-orange-600 hover:to-amber-950 text-white font-semibold rounded-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 Submit
                             </button>
                             <button
                                 onClick={handleFinishInterview}
                                 disabled={!hasSuccessfulSubmission || isFinishing}
-                                className={`px-6 py-2 font-semibold rounded-md transition-colors ${
+                                className={`px-6 py-2 font-semibold rounded-md transition-all ${
                                     hasSuccessfulSubmission
-                                        ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                                        ? 'bg-gradient-to-br from-orange-500 to-amber-900 hover:from-orange-600 hover:to-amber-950 text-white'
                                         : 'bg-gray-600 text-gray-400 cursor-not-allowed'
                                 } disabled:opacity-50`}
                                 title={!hasSuccessfulSubmission ? 'Complete at least one successful submission first' : 'Finish interview and see results'}

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useInterview } from '@/context/InterviewContext';
 import { createInterviewSession, getInterviewQuestions } from '@/lib/api';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 // Define available interview topics
 const INTERVIEW_TOPICS = [
@@ -181,7 +182,17 @@ export default function TopicsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 py-12 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 py-12 px-4 relative">
+      {/* Loading Overlay */}
+      {isCreatingSession && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
+          <LoadingSpinner 
+            message="Creating your interview session..."
+            size="large"
+          />
+        </div>
+      )}
+
       <div className="container mx-auto max-w-6xl">
         {/* Header */}
         <div className="mb-12 text-center">

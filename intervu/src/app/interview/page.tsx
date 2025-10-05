@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
 import { useInterview } from '@/context/InterviewContext';
 import { getInterviewFeedback } from '@/lib/api';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 // Mock questions - will be replaced with backend data
 const MOCK_QUESTIONS = [
@@ -504,7 +505,17 @@ export default function InterviewPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 p-6 relative">
+      {/* Loading Overlay */}
+      {(isTranscribing || isSubmitting) && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
+          <LoadingSpinner 
+            message={isSubmitting ? 'Submitting your interview...' : 'Transcribing your answer...'}
+            size="large"
+          />
+        </div>
+      )}
+
       {/* Header */}
       <div className="max-w-7xl mx-auto mb-6">
         <div className="flex items-center justify-between">

@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import Editor from '@monaco-editor/react';
 import { getTechnicalQuestion, executeCode, getHint, type TechnicalQuestion, type ExecuteCodeResponse } from '@/lib/api';
 import { useInterview } from '@/context/InterviewContext';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 // Generate starter code based on function name
 const getStarterCode = (language: string, functionName: string) => {
@@ -189,7 +190,21 @@ export default function TechnicalInterview() {
   };
 
   return (
-    <div className="h-screen bg-gray-900 flex flex-col">
+    <div className="h-screen bg-gray-900 flex flex-col relative">
+      {/* Loading Overlay */}
+      {(isLoading || isRunning || isGettingHint) && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
+          <LoadingSpinner 
+            message={
+              isLoading ? 'Loading technical question...' :
+              isRunning ? 'Executing your code...' :
+              'Getting hint...'
+            }
+            size="large"
+          />
+        </div>
+      )}
+
       {/* Header */}
       <div className="bg-gray-800 border-b border-gray-700 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-4">

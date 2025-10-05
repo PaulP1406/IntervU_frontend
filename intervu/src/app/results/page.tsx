@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import type { FeedbackResponse } from '@/lib/api';
 import { useInterview } from '@/context/InterviewContext';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 // Mock data - will be replaced with backend response
 const MOCK_RESULTS = {
@@ -269,9 +270,11 @@ export default function ResultsPage() {
         </div>
 
         {isLoading ? (
-          <div className="text-center py-20">
-            <div className="inline-block animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-600"></div>
-            <p className="text-slate-300 text-lg mt-6">Analyzing your responses...</p>
+          <div className="flex items-center justify-center py-32">
+            <LoadingSpinner 
+              message="Analyzing your interview responses..."
+              size="large"
+            />
           </div>
         ) : (
           <>

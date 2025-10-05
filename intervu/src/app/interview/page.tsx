@@ -7,6 +7,7 @@ import { getInterviewFeedback } from '@/lib/api';
 import Header from '@/components/Header';
 import { INTERVIEWER_VOICE } from '@/lib/constants';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import Image from 'next/image';
 
 // Mock questions - will be replaced with backend data
 const MOCK_QUESTIONS = [
@@ -103,12 +104,28 @@ export default function InterviewPage() {
     const [displayedQuestion, setDisplayedQuestion] = useState("");
     const [autoStartTimer, setAutoStartTimer] = useState(10);
     const [showTimerWarning, setShowTimerWarning] = useState(false);
+    const [raccoonFrame, setRaccoonFrame] = useState<'silent' | 'speaking'>('silent');
 
     // Use questions from context if available, otherwise use mock
     const questions =
         contextQuestions.length > 0 ? contextQuestions : MOCK_QUESTIONS;
     const currentQuestion = questions[currentQuestionIndex];
     const isLastQuestion = currentQuestionIndex === questions.length - 1;
+
+    // Animate raccoon when speaking
+    useEffect(() => {
+        if (!isSpeaking) {
+            setRaccoonFrame('silent');
+            return;
+        }
+
+        // Alternate between silent and speaking frames every 300ms
+        const interval = setInterval(() => {
+            setRaccoonFrame(prev => prev === 'silent' ? 'speaking' : 'silent');
+        }, 300);
+
+        return () => clearInterval(interval);
+    }, [isSpeaking]);
 
     // Initialize camera
     useEffect(() => {
@@ -668,14 +685,18 @@ export default function InterviewPage() {
                     {/* AI Interviewer */}
                     <div className="bg-gray-800 rounded-2xl p-6 shadow-xl border border-gray-700">
                         <div className="flex items-center gap-3 mb-4">
-                            <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center">
-                                <span className="text-white font-bold text-lg">
-                                    AI
-                                </span>
+                            <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-amber-900 rounded-full flex items-center justify-center overflow-hidden">
+                                <Image
+                                    src="/raccoonSmile.svg"
+                                    alt="InterviewBot"
+                                    width={30}
+                                    height={30}
+                                    className='mt-3'
+                                />
                             </div>
                             <div>
                                 <h3 className="text-white font-semibold">
-                                    InterviewBot
+                                    Ryan the raccoon
                                 </h3>
                                 <p className="text-gray-400 text-sm">
                                     Your AI Interviewer
@@ -684,12 +705,18 @@ export default function InterviewPage() {
                         </div>
 
                         {/* Mascot/Avatar Area */}
-                        <div className="relative aspect-video bg-gradient-to-br from-indigo-900 to-purple-900 rounded-lg overflow-hidden mb-4">
+                        <div className="relative aspect-video bg-gradient-to-br from-indigo-500 to-purple-900 rounded-lg overflow-hidden mb-4">
                             {/* Simple animated mascot */}
                             <div className="absolute inset-0 flex items-center justify-center">
                                 <div className="text-center">
                                     <div className="w-32 h-32 mx-auto bg-gradient-to-br from-indigo-400 to-purple-500 rounded-full flex items-center justify-center mb-4 shadow-lg">
-                                        <span className="text-6xl">🤖</span>
+                                        <Image
+                                            src={raccoonFrame === 'speaking' ? '/raccoonCircleEyesSpeaking 2.svg' : '/raccoonCircleEyesSilent 1.svg'}
+                                            alt="AI Interviewer"
+                                            width={96}
+                                            height={96}
+                                            className="transition-opacity duration-150 mt-8"
+                                        />
                                     </div>
                                     <div className="space-y-2">
                                         <div

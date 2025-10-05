@@ -624,6 +624,12 @@ export default function ResultsPage() {
             {/* Action Buttons */}
             <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
           <button
+            onClick={() => router.push('/technical')}
+            className="px-8 py-4 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
+          >
+            💻 Start Technical Interview
+          </button>
+          <button
             onClick={() => router.push('/upload')}
             className="px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
           >

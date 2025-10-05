@@ -14,10 +14,10 @@ export default function LoadingSpinner({
 
   // Animation frames in sequence
   const frames = [
-    '/trashcanclosed.svg',
-    '/trashcanmiddle.svg',
+    '/trashcanClosed.svg',
+    '/trashcanMiddle.svg',
     '/trashcan.svg',
-    '/trashcanmiddle.svg'
+    '/trashcanMiddle.svg'
   ];
 
   // Cycle through frames

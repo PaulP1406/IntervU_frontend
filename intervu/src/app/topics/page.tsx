@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useInterview } from '@/context/InterviewContext';
+import { createInterviewSession } from '@/lib/api';
 
 // Define available interview topics
 const INTERVIEW_TOPICS = [
@@ -60,7 +62,9 @@ const MAX_SELECTIONS = 3;
 
 export default function TopicsPage() {
   const router = useRouter();
+  const { resumeText, jobTitle, jobInfo, companyName, additionalInfo, setSelectedTopics: setContextTopics, setSessionId } = useInterview();
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
+  const [isCreatingSession, setIsCreatingSession] = useState(false);
 
   const handleTopicToggle = (topicId: string) => {
     if (selectedTopics.includes(topicId)) {
@@ -72,27 +76,91 @@ export default function TopicsPage() {
     }
   };
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
     if (selectedTopics.length === 0) {
       alert('Please select at least one topic or click "Random Selection"');
       return;
     }
 
-    // TODO: Store selected topics and navigate to waiting room
-    console.log('Selected topics:', selectedTopics);
-    router.push('/waiting-room');
+    // Get selected topic titles
+    const topicTitles = selectedTopics.map(id => {
+      const topic = INTERVIEW_TOPICS.find(t => t.id === id);
+      return topic ? topic.title : '';
+    }).filter(Boolean);
+
+    // Save topics to context
+    setContextTopics(topicTitles);
+
+    // Create interview session with backend
+    setIsCreatingSession(true);
+    try {
+      const sessionData = {
+        sessionId: Date.now(), // Use timestamp as unique session ID
+        parsedResumeText: resumeText,
+        jobTitle: jobTitle,
+        jobInfo: jobInfo,
+        companyName: companyName || undefined,
+        additionalInfo: additionalInfo || undefined,
+        behaviouralTopics: topicTitles,
+      };
+
+      console.log('Creating interview session:', sessionData);
+      
+      const response = await createInterviewSession(sessionData);
+      setSessionId(response.sessionId);
+      
+      console.log('Session created successfully:', response.sessionId);
+      console.log('Selected topics:', topicTitles);
+      
+      router.push('/waiting-room');
+    } catch (error) {
+      console.error('Failed to create session:', error);
+      alert('Failed to create interview session. Please try again.');
+    } finally {
+      setIsCreatingSession(false);
+    }
   };
 
-  const handleRandomSelection = () => {
+  const handleRandomSelection = async () => {
     // Randomly select 3 topics
     const shuffled = [...INTERVIEW_TOPICS].sort(() => 0.5 - Math.random());
     const randomTopics = shuffled.slice(0, MAX_SELECTIONS).map(t => t.id);
     setSelectedTopics(randomTopics);
     
     // Auto-proceed after short delay to show selection
-    setTimeout(() => {
-      console.log('Randomly selected topics:', randomTopics);
-      router.push('/waiting-room');
+    setTimeout(async () => {
+      const topicTitles = randomTopics.map(id => {
+        const topic = INTERVIEW_TOPICS.find(t => t.id === id);
+        return topic ? topic.title : '';
+      }).filter(Boolean);
+
+      setContextTopics(topicTitles);
+
+      // Create session
+      setIsCreatingSession(true);
+      try {
+        const sessionData = {
+          sessionId: Date.now(),
+          parsedResumeText: resumeText,
+          jobTitle: jobTitle,
+          jobInfo: jobInfo,
+          companyName: companyName || undefined,
+          additionalInfo: additionalInfo || undefined,
+          behaviouralTopics: topicTitles,
+        };
+
+        const response = await createInterviewSession(sessionData);
+        setSessionId(response.sessionId);
+        
+        console.log('Randomly selected topics:', topicTitles);
+        console.log('Session created:', response.sessionId);
+        
+        router.push('/waiting-room');
+      } catch (error) {
+        console.error('Failed to create session:', error);
+        alert('Failed to create interview session. Please try again.');
+        setIsCreatingSession(false);
+      }
     }, 800);
   };
 
@@ -169,16 +237,16 @@ export default function TopicsPage() {
 
           <button
             onClick={handleContinue}
-            disabled={selectedTopics.length === 0}
+            disabled={selectedTopics.length === 0 || isCreatingSession}
             className={`
               w-full sm:w-auto px-12 py-4 text-lg font-semibold rounded-lg shadow-lg transition-all duration-200 transform hover:scale-105
-              ${selectedTopics.length === 0
+              ${selectedTopics.length === 0 || isCreatingSession
                 ? 'bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed'
                 : 'bg-indigo-600 hover:bg-indigo-700 text-white'
               }
             `}
           >
-            Continue →
+            {isCreatingSession ? 'Creating Session...' : 'Continue →'}
           </button>
         </div>
 

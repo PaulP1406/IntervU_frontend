@@ -2,6 +2,8 @@
 
 import { useRouter } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
+import { useInterview } from '@/context/InterviewContext';
+import { getInterviewFeedback } from '@/lib/api';
 
 // Mock questions - will be replaced with backend data
 const MOCK_QUESTIONS = [
@@ -64,25 +66,27 @@ const MOCK_QUESTIONS = [
 
 export default function InterviewPage() {
   const router = useRouter();
+  const { sessionId, questions: contextQuestions, setTranscripts: setContextTranscripts } = useInterview();
   const videoRef = useRef<HTMLVideoElement>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [timeRemaining, setTimeRemaining] = useState(MOCK_QUESTIONS[0].timeLimit);
+  const [timeRemaining, setTimeRemaining] = useState(120); // Default 2 minutes
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [showHints, setShowHints] = useState(false);
   const [questionTranscripts, setQuestionTranscripts] = useState<{
-    questionId: number;
     question: string;
-    transcript: string;
-    audioBlob?: Blob;
+    answer: string;
   }[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const currentQuestion = MOCK_QUESTIONS[currentQuestionIndex];
-  const isLastQuestion = currentQuestionIndex === MOCK_QUESTIONS.length - 1;
+  // Use questions from context if available, otherwise use mock
+  const questions = contextQuestions.length > 0 ? contextQuestions : MOCK_QUESTIONS;
+  const currentQuestion = questions[currentQuestionIndex];
+  const isLastQuestion = currentQuestionIndex === questions.length - 1;
 
   // Initialize camera
   useEffect(() => {
@@ -169,47 +173,41 @@ export default function InterviewPage() {
         if (data.success) {
           const whisperTranscript = data.transcript;
           
-          // Save transcript and audio for this question
+          // Save transcript in backend API format
           setQuestionTranscripts(prev => [
             ...prev,
             {
-              questionId: currentQuestion.id,
               question: currentQuestion.question,
-              transcript: whisperTranscript,
-              audioBlob: audioBlob
+              answer: whisperTranscript
             }
           ]);
           
           console.log('Question answered:', {
-            questionId: currentQuestion.id,
-            transcript: whisperTranscript,
+            question: currentQuestion.question,
+            answer: whisperTranscript,
             audioSize: audioBlob.size
           });
         } else {
           console.error('Transcription failed:', data.error);
           
-          // Save with empty transcript if transcription fails
+          // Save with placeholder if transcription fails
           setQuestionTranscripts(prev => [
             ...prev,
             {
-              questionId: currentQuestion.id,
               question: currentQuestion.question,
-              transcript: '[Transcription failed - audio saved]',
-              audioBlob: audioBlob
+              answer: '[Transcription failed - please answer verbally]'
             }
           ]);
         }
       } catch (error) {
         console.error('Error calling transcription API:', error);
         
-        // Save with empty transcript if API call fails
+        // Save with placeholder if API call fails
         setQuestionTranscripts(prev => [
           ...prev,
           {
-            questionId: currentQuestion.id,
             question: currentQuestion.question,
-            transcript: '[Transcription failed - audio saved]',
-            audioBlob: audioBlob
+            answer: '[Transcription failed - please answer verbally]'
           }
         ]);
       }
@@ -219,7 +217,7 @@ export default function InterviewPage() {
     mediaRecorderRef.current = mediaRecorder;
 
     setIsRecording(true);
-    console.log('Started recording audio for question:', currentQuestion.id);
+    console.log('Started recording audio for question:', currentQuestion.question);
   };
 
   const handlePauseRecording = () => {
@@ -253,7 +251,7 @@ export default function InterviewPage() {
       handleSubmitInterview();
     } else {
       setCurrentQuestionIndex(prev => prev + 1);
-      setTimeRemaining(MOCK_QUESTIONS[currentQuestionIndex + 1].timeLimit);
+      setTimeRemaining(120); // Default 2 minutes
       setIsRecording(false);
       setIsPaused(false);
       setShowHints(false);
@@ -263,31 +261,65 @@ export default function InterviewPage() {
   const handlePreviousQuestion = () => {
     if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex(prev => prev - 1);
-      setTimeRemaining(MOCK_QUESTIONS[currentQuestionIndex - 1].timeLimit);
+      setTimeRemaining(120); // Default 2 minutes
       setIsRecording(false);
       setIsPaused(false);
-      setShowHints(false); // Reset hints for new question
+      setShowHints(false);
     }
   };
 
-  const handleSubmitInterview = () => {
+  const handleSubmitInterview = async () => {
     // Stop any ongoing recording
     if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
       mediaRecorderRef.current.stop();
+      // Wait a bit for the recording to process
+      await new Promise(resolve => setTimeout(resolve, 1000));
     }
 
     console.log('Interview completed! Submitting all answers...');
     console.log('All transcripts:', questionTranscripts);
-    
-    // TODO: Send transcripts to backend for analysis
-    // Format: { questionId, question, transcript, audioBlob }
-    
-    // Cleanup
-    if (stream) {
-      stream.getTracks().forEach(track => track.stop());
+
+    // Save transcripts to context
+    setContextTranscripts(questionTranscripts);
+
+    // Send to backend for feedback
+    if (sessionId && questionTranscripts.length > 0) {
+      setIsSubmitting(true);
+      try {
+        console.log('Sending to backend:', {
+          sessionId,
+          interviewQuestionsWithAnswers: questionTranscripts
+        });
+
+        const feedback = await getInterviewFeedback({
+          sessionId,
+          interviewQuestionsWithAnswers: questionTranscripts
+        });
+
+        console.log('Received feedback:', feedback);
+
+        // Store feedback in localStorage to pass to results page
+        localStorage.setItem('interviewFeedback', JSON.stringify(feedback));
+
+        // Cleanup
+        if (stream) {
+          stream.getTracks().forEach(track => track.stop());
+        }
+
+        router.push('/results');
+      } catch (error) {
+        console.error('Failed to get feedback:', error);
+        alert('Failed to get interview feedback. Please try again.');
+        setIsSubmitting(false);
+      }
+    } else {
+      console.warn('No session ID or transcripts available');
+      // Cleanup
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+      }
+      router.push('/results');
     }
-    
-    router.push('/results');
   };
 
   const formatTime = (seconds: number) => {
@@ -467,7 +499,7 @@ export default function InterviewPage() {
 
             {showHints ? (
               <div className="space-y-3">
-                {currentQuestion.hints.map((hint, index) => (
+                {(currentQuestion as any).hints?.map((hint: string, index: number) => (
                   <div
                     key={index}
                     className="flex items-start gap-3 bg-gray-900 rounded-lg p-4 border border-indigo-500/30"
@@ -477,7 +509,11 @@ export default function InterviewPage() {
                     </div>
                     <p className="text-gray-300 text-sm leading-relaxed">{hint}</p>
                   </div>
-                ))}
+                )) || (
+                  <div className="text-center py-4">
+                    <p className="text-gray-400 text-sm">No hints available for this question</p>
+                  </div>
+                )}
               </div>
             ) : (
               <div className="text-center py-8">
@@ -488,63 +524,61 @@ export default function InterviewPage() {
             )}
           </div>
 
-          {/* Progress & Navigation */}
-          <div className="bg-gray-800 rounded-2xl p-6 shadow-xl border border-gray-700">
-            {/* Progress */}
-            <div className="mb-6">
-              <div className="flex justify-between text-sm text-gray-400 mb-2">
-                <span>Progress</span>
-                <span>{Math.round(((currentQuestionIndex + 1) / MOCK_QUESTIONS.length) * 100)}%</span>
+            {/* Progress & Navigation */}
+            <div className="bg-gray-800 rounded-2xl p-6 shadow-xl border border-gray-700">
+              {/* Progress */}
+              <div className="mb-6">
+                <div className="flex justify-between text-sm text-gray-400 mb-2">
+                  <span>Progress</span>
+                  <span>{Math.round(((currentQuestionIndex + 1) / questions.length) * 100)}%</span>
+                </div>
+                <div className="w-full bg-gray-700 rounded-full h-2">
+                  <div 
+                    className="bg-indigo-600 h-2 rounded-full transition-all duration-300"
+                    style={{ width: `${((currentQuestionIndex + 1) / questions.length) * 100}%` }}
+                  ></div>
+                </div>
               </div>
-              <div className="w-full bg-gray-700 rounded-full h-2">
-                <div 
-                  className="bg-indigo-600 h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${((currentQuestionIndex + 1) / MOCK_QUESTIONS.length) * 100}%` }}
-                ></div>
-              </div>
-            </div>
 
-            {/* Question List */}
-            <div className="mb-6">
-              <h4 className="text-white font-semibold mb-3 text-sm">Questions</h4>
-              <div className="space-y-2">
-                {MOCK_QUESTIONS.map((q, index) => (
-                  <div
-                    key={q.id}
-                    className={`flex items-center gap-2 text-sm ${
-                      index === currentQuestionIndex
-                        ? 'text-indigo-400 font-semibold'
-                        : index < currentQuestionIndex
-                        ? 'text-green-400'
-                        : 'text-gray-500'
-                    }`}
-                  >
-                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs flex-shrink-0 ${
-                      index === currentQuestionIndex
-                        ? 'bg-indigo-600 text-white'
-                        : index < currentQuestionIndex
-                        ? 'bg-green-600 text-white'
-                        : 'bg-gray-700 text-gray-400'
-                    }`}>
-                      {index < currentQuestionIndex ? '✓' : index + 1}
+              {/* Question List */}
+              <div className="mb-6">
+                <h4 className="text-white font-semibold mb-3 text-sm">Questions</h4>
+                <div className="space-y-2">
+                  {questions.map((q, index) => (
+                    <div
+                      key={index}
+                      className={`flex items-center gap-2 text-sm ${
+                        index === currentQuestionIndex
+                          ? 'text-indigo-400 font-semibold'
+                          : index < currentQuestionIndex
+                          ? 'text-green-400'
+                          : 'text-gray-500'
+                      }`}
+                    >
+                      <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs flex-shrink-0 ${
+                        index === currentQuestionIndex
+                          ? 'bg-indigo-600 text-white'
+                          : index < currentQuestionIndex
+                          ? 'bg-green-600 text-white'
+                          : 'bg-gray-700 text-gray-400'
+                      }`}>
+                        {index < currentQuestionIndex ? '✓' : index + 1}
+                      </div>
+                      <span className="truncate">{q.topic}</span>
                     </div>
-                    <span className="truncate">{q.topic}</span>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
 
-            {/* Navigation */}
-            <div className="space-y-3">
-              <button
-                onClick={handleNextQuestion}
-                disabled={!isRecording}
-                className="w-full px-6 py-3 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-30 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors"
-              >
-                {isLastQuestion ? '✓ Submit Interview' : 'Next Question →'}
-              </button>
-              
-              <button
+              {/* Navigation */}
+              <div className="space-y-3">
+                <button
+                  onClick={handleNextQuestion}
+                  disabled={!isRecording || isSubmitting}
+                  className="w-full px-6 py-3 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-30 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors"
+                >
+                  {isSubmitting ? 'Submitting...' : isLastQuestion ? '✓ Submit Interview' : 'Next Question →'}
+                </button>              <button
                 onClick={handlePreviousQuestion}
                 disabled={currentQuestionIndex === 0}
                 className="w-full px-6 py-2 text-gray-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors text-sm"

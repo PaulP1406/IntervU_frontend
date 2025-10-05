@@ -3,9 +3,12 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useInterview } from '@/context/InterviewContext';
 
 export default function UploadPage() {
   const router = useRouter();
+  const { setResumeText: setContextResumeText, setJobTitle: setContextJobTitle, setJobInfo, setCompanyName: setContextCompanyName, setAdditionalInfo } = useInterview();
+  
   const [formData, setFormData] = useState({
     companyName: '',
     jobTitle: '',
@@ -105,16 +108,27 @@ export default function UploadPage() {
       alert('Please upload your resume');
       return;
     }
-    if (!formData.companyName || !formData.jobTitle) {
+    if (!formData.companyName || !formData.jobTitle || !formData.jobDescription) {
       alert('Please fill in all required fields');
       return;
     }
 
-    // TODO: Handle form submission (upload resume, save data)
-    console.log('Form submitted:', { 
-      formData, 
-      resumeFile,
-      resumeText // This is the parsed PDF text as a single string
+    // Save data to context
+    setContextResumeText(resumeText);
+    setContextJobTitle(formData.jobTitle);
+    setJobInfo(formData.jobDescription);
+    setContextCompanyName(formData.companyName);
+    
+    // Combine location and experience level as additional info
+    const additionalInfoText = `Location: ${formData.location || 'Not specified'}. Experience Level: ${formData.experienceLevel || 'Not specified'}.`;
+    setAdditionalInfo(additionalInfoText);
+    
+    console.log('Form data saved to context:', { 
+      resumeText,
+      jobTitle: formData.jobTitle,
+      jobInfo: formData.jobDescription,
+      companyName: formData.companyName,
+      additionalInfo: additionalInfoText
     });
     
     // Navigate to topics selection page

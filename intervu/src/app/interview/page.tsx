@@ -176,8 +176,6 @@ export default function InterviewPage() {
         if (data.success) {
           const whisperTranscript = data.transcript;
           
-          console.log('✅ [TRANSCRIPTION] Success! Length:', whisperTranscript.length, 'chars');
-          
           // Save transcript in backend API format
           const newTranscript = {
             question: currentQuestion.question,
@@ -189,23 +187,13 @@ export default function InterviewPage() {
           
           setQuestionTranscripts(prev => {
             const updated = [...prev, newTranscript];
-            console.log('📝 [SAVED] Total transcripts:', updated.length);
-            console.log('📝 [REF] Total in ref:', transcriptsRef.current.length);
             return updated;
-          });
-          
-          console.log('📋 [QUESTION] Answered:', {
-            questionNumber: currentQuestionIndex + 1,
-            question: currentQuestion.question,
-            answerLength: whisperTranscript.length,
-            audioSize: audioBlob.size
           });
           
           setIsTranscribing(false);
           setIsReadyToAdvance(true);
-          console.log('✅ [READY] User can now advance to next question');
         } else {
-          console.error('❌ [ERROR] Transcription failed:', data.error);
+          console.error('Transcription failed:', data.error);
           
           const placeholderTranscript = {
             question: currentQuestion.question,
@@ -223,10 +211,9 @@ export default function InterviewPage() {
           
           setIsTranscribing(false);
           setIsReadyToAdvance(true);
-          console.log('⚠️ [READY] Transcription failed but user can advance');
         }
       } catch (error) {
-        console.error('❌ [ERROR] Error calling transcription API:', error);
+        console.error('Error calling transcription API:', error);
         
         const placeholderTranscript = {
           question: currentQuestion.question,
@@ -244,7 +231,6 @@ export default function InterviewPage() {
         
         setIsTranscribing(false);
         setIsReadyToAdvance(true);
-        console.log('⚠️ [READY] API error but user can advance');
       }
     };
     
@@ -268,15 +254,11 @@ export default function InterviewPage() {
   const handleNextQuestion = async () => {
     if (!isReadyToAdvance) return;
     
-    console.log('➡️ [NEXT] User clicked next/submit button');
-    
     if (isLastQuestion) {
       // Submit interview
-      console.log('🏁 [SUBMIT] Last question - submitting interview');
       await handleSubmitInterview();
     } else {
       // Go to next question
-      console.log('📄 [NEXT] Moving to next question');
       setCurrentQuestionIndex(prev => prev + 1);
       setTimeRemaining(120);
       setShowHints(false);
@@ -299,18 +281,11 @@ export default function InterviewPage() {
     if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
       mediaRecorderRef.current.stop();
       // Wait for transcription to complete
-      console.log('⏳ [SUBMIT] Waiting for transcription to complete...');
       await new Promise(resolve => setTimeout(resolve, 3000));
     }
 
     // Use ref to get the latest transcripts (not stale state)
     const finalTranscripts = transcriptsRef.current.length > 0 ? transcriptsRef.current : questionTranscripts;
-    
-    console.log('📝 [INTERVIEW] Interview completed! Submitting all answers...');
-    console.log('📊 [STATS] Transcripts from ref:', transcriptsRef.current.length);
-    console.log('📊 [STATS] Transcripts from state:', questionTranscripts.length);
-    console.log('📊 [STATS] Using transcripts:', finalTranscripts.length);
-    console.log('📋 [ALL TRANSCRIPTS]:', JSON.stringify(finalTranscripts, null, 2));
 
     // Save transcripts to context
     setContextTranscripts(finalTranscripts);
@@ -319,12 +294,6 @@ export default function InterviewPage() {
     if (sessionId && finalTranscripts.length > 0) {
       setIsSubmitting(true);
       try {
-        console.log('🚀 [API] Sending to backend...');
-        console.log('📦 [PAYLOAD]:', JSON.stringify({
-          sessionId,
-          interviewQuestionsWithAnswers: finalTranscripts
-        }, null, 2));
-
         const feedback = await getInterviewFeedback({
           sessionId,
           interviewQuestionsWithAnswers: finalTranscripts

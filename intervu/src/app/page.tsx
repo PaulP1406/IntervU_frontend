@@ -48,7 +48,7 @@ export default function Home() {
 
           {/* CTA Button */}
           <Link
-            href="/upload"
+            href="/instructions"
             className="inline-block bg-indigo-600 hover:bg-indigo-700 text-white text-xl font-semibold px-12 py-4 rounded-full shadow-lg transition-all duration-200 transform hover:scale-105"
           >
             Try It Out

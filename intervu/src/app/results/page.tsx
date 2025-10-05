@@ -348,11 +348,11 @@ export default function ResultsPage() {
                     
                     {/* Labels */}
                     <div className="flex justify-between text-xs text-gray-400 mt-2 px-2">
-                      <span>30% says NO</span>
+                      <span></span>
                       <span className={`font-bold ${hiringCategory.color}`}>
                         {hiringProbability}%
                       </span>
-                      <span>70% says YES</span>
+                      <span></span>
                     </div>
                   </div>
 
@@ -393,83 +393,7 @@ export default function ResultsPage() {
 
         {/* Overview Tab */}
         {activeTab === 'overview' && (
-          <div className="space-y-6">
-            {/* Overall Performance Summary */}
-            <div className="bg-gray-800 rounded-2xl p-6 shadow-xl border border-gray-700">
-              <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                <span className="text-2xl">�</span>
-                Performance Summary
-              </h3>
-              <div className="space-y-4">
-                {results ? (
-                  results.interviewQuestionFeedback.map((qf, index) => (
-                    <div key={index} className="bg-gray-900 rounded-lg p-4 border border-gray-700">
-                      <div className="flex items-start justify-between mb-3">
-                        <h4 className="text-white font-semibold flex-1">Question {index + 1}</h4>
-                        <span className={`text-xl font-bold ${getScoreColor(qf.score)} ml-2`}>
-                          {qf.score}/10
-                        </span>
-                      </div>
-                      <p className="text-gray-400 text-sm mb-3 italic">"{qf.question}"</p>
-                      
-                      {/* User's Answer */}
-                      {qf.userAnswer && (
-                        <div className="mb-3 bg-gray-800 rounded-lg p-3 border-l-4 border-indigo-600">
-                          <h5 className="text-indigo-400 font-semibold text-xs mb-2">💬 You said:</h5>
-                          <p className="text-gray-300 text-sm italic">"{qf.userAnswer}"</p>
-                        </div>
-                      )}
-                      
-                      {/* Strengths */}
-                      <div className="mb-3">
-                        <h5 className="text-green-400 font-semibold text-sm mb-2">✅ Strengths:</h5>
-                        {qf.strengths.length > 0 && qf.strengths[0] !== "No strengths demonstrated - the response was inappropriate." ? (
-                          <ul className="space-y-1">
-                            {qf.strengths.map((strength, idx) => (
-                              <li key={idx} className="text-gray-300 text-sm flex items-start gap-2">
-                                <span className="text-green-400 mt-1">•</span>
-                                <span>{strength}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        ) : (
-                          <p className="text-gray-500 text-sm italic">No strengths identified for this response.</p>
-                        )}
-                      </div>
-                      
-                      {/* Areas for Improvement */}
-                      <div>
-                        <h5 className="text-yellow-400 font-semibold text-sm mb-2">💡 Areas to Improve:</h5>
-                        {qf.areasForImprovement.length > 0 ? (
-                          <ul className="space-y-1">
-                            {qf.areasForImprovement.map((improvement, idx) => (
-                              <li key={idx} className="text-gray-300 text-sm flex items-start gap-2">
-                                <span className="text-yellow-400 mt-1">•</span>
-                                <span>{improvement}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        ) : (
-                          <p className="text-gray-500 text-sm italic">No areas for improvement identified.</p>
-                        )}
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  MOCK_RESULTS.strengths.map((strength, index) => (
-                    <div key={index} className="bg-gray-900 rounded-lg p-4 border border-green-500/30">
-                      <div className="flex items-center justify-between mb-2">
-                        <h4 className="text-white font-semibold">{strength.category}</h4>
-                        <span className={`text-xl font-bold ${getScoreColor(strength.score)}`}>
-                          {strength.score}/10
-                        </span>
-                      </div>
-                      <p className="text-gray-400 text-sm">{strength.feedback}</p>
-                    </div>
-                  ))
-                )}
-              </div>
-            </div>
+          <div className="space-y-6">         
 
             {/* Key Takeaways */}
             <div className="bg-gray-800 rounded-2xl p-6 shadow-xl border border-gray-700">
@@ -704,15 +628,6 @@ export default function ResultsPage() {
             className="px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
           >
             🔄 Try Another Interview
-          </button>
-          <button
-            onClick={() => {
-              // TODO: Implement download/share functionality
-              console.log('Download report');
-            }}
-            className="px-8 py-4 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
-          >
-            📥 Download Report
           </button>
           <button
             onClick={() => router.push('/')}

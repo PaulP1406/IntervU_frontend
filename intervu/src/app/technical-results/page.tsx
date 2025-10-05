@@ -69,44 +69,62 @@ export default function TechnicalResultsPage() {
     }
 
     return (
-        <div className="min-h-screen bg-[#0a0a0f] pt-24">
+        <div className="min-h-screen bg-[#0a0a0f] pt-24 sm:pt-28 md:pt-32">
             <Header />
             
-            <div className="py-12 px-8 relative">
+            <div className="py-6 md:py-12 px-4 md:px-8 relative">
                 {/* Left Leaves */}
                 <img 
                     src="/leavesLeft.svg"
                     alt="Decorative leaves"
-                    className="absolute left-0 top-0 h-auto pointer-events-none"
-                    style={{ width: '15%' }}
+                    className="absolute left-0 top-0 h-auto pointer-events-none w-[10%] md:w-[15%]"
                 />
                 
                 {/* Right Leaves */}
                 <img 
                     src="/leavesRight.svg"
                     alt="Decorative leaves"
-                    className="absolute right-0 top-0 h-auto pointer-events-none"
-                    style={{ width: '15%' }}
+                    className="absolute right-0 top-0 h-auto pointer-events-none w-[10%] md:w-[15%]"
                 />
                 
                 <div className="max-w-6xl mx-auto relative z-10">
                     {/* Header */}
-                    <div className="mb-8 text-center">
-                        <h1 className="text-4xl font-bold text-white mb-2">
+                    <div className="mb-6 md:mb-8 text-center">
+                        <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
                             Technical Interview Complete!
                         </h1>
-                        <p className="text-xl text-slate-300">
+                        <p className="text-lg md:text-xl text-slate-300">
                             Here's your performance analysis and insights
                         </p>
                     </div>
 
                     {/* Overall Score Card */}
-                    <div className="bg-gradient-to-br from-blue-900/30 to-purple-900/30 rounded-3xl p-10 shadow-2xl border border-slate-700 mb-6 backdrop-blur-sm">
+                    <div className="bg-gradient-to-br from-blue-900/30 to-purple-900/30 rounded-3xl p-6 md:p-10 shadow-2xl border border-slate-700 mb-6 backdrop-blur-sm">
                         <div className="text-center">
-                            <h2 className="text-slate-300 text-xl mb-6 font-semibold">Hireability Score</h2>
-                            <div className="relative w-56 h-56 mx-auto mb-6">
+                            <h2 className="text-slate-300 text-lg md:text-xl mb-4 md:mb-6 font-semibold">Hireability Score</h2>
+                            <div className="relative w-48 h-48 md:w-56 md:h-56 mx-auto mb-4 md:mb-6">
                                 {/* Circular progress */}
-                                <svg className="w-56 h-56 transform -rotate-90">
+                                <svg className="w-48 h-48 md:w-56 md:h-56 transform -rotate-90">
+                                    <circle
+                                        cx="96"
+                                        cy="96"
+                                        r="86"
+                                        stroke="rgba(148, 163, 184, 0.2)"
+                                        strokeWidth="12"
+                                        fill="none"
+                                        className="md:hidden"
+                                    />
+                                    <circle
+                                        cx="96"
+                                        cy="96"
+                                        r="86"
+                                        stroke="url(#gradient)"
+                                        strokeWidth="12"
+                                        fill="none"
+                                        strokeDasharray={`${(feedback.hireAbilityScore / 100) * 540} 540`}
+                                        strokeLinecap="round"
+                                        className="transition-all duration-1000 md:hidden"
+                                    />
                                     <circle
                                         cx="112"
                                         cy="112"
@@ -114,6 +132,7 @@ export default function TechnicalResultsPage() {
                                         stroke="rgba(148, 163, 184, 0.2)"
                                         strokeWidth="14"
                                         fill="none"
+                                        className="hidden md:block"
                                     />
                                     <circle
                                         cx="112"
@@ -124,7 +143,7 @@ export default function TechnicalResultsPage() {
                                         fill="none"
                                         strokeDasharray={`${(feedback.hireAbilityScore / 100) * 628} 628`}
                                         strokeLinecap="round"
-                                        className="transition-all duration-1000"
+                                        className="transition-all duration-1000 hidden md:block"
                                     />
                                     <defs>
                                         <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -134,13 +153,13 @@ export default function TechnicalResultsPage() {
                                     </defs>
                                 </svg>
                                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                                    <span className="text-6xl font-bold text-white">
+                                    <span className="text-5xl md:text-6xl font-bold text-white">
                                         {feedback.hireAbilityScore}
                                     </span>
-                                    <span className="text-slate-400 text-lg">out of 100</span>
+                                    <span className="text-slate-400 text-base md:text-lg">out of 100</span>
                                 </div>
                             </div>
-                            <div className="text-2xl font-bold text-slate-300">
+                            <div className="text-xl md:text-2xl font-bold text-slate-300">
                                 {getScoreLabel(feedback.hireAbilityScore)}
                             </div>
                         </div>
@@ -210,16 +229,16 @@ export default function TechnicalResultsPage() {
                     </div>
 
                     {/* Action Buttons */}
-                    <div className="mt-12 flex flex-col sm:flex-row gap-6 justify-center">
+                    <div className="mt-8 md:mt-12 flex flex-col sm:flex-row gap-4 md:gap-6 justify-center">
                         <button
                             onClick={() => router.push('/')}
-                            className="px-10 py-4 bg-slate-700 hover:bg-slate-600 text-white font-semibold text-lg rounded-[32px] transition-all duration-200"
+                            className="w-full sm:w-auto px-8 md:px-10 py-3 md:py-4 bg-slate-700 hover:bg-slate-600 text-white font-semibold text-base md:text-lg rounded-[32px] transition-all duration-200"
                         >
                             Back to Home
                         </button>
                         <button
                             onClick={() => router.push('/interview')}
-                            className="px-10 py-4 bg-purple-600 hover:bg-purple-700 text-white font-semibold text-lg rounded-[32px] transition-all duration-200 shadow-lg shadow-purple-600/30 hover:shadow-purple-600/50 flex items-center justify-center gap-2"
+                            className="w-full sm:w-auto px-8 md:px-10 py-3 md:py-4 bg-purple-600 hover:bg-purple-700 text-white font-semibold text-base md:text-lg rounded-[32px] transition-all duration-200 shadow-lg shadow-purple-600/30 hover:shadow-purple-600/50 flex items-center justify-center gap-2"
                         >
                             Start Behavioral Interview
                         </button>
@@ -228,7 +247,7 @@ export default function TechnicalResultsPage() {
                                 localStorage.removeItem('technicalFeedback');
                                 router.push('/technical');
                             }}
-                            className="px-10 py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-lg rounded-[32px] transition-all duration-200 shadow-lg shadow-blue-600/30 hover:shadow-blue-600/50 flex items-center justify-center gap-2"
+                            className="w-full sm:w-auto px-8 md:px-10 py-3 md:py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-base md:text-lg rounded-[32px] transition-all duration-200 shadow-lg shadow-blue-600/30 hover:shadow-blue-600/50 flex items-center justify-center gap-2"
                         >
                             Try Another Question
                         </button>

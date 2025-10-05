@@ -5,16 +5,16 @@ import Link from 'next/link';
 
 const Home = () => {
   return (
-    <div className="min-h-screen bg-[#0a0a0f] text-white pt-24">
+    <div className="min-h-screen bg-[#0a0a0f] text-white pt-24 sm:pt-28 md:pt-32">
       <Header />
 
       {/* Hero Section */}
-      <section className="flex flex-row w-full justify-center items-center gap-16 py-16 px-8 max-w-7xl mx-auto">
-        <div className='flex flex-col justify-center max-w-[600px] items-start gap-6'>
-          <h2 className='text-6xl font-bold leading-tight'>
+      <section className="flex flex-col md:flex-row w-full justify-center items-center gap-8 md:gap-16 py-8 md:py-16 px-4 md:px-8 max-w-7xl mx-auto">
+        <div className='flex flex-col justify-center max-w-[600px] items-center md:items-start gap-4 md:gap-6 text-center md:text-left'>
+          <h2 className='text-4xl md:text-6xl font-bold leading-tight'>
             Practice made<br />for you, by you.
           </h2> 
-          <p className='text-xl text-slate-300 leading-relaxed'>
+          <p className='text-lg md:text-xl text-slate-300 leading-relaxed'>
             Your personal AI interview coach—realistic, customizable, and designed to help you improve with every answer.
           </p>
         </div>
@@ -24,21 +24,21 @@ const Home = () => {
             alt="Ryan the Raccoon mascot waving"
             width={300}
             height={300}
+            className="w-48 h-48 md:w-[300px] md:h-[300px]"
           />
         </div>
       </section>
 
       {/* Leaves Decoration with CTA Button */}
-      <section className="flex justify-between items-center w-full relative">
+      <section className="flex justify-between items-center w-full relative my-4 md:my-0">
         <img 
           src="/leavesLeft.svg"
           alt="Decorative leaves"
-          className="h-auto"
-          style={{ width: '40%' }}
+          className="h-auto w-[25%] md:w-[40%]"
         />
         <div className="absolute left-1/2 transform -translate-x-1/2">
           <Link href="/instructions">
-            <button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-lg px-12 py-4 rounded-[32px] transition-colors duration-200">
+            <button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm md:text-lg px-6 md:px-12 py-3 md:py-4 rounded-[32px] transition-colors duration-200">
               Begin Practicing
             </button>
           </Link>
@@ -46,17 +46,16 @@ const Home = () => {
         <img 
           src="/leavesRight.svg"
           alt="Decorative leaves"
-          className="h-auto"
-          style={{ width: '40%' }}
+          className="h-auto w-[25%] md:w-[40%]"
         />
       </section>
 
       
 
       {/* What is IntervU Section */}
-      <section className="max-w-7xl mx-auto px-8 py-20">
-        <div className="grid md:grid-cols-2 gap-16 items-center">
-          <div className="bg-slate-800/50 rounded-lg h-80 flex items-center justify-center overflow-hidden border border-slate-700">
+      <section className="max-w-7xl mx-auto px-4 md:px-8 py-12 md:py-20">
+        <div className="grid md:grid-cols-2 gap-8 md:gap-16 items-center">
+          <div className="bg-slate-800/50 rounded-lg h-60 md:h-80 flex items-center justify-center overflow-hidden border border-slate-700">
             <Image
               src="/whatIsIntervU.png"
               alt="What is IntervU"
@@ -65,9 +64,9 @@ const Home = () => {
               className="w-full h-full object-cover"
             />
           </div>
-          <div>
-            <h3 className="text-5xl font-bold mb-6">What is IntervU?</h3>
-            <p className="text-lg text-slate-300 leading-relaxed">
+          <div className="text-center md:text-left">
+            <h3 className="text-3xl md:text-5xl font-bold mb-4 md:mb-6">What is IntervU?</h3>
+            <p className="text-base md:text-lg text-slate-300 leading-relaxed">
               IntervU is an AI interview simulator that generates personalized behavioural and
               technical questions based on your resume and job description, offering realistic practice
               and feedback to help you prepare for real interviews.
@@ -77,22 +76,22 @@ const Home = () => {
       </section>
 
       {/* Meet the Team Section */}
-      <section className="max-w-7xl mx-auto px-8 py-20">
-        <div className="grid md:grid-cols-2 gap-16 items-center">
-          <div className="text-left">
-            <h3 className="text-5xl font-bold mb-6">Meet the Team</h3>
-            <p className="text-lg text-slate-300 leading-relaxed">
+      <section className="max-w-7xl mx-auto px-4 md:px-8 py-12 md:py-20">
+        <div className="grid md:grid-cols-2 gap-8 md:gap-16 items-center">
+          <div className="text-center md:text-left order-2 md:order-1">
+            <h3 className="text-3xl md:text-5xl font-bold mb-4 md:mb-6">Meet the Team</h3>
+            <p className="text-base md:text-lg text-slate-300 leading-relaxed">
               Brandon, Eric, Mark and Paul, are all Computing Science students at Simon
               Fraser University. While they build the app, the ever trustworthy (and mischievous)
               Ryan the Raccoon leads the interviews to guide IntervU's users onto the path to
               success.
             </p>
           </div>
-          <div className="flex justify-center">
-            <div className="bg-slate-800/50 rounded-lg w-80 h-80 flex items-center justify-center relative">
+          <div className="flex justify-center order-1 md:order-2">
+            <div className="bg-slate-800/50 rounded-lg w-60 h-60 md:w-80 md:h-80 flex items-center justify-center relative">
               <span className="text-slate-500">Team Image</span>
               <div className="absolute bottom-4 right-4">
-                <div className="text-6xl">🦝</div>
+                <div className="text-4xl md:text-6xl">🦝</div>
               </div>
             </div>
           </div>
@@ -100,14 +99,14 @@ const Home = () => {
       </section>
 
       {/* How does it work Section */}
-      <section className="max-w-7xl mx-auto px-8 py-20">
-        <div className="grid md:grid-cols-2 gap-16 items-center">
-          <div className="bg-slate-800/50 rounded-lg h-80 flex items-center justify-center">
+      <section className="max-w-7xl mx-auto px-4 md:px-8 py-12 md:py-20">
+        <div className="grid md:grid-cols-2 gap-8 md:gap-16 items-center">
+          <div className="bg-slate-800/50 rounded-lg h-60 md:h-80 flex items-center justify-center">
             <span className="text-slate-500">Process Diagram</span>
           </div>
-          <div>
-            <h3 className="text-5xl font-bold mb-6">How does it work?</h3>
-            <p className="text-lg text-slate-300 leading-relaxed">
+          <div className="text-center md:text-left">
+            <h3 className="text-3xl md:text-5xl font-bold mb-4 md:mb-6">How does it work?</h3>
+            <p className="text-base md:text-lg text-slate-300 leading-relaxed">
               Powered by Gemini and ElevenLabs, the tool delivers a hyper-realistic interview experience — generating smart, personalized questions from your resume and job description, evaluating your answers on the fly, and responding with lifelike voice for a truly immersive practice session.
             </p>
           </div>
@@ -115,18 +114,16 @@ const Home = () => {
       </section>
 
       {/* Leaves Decoration Bottom */}
-      <section className="flex justify-between w-full">
+      <section className="flex justify-between w-full mt-8 md:mt-0">
         <img 
           src="/leavesRight.svg"
           alt="Decorative leaves"
-          className="h-auto"
-          style={{ width: '40%' }}
+          className="h-auto w-[25%] md:w-[40%]"
         />
         <img 
           src="/leavesLeft.svg"
           alt="Decorative leaves"
-          className="h-auto"
-          style={{ width: '40%' }}
+          className="h-auto w-[25%] md:w-[40%]"
         />
         
       </section>

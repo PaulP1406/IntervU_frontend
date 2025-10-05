@@ -183,7 +183,7 @@ export default function TopicsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] pt-24">
+    <div className="min-h-screen bg-[#0a0a0f] pt-24 sm:pt-28 md:pt-32">
       {/* Loading Overlay */}
       {isCreatingSession && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
@@ -197,32 +197,30 @@ export default function TopicsPage() {
       <Header />
 
       {/* Top Leaves Decoration with Title */}
-      <section className="flex justify-between items-center w-full relative">
+      <section className="flex justify-between items-center w-full relative mb-8 md:mb-0">
         <img 
           src="/leavesLeft.svg"
           alt="Decorative leaves"
-          className="h-auto"
-          style={{ width: '15%' }}
+          className="h-auto w-[10%] md:w-[15%]"
         />
-        <div className="absolute left-1/2 transform -translate-x-1/2 text-center px-8 pt-12">
-          <h1 className="text-4xl font-bold text-white mb-4">
+        <div className="absolute left-1/2 transform -translate-x-1/2 text-center px-4 pt-6 md:pt-12">
+          <h1 className="text-2xl md:text-4xl font-bold text-white mb-2 md:mb-4">
             Select Your Interview Topics
           </h1>
-          <p className="text-xl text-gray-300">
+          <p className="text-base md:text-xl text-gray-300">
             Choose up to {MAX_SELECTIONS} behavioral interview topics
           </p>
         </div>
         <img 
           src="/leavesRight.svg"
           alt="Decorative leaves"
-          className="h-auto"
-          style={{ width: '15%' }}
+          className="h-auto w-[10%] md:w-[15%]"
         />
       </section>
 
-      <div className="container mx-auto max-w-6xl py-12 px-4">
+      <div className="container mx-auto max-w-6xl py-6 md:py-12 px-4">
         {/* Topic Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
           {INTERVIEW_TOPICS.map((topic) => {
             const isSelected = selectedTopics.includes(topic.id);
             const isDisabled = !isSelected && selectedTopics.length >= MAX_SELECTIONS;
@@ -233,7 +231,7 @@ export default function TopicsPage() {
                 onClick={() => handleTopicToggle(topic.id)}
                 disabled={isDisabled}
                 className={`
-                  relative p-6 rounded-xl shadow-lg transition-all duration-200 transform hover:scale-105
+                  relative p-4 md:p-6 rounded-xl shadow-lg transition-all duration-200 transform hover:scale-105
                   ${isSelected
                     ? 'bg-indigo-600 text-white ring-4 ring-indigo-300 dark:ring-indigo-500'
                     : isDisabled
@@ -244,16 +242,16 @@ export default function TopicsPage() {
               >
                 {/* Selection Badge */}
                 {isSelected && (
-                  <div className="absolute top-3 right-3 bg-white text-indigo-600 rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm">
+                  <div className="absolute top-2 right-2 md:top-3 md:right-3 bg-white text-indigo-600 rounded-full w-6 h-6 md:w-8 md:h-8 flex items-center justify-center font-bold text-xs md:text-sm">
                     ✓
                   </div>
                 )}
 
                 {/* Title */}
-                <h3 className="text-xl font-bold mb-2">{topic.title}</h3>
+                <h3 className="text-lg md:text-xl font-bold mb-1 md:mb-2">{topic.title}</h3>
 
                 {/* Description */}
-                <p className={`text-sm ${isSelected ? 'text-indigo-100' : 'text-gray-600 dark:text-gray-400'}`}>
+                <p className={`text-xs md:text-sm ${isSelected ? 'text-indigo-100' : 'text-gray-600 dark:text-gray-400'}`}>
                   {topic.description}
                 </p>
               </button>
@@ -269,10 +267,10 @@ export default function TopicsPage() {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex justify-center items-center gap-4">
+        <div className="flex flex-col sm:flex-row justify-center items-center gap-3 md:gap-4">
           <button
             onClick={() => router.push('/upload')}
-            className="bg-white hover:bg-gray-200 text-gray-900 text-lg font-semibold px-8 py-4 rounded-[32px] transition-colors duration-200"
+            className="w-full sm:w-auto bg-white hover:bg-gray-200 text-gray-900 text-base md:text-lg font-semibold px-6 md:px-8 py-3 md:py-4 rounded-[32px] transition-colors duration-200"
           >
             Go Back
           </button>
@@ -280,7 +278,7 @@ export default function TopicsPage() {
           <button
             onClick={handleRandomSelection}
             disabled={isCreatingSession}
-            className="bg-purple-600 hover:bg-purple-700 text-white text-lg font-semibold px-8 py-4 rounded-[32px] transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full sm:w-auto bg-purple-600 hover:bg-purple-700 text-white text-base md:text-lg font-semibold px-6 md:px-8 py-3 md:py-4 rounded-[32px] transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             🎲 Random Selection
           </button>
@@ -289,7 +287,7 @@ export default function TopicsPage() {
             onClick={handleContinue}
             disabled={selectedTopics.length === 0 || isCreatingSession}
             className={`
-              text-lg font-semibold px-12 py-4 rounded-[32px] transition-colors duration-200
+              w-full sm:w-auto text-base md:text-lg font-semibold px-8 md:px-12 py-3 md:py-4 rounded-[32px] transition-colors duration-200
               ${selectedTopics.length === 0 || isCreatingSession
                 ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
                 : 'bg-blue-600 hover:bg-blue-700 text-white'
@@ -309,18 +307,16 @@ export default function TopicsPage() {
       </div>
 
       {/* Bottom Leaves Decoration */}
-      <section className="flex justify-between w-full mt-12">
+      <section className="flex justify-between w-full mt-8 md:mt-12">
         <img 
           src="/leavesLeft.svg"
           alt="Decorative leaves"
-          className="h-auto"
-          style={{ width: '40%' }}
+          className="h-auto w-[25%] md:w-[40%]"
         />
         <img 
           src="/leavesRight.svg"
           alt="Decorative leaves"
-          className="h-auto"
-          style={{ width: '40%' }}
+          className="h-auto w-[25%] md:w-[40%]"
         />
       </section>
     </div>

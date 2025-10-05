@@ -1,0 +1,76 @@
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function POST(request: NextRequest) {
+  try {
+    const { text } = await request.json();
+
+    if (!text) {
+      return NextResponse.json(
+        { success: false, error: 'No text provided' },
+        { status: 400 }
+      );
+    }
+
+    const ELEVENLABS_API_KEY = process.env.ELEVENLABS_API_KEY;
+    const VOICE_ID = process.env.ELEVENLABS_VOICE_ID || 'EXAVITQu4vr4xnSDxMaL'; // Default voice (Sarah)
+
+    if (!ELEVENLABS_API_KEY) {
+      return NextResponse.json(
+        { success: false, error: 'ElevenLabs API key not configured' },
+        { status: 500 }
+      );
+    }
+
+    // Enhance the text to sound more natural and conversational
+    const enhancedText = `Hello! Here's your interview question: ${text}`;
+
+    // Call ElevenLabs API
+    const response = await fetch(
+      `https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}`,
+      {
+        method: 'POST',
+        headers: {
+          'Accept': 'audio/mpeg',
+          'Content-Type': 'application/json',
+          'xi-api-key': ELEVENLABS_API_KEY,
+        },
+        body: JSON.stringify({
+          text: enhancedText,
+          model_id: 'eleven_turbo_v2_5', // Using the latest, more natural model
+          voice_settings: {
+            stability: 0.3, // Lower for more expression and natural variation
+            similarity_boost: 0.75, // Higher to maintain voice clarity
+            style: 0.5, // Add natural speaking style
+            use_speaker_boost: true, // Enhance voice clarity
+          },
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('ElevenLabs API error:', errorText);
+      return NextResponse.json(
+        { success: false, error: 'Failed to generate speech' },
+        { status: response.status }
+      );
+    }
+
+    // Get audio data as buffer
+    const audioBuffer = await response.arrayBuffer();
+
+    // Return audio as response
+    return new NextResponse(audioBuffer, {
+      headers: {
+        'Content-Type': 'audio/mpeg',
+        'Content-Length': audioBuffer.byteLength.toString(),
+      },
+    });
+  } catch (error) {
+    console.error('Error in text-to-speech API:', error);
+    return NextResponse.json(
+      { success: false, error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}

@@ -71,6 +71,7 @@ export default function InterviewPage() {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const transcriptsRef = useRef<{ question: string; answer: string }[]>([]);
+  const ttsAudioRef = useRef<HTMLAudioElement | null>(null);
   
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [timeRemaining, setTimeRemaining] = useState(120); // Default 2 minutes
@@ -84,6 +85,8 @@ export default function InterviewPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [isReadyToAdvance, setIsReadyToAdvance] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [displayedQuestion, setDisplayedQuestion] = useState('');
 
   // Use questions from context if available, otherwise use mock
   const questions = contextQuestions.length > 0 ? contextQuestions : MOCK_QUESTIONS;
@@ -115,6 +118,116 @@ export default function InterviewPage() {
       }
     };
   }, []);
+
+  // Text-to-Speech for questions with typewriter effect
+  useEffect(() => {
+    let isActive = true;
+    let typewriterTimeout: NodeJS.Timeout;
+    
+    const speakQuestion = async () => {
+      if (!currentQuestion || !isActive) return;
+
+      try {
+        // Reset displayed question
+        setDisplayedQuestion('');
+        setIsSpeaking(true);
+        
+        // Stop any previous audio
+        if (ttsAudioRef.current) {
+          ttsAudioRef.current.pause();
+          ttsAudioRef.current.currentTime = 0;
+          ttsAudioRef.current = null;
+        }
+
+        const response = await fetch('/api/text-to-speech', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ text: currentQuestion.question }),
+        });
+
+        if (!response.ok || !isActive) {
+          console.error('Failed to generate speech');
+          setIsSpeaking(false);
+          setDisplayedQuestion(currentQuestion.question);
+          return;
+        }
+
+        // Get audio blob
+        const audioBlob = await response.blob();
+        const audioUrl = URL.createObjectURL(audioBlob);
+
+        if (!isActive) {
+          URL.revokeObjectURL(audioUrl);
+          return;
+        }
+
+        // Create and play audio
+        const audio = new Audio(audioUrl);
+        ttsAudioRef.current = audio;
+
+        // Start typewriter effect when audio starts
+        audio.onplay = () => {
+          if (!isActive) return;
+          
+          const questionText = currentQuestion.question;
+          let index = 0;
+          
+          const typeWriter = () => {
+            if (index < questionText.length && isActive) {
+              setDisplayedQuestion(questionText.substring(0, index + 1));
+              index++;
+              typewriterTimeout = setTimeout(typeWriter, 55); // Adjust speed here (lower = faster)
+            }
+          };
+          
+          typeWriter();
+        };
+
+        audio.onended = () => {
+          if (isActive) {
+            setIsSpeaking(false);
+            setDisplayedQuestion(currentQuestion.question); // Ensure full question is shown
+          }
+          URL.revokeObjectURL(audioUrl);
+        };
+
+        audio.onerror = () => {
+          console.error('Error playing audio');
+          if (isActive) {
+            setIsSpeaking(false);
+            setDisplayedQuestion(currentQuestion.question);
+          }
+          URL.revokeObjectURL(audioUrl);
+        };
+
+        if (isActive) {
+          await audio.play();
+        }
+      } catch (error) {
+        console.error('Error with text-to-speech:', error);
+        if (isActive) {
+          setIsSpeaking(false);
+          setDisplayedQuestion(currentQuestion.question);
+        }
+      }
+    };
+
+    speakQuestion();
+
+    // Cleanup on unmount or question change
+    return () => {
+      isActive = false;
+      clearTimeout(typewriterTimeout);
+      
+      if (ttsAudioRef.current) {
+        ttsAudioRef.current.pause();
+        ttsAudioRef.current.currentTime = 0;
+        ttsAudioRef.current = null;
+      }
+    };
+  }, [currentQuestionIndex]); // Only depend on question index, not the whole question object
 
   // Timer countdown
   useEffect(() => {
@@ -176,6 +289,8 @@ export default function InterviewPage() {
         if (data.success) {
           const whisperTranscript = data.transcript;
           
+          console.log('✅ [TRANSCRIPTION] Success! Length:', whisperTranscript.length, 'chars');
+          
           // Save transcript in backend API format
           const newTranscript = {
             question: currentQuestion.question,
@@ -187,13 +302,23 @@ export default function InterviewPage() {
           
           setQuestionTranscripts(prev => {
             const updated = [...prev, newTranscript];
+            console.log('📝 [SAVED] Total transcripts:', updated.length);
+            console.log('📝 [REF] Total in ref:', transcriptsRef.current.length);
             return updated;
+          });
+          
+          console.log('📋 [QUESTION] Answered:', {
+            questionNumber: currentQuestionIndex + 1,
+            question: currentQuestion.question,
+            answerLength: whisperTranscript.length,
+            audioSize: audioBlob.size
           });
           
           setIsTranscribing(false);
           setIsReadyToAdvance(true);
+          console.log('✅ [READY] User can now advance to next question');
         } else {
-          console.error('Transcription failed:', data.error);
+          console.error('❌ [ERROR] Transcription failed:', data.error);
           
           const placeholderTranscript = {
             question: currentQuestion.question,
@@ -211,9 +336,10 @@ export default function InterviewPage() {
           
           setIsTranscribing(false);
           setIsReadyToAdvance(true);
+          console.log('⚠️ [READY] Transcription failed but user can advance');
         }
       } catch (error) {
-        console.error('Error calling transcription API:', error);
+        console.error('❌ [ERROR] Error calling transcription API:', error);
         
         const placeholderTranscript = {
           question: currentQuestion.question,
@@ -231,6 +357,7 @@ export default function InterviewPage() {
         
         setIsTranscribing(false);
         setIsReadyToAdvance(true);
+        console.log('⚠️ [READY] API error but user can advance');
       }
     };
     
@@ -254,11 +381,15 @@ export default function InterviewPage() {
   const handleNextQuestion = async () => {
     if (!isReadyToAdvance) return;
     
+    console.log('➡️ [NEXT] User clicked next/submit button');
+    
     if (isLastQuestion) {
       // Submit interview
+      console.log('🏁 [SUBMIT] Last question - submitting interview');
       await handleSubmitInterview();
     } else {
       // Go to next question
+      console.log('📄 [NEXT] Moving to next question');
       setCurrentQuestionIndex(prev => prev + 1);
       setTimeRemaining(120);
       setShowHints(false);
@@ -281,11 +412,18 @@ export default function InterviewPage() {
     if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
       mediaRecorderRef.current.stop();
       // Wait for transcription to complete
+      console.log('⏳ [SUBMIT] Waiting for transcription to complete...');
       await new Promise(resolve => setTimeout(resolve, 3000));
     }
 
     // Use ref to get the latest transcripts (not stale state)
     const finalTranscripts = transcriptsRef.current.length > 0 ? transcriptsRef.current : questionTranscripts;
+    
+    console.log('📝 [INTERVIEW] Interview completed! Submitting all answers...');
+    console.log('📊 [STATS] Transcripts from ref:', transcriptsRef.current.length);
+    console.log('📊 [STATS] Transcripts from state:', questionTranscripts.length);
+    console.log('📊 [STATS] Using transcripts:', finalTranscripts.length);
+    console.log('📋 [ALL TRANSCRIPTS]:', JSON.stringify(finalTranscripts, null, 2));
 
     // Save transcripts to context
     setContextTranscripts(finalTranscripts);
@@ -294,6 +432,12 @@ export default function InterviewPage() {
     if (sessionId && finalTranscripts.length > 0) {
       setIsSubmitting(true);
       try {
+        console.log('🚀 [API] Sending to backend...');
+        console.log('📦 [PAYLOAD]:', JSON.stringify({
+          sessionId,
+          interviewQuestionsWithAnswers: finalTranscripts
+        }, null, 2));
+
         const feedback = await getInterviewFeedback({
           sessionId,
           interviewQuestionsWithAnswers: finalTranscripts
@@ -400,15 +544,34 @@ export default function InterviewPage() {
                   <span className="text-white text-xs font-semibold">LISTENING</span>
                 </div>
               )}
+              
+              {/* Speaking indicator */}
+              {isSpeaking && (
+                <div className="absolute top-4 right-4 flex items-center gap-2 bg-indigo-600 px-3 py-1 rounded-full">
+                  <div className="w-2 h-2 rounded-full bg-white animate-pulse"></div>
+                  <span className="text-white text-xs font-semibold">SPEAKING</span>
+                </div>
+              )}
             </div>
 
             {/* Question Display */}
             <div className="bg-gray-900 rounded-lg p-4">
-              <span className="inline-block px-2 py-1 bg-indigo-600 text-white text-xs font-semibold rounded mb-2">
-                {currentQuestion.topic}
-              </span>
+              <div className="flex items-center justify-between mb-2">
+                <span className="inline-block px-2 py-1 bg-indigo-600 text-white text-xs font-semibold rounded">
+                  {currentQuestion.topic}
+                </span>
+                {isSpeaking && (
+                  <span className="text-indigo-400 text-xs flex items-center gap-1">
+                    <span className="animate-pulse">🔊</span>
+                    Reading question...
+                  </span>
+                )}
+              </div>
               <p className="text-white text-lg leading-relaxed">
-                {currentQuestion.question}
+                {displayedQuestion}
+                {isSpeaking && displayedQuestion.length < currentQuestion.question.length && (
+                  <span className="animate-pulse">|</span>
+                )}
               </p>
             </div>
           </div>

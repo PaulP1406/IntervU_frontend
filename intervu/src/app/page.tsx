@@ -5,15 +5,15 @@ import Link from 'next/link';
 
 const Home = () => {
   return (
-    <div className="min-h-screen bg-[#0a0a0f] text-white">
+    <div className="min-h-screen bg-[#0a0a0f] text-white pt-24">
       <Header />
 
       {/* Hero Section */}
       <section className="flex flex-row w-full justify-center items-center gap-16 py-16 px-8 max-w-7xl mx-auto">
         <div className='flex flex-col justify-center max-w-[600px] items-start gap-6'>
           <h2 className='text-6xl font-bold leading-tight'>
-            Practice smarter,<br />not harder.
-          </h2>
+            Practice made<br />for you, by you.
+          </h2> 
           <p className='text-xl text-slate-300 leading-relaxed'>
             Your personal AI interview coach—realistic, customizable, and designed to help you improve with every answer.
           </p>

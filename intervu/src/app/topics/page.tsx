@@ -182,25 +182,34 @@ export default function TopicsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f]">
+    <div className="min-h-screen bg-[#0a0a0f] pt-24">
       <Header />
-      <div className="container mx-auto max-w-6xl py-12 px-4">
-        {/* Page Title */}
-        <div className="mb-12 text-center">
-          <Link href="/upload" className="text-indigo-600 dark:text-indigo-400 hover:underline mb-4 inline-block">
-            ← Back
-          </Link>
-          <h1 className="text-5xl font-bold text-gray-900 dark:text-white mb-4">
+
+      {/* Top Leaves Decoration with Title */}
+      <section className="flex justify-between items-center w-full relative">
+        <img 
+          src="/leavesLeft.svg"
+          alt="Decorative leaves"
+          className="h-auto"
+          style={{ width: '15%' }}
+        />
+        <div className="absolute left-1/2 transform -translate-x-1/2 text-center px-8 pt-12">
+          <h1 className="text-4xl font-bold text-white mb-4">
             Select Your Interview Topics
           </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-300 mb-2">
+          <p className="text-xl text-gray-300">
             Choose up to {MAX_SELECTIONS} behavioral interview topics
           </p>
-          <p className="text-lg text-gray-500 dark:text-gray-400">
-            {selectedTopics.length} / {MAX_SELECTIONS} selected
-          </p>
         </div>
+        <img 
+          src="/leavesRight.svg"
+          alt="Decorative leaves"
+          className="h-auto"
+          style={{ width: '15%' }}
+        />
+      </section>
 
+      <div className="container mx-auto max-w-6xl py-12 px-4">
         {/* Topic Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {INTERVIEW_TOPICS.map((topic) => {
@@ -229,9 +238,6 @@ export default function TopicsPage() {
                   </div>
                 )}
 
-                {/* Icon */}
-                <div className="text-5xl mb-3">{topic.icon}</div>
-
                 {/* Title */}
                 <h3 className="text-xl font-bold mb-2">{topic.title}</h3>
 
@@ -244,11 +250,26 @@ export default function TopicsPage() {
           })}
         </div>
 
+        {/* Selection Counter */}
+        <div className="text-center mb-4">
+          <p className="text-lg text-gray-400">
+            {selectedTopics.length} / {MAX_SELECTIONS} selected
+          </p>
+        </div>
+
         {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+        <div className="flex justify-center items-center gap-4">
+          <button
+            onClick={() => router.push('/upload')}
+            className="bg-white hover:bg-gray-200 text-gray-900 text-lg font-semibold px-8 py-4 rounded-[32px] transition-colors duration-200"
+          >
+            Go Back
+          </button>
+
           <button
             onClick={handleRandomSelection}
-            className="w-full sm:w-auto px-8 py-4 bg-gray-600 hover:bg-gray-700 text-white text-lg font-semibold rounded-lg shadow-lg transition-all duration-200 transform hover:scale-105"
+            disabled={isCreatingSession}
+            className="bg-purple-600 hover:bg-purple-700 text-white text-lg font-semibold px-8 py-4 rounded-[32px] transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             🎲 Random Selection
           </button>
@@ -257,24 +278,40 @@ export default function TopicsPage() {
             onClick={handleContinue}
             disabled={selectedTopics.length === 0 || isCreatingSession}
             className={`
-              w-full sm:w-auto px-12 py-4 text-lg font-semibold rounded-lg shadow-lg transition-all duration-200 transform hover:scale-105
+              text-lg font-semibold px-12 py-4 rounded-[32px] transition-colors duration-200
               ${selectedTopics.length === 0 || isCreatingSession
-                ? 'bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed'
-                : 'bg-indigo-600 hover:bg-indigo-700 text-white'
+                ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
+                : 'bg-blue-600 hover:bg-blue-700 text-white'
               }
             `}
           >
-            {isCreatingSession ? 'Creating Session...' : 'Continue →'}
+            {isCreatingSession ? 'Creating Session...' : 'Continue'}
           </button>
         </div>
 
         {/* Hint Text */}
         {selectedTopics.length === MAX_SELECTIONS && (
-          <p className="text-center mt-6 text-green-600 dark:text-green-400 font-semibold">
+          <p className="text-center mt-6 text-green-400 font-semibold">
             ✓ Maximum topics selected! Click Continue to proceed.
           </p>
         )}
       </div>
+
+      {/* Bottom Leaves Decoration */}
+      <section className="flex justify-between w-full mt-12">
+        <img 
+          src="/leavesLeft.svg"
+          alt="Decorative leaves"
+          className="h-auto"
+          style={{ width: '40%' }}
+        />
+        <img 
+          src="/leavesRight.svg"
+          alt="Decorative leaves"
+          className="h-auto"
+          style={{ width: '40%' }}
+        />
+      </section>
     </div>
   );
 }

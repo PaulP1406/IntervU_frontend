@@ -8,19 +8,49 @@ import Header from '@/components/Header';
 
 export default function UploadPage() {
   const router = useRouter();
-  const { setResumeText: setContextResumeText, setJobTitle: setContextJobTitle, setJobInfo, setCompanyName: setContextCompanyName, setAdditionalInfo } = useInterview();
+  const { 
+    resumeText: contextResumeText,
+    setResumeText: setContextResumeText,
+    resumeFileName: contextResumeFileName,
+    setResumeFileName: setContextResumeFileName,
+    jobTitle: contextJobTitle,
+    setJobTitle: setContextJobTitle, 
+    jobInfo: contextJobInfo,
+    setJobInfo, 
+    companyName: contextCompanyName,
+    setCompanyName: setContextCompanyName, 
+    additionalInfo: contextAdditionalInfo,
+    setAdditionalInfo 
+  } = useInterview();
   
   const [formData, setFormData] = useState({
     companyName: '',
     jobTitle: '',
-    location: '',
-    experienceLevel: '',
+    additionalInfo: '',
     jobDescription: '',
   });
   const [resumeFile, setResumeFile] = useState<File | null>(null);
   const [resumeText, setResumeText] = useState<string>('');
+  const [resumeFileName, setResumeFileName] = useState<string>('');
   const [isDragging, setIsDragging] = useState(false);
   const [isParsingPdf, setIsParsingPdf] = useState(false);
+
+  // Initialize form data from context on mount
+  useEffect(() => {
+    if (contextCompanyName || contextJobTitle || contextJobInfo || contextAdditionalInfo) {
+      setFormData({
+        companyName: contextCompanyName,
+        jobTitle: contextJobTitle,
+        additionalInfo: contextAdditionalInfo,
+        jobDescription: contextJobInfo,
+      });
+    }
+    if (contextResumeText) {
+      setResumeText(contextResumeText);
+      setResumeFileName(contextResumeFileName);
+      // Note: We can't restore the actual File object, but we show that resume was uploaded
+    }
+  }, []);
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -41,6 +71,8 @@ export default function UploadPage() {
       const file = files[0];
       if (file.type === 'application/pdf' || file.name.endsWith('.pdf')) {
         setResumeFile(file);
+        setResumeFileName(file.name);
+        setContextResumeFileName(file.name);
         parsePdfToText(file);
       } else {
         alert('Please upload a PDF file');
@@ -52,6 +84,8 @@ export default function UploadPage() {
     const files = e.target.files;
     if (files && files.length > 0) {
       setResumeFile(files[0]);
+      setResumeFileName(files[0].name);
+      setContextResumeFileName(files[0].name);
       parsePdfToText(files[0]);
     }
   };
@@ -84,6 +118,7 @@ export default function UploadPage() {
       }
 
       setResumeText(fullText.trim());
+      setContextResumeText(fullText.trim());
       console.log('Parsed resume text:', fullText.trim());
     } catch (error) {
       console.error('Error parsing PDF:', error);
@@ -99,13 +134,29 @@ export default function UploadPage() {
       ...prev,
       [name]: value
     }));
+    
+    // Save to context immediately as user types
+    switch (name) {
+      case 'companyName':
+        setContextCompanyName(value);
+        break;
+      case 'jobTitle':
+        setContextJobTitle(value);
+        break;
+      case 'jobDescription':
+        setJobInfo(value);
+        break;
+      case 'additionalInfo':
+        setAdditionalInfo(value);
+        break;
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validation
-    if (!resumeFile) {
+    // Validation - accept either current file or existing resume text from context
+    if (!resumeFile && !resumeText) {
       alert('Please upload your resume');
       return;
     }
@@ -120,16 +171,15 @@ export default function UploadPage() {
     setJobInfo(formData.jobDescription);
     setContextCompanyName(formData.companyName);
     
-    // Combine location and experience level as additional info
-    const additionalInfoText = `Location: ${formData.location || 'Not specified'}. Experience Level: ${formData.experienceLevel || 'Not specified'}.`;
-    setAdditionalInfo(additionalInfoText);
+    // Save additional info
+    setAdditionalInfo(formData.additionalInfo);
     
     console.log('Form data saved to context:', { 
       resumeText,
       jobTitle: formData.jobTitle,
       jobInfo: formData.jobDescription,
       companyName: formData.companyName,
-      additionalInfo: additionalInfoText
+      additionalInfo: formData.additionalInfo
     });
     
     // Navigate to topics selection page
@@ -137,7 +187,7 @@ export default function UploadPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f]">
+    <div className="min-h-screen bg-[#0a0a0f] pt-24">
       <Header />
 
       {/* Top Leaves Decoration with Title */}
@@ -149,12 +199,9 @@ export default function UploadPage() {
           style={{ width: '15%' }}
         />
         <div className="absolute left-1/2 transform -translate-x-1/2 text-center">
-          <h1 className="text-4xl font-bold text-white mb-2">
-            Upload Resume
+          <h1 className="text-4xl font-bold text-white">
+            Upload Your Resume
           </h1>
-          <p className="text-gray-300">
-            Provide your resume and job details to get started
-          </p>
         </div>
         <img 
           src="/leavesRight.svg"
@@ -164,17 +211,17 @@ export default function UploadPage() {
         />
       </section>
 
-      <div className="container mx-auto max-w-6xl py-12 px-4">
+      <div className="container mx-auto max-w-5xl py-12 px-4">
 
         <form onSubmit={handleSubmit}>
-          <div className="grid md:grid-cols-2 gap-8 mb-8 items-start">
+          <div className="grid md:grid-cols-2 gap-8">
           {/* Left Column - Resume Upload */}
-          <div className="flex flex-col h-full">
+          <div className="flex flex-col">
             <label className="block text-sm font-medium text-gray-200 mb-2">
               Resume <span className="text-red-500">*</span>
             </label>
             <div
-              className={`flex-1 max-h-[580px] border-2 border-dashed rounded-lg p-6 text-center transition-all flex flex-col justify-center ${
+              className={`flex-1 border-2 border-dashed rounded-lg p-6 text-center transition-all flex flex-col justify-center ${
                 isDragging
                   ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20'
                   : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800'
@@ -184,19 +231,11 @@ export default function UploadPage() {
               onDrop={handleDrop}
             >
               <div className="mb-4">
-                <svg
-                  className="mx-auto h-16 w-16 text-gray-400"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                  />
-                </svg>
+                <img
+                  src="/raccoonUpload.svg"
+                  alt="Upload"
+                  className="mx-auto h-48 w-48"
+                />
               </div>
               <p className="text-xl font-semibold text-gray-700 dark:text-gray-200 mb-2">
                 Drop Files Here
@@ -234,11 +273,21 @@ export default function UploadPage() {
                   </p>
                 </div>
               )}
+              {!resumeFile && resumeText && !isParsingPdf && (
+                <div className="mt-4 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded">
+                  <p className="text-green-700 dark:text-green-300 font-medium">
+                    ✓ {resumeFileName || 'Resume Previously Uploaded'}
+                  </p>
+                  <p className="text-green-600 dark:text-green-400 text-sm mt-1">
+                    {resumeText.length} characters stored
+                  </p>
+                </div>
+              )}
             </div>
           </div>
 
           {/* Right Column - Job Details Form */}
-          <div className="space-y-4">
+          <div className="flex flex-col space-y-4">
             {/* Company Name */}
             <div>
               <label htmlFor="companyName" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
@@ -273,44 +322,8 @@ export default function UploadPage() {
               />
             </div>
 
-            {/* Location */}
-            <div>
-              <label htmlFor="location" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-                Location
-              </label>
-              <input
-                type="text"
-                id="location"
-                name="location"
-                value={formData.location}
-                onChange={handleInputChange}
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                placeholder="e.g., San Francisco, CA or Remote"
-              />
-            </div>
-
-            {/* Experience Level */}
-            <div>
-              <label htmlFor="experienceLevel" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-                Experience Level
-              </label>
-              <select
-                id="experienceLevel"
-                name="experienceLevel"
-                value={formData.experienceLevel}
-                onChange={handleInputChange}
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-              >
-                <option value="">Select level...</option>
-                <option value="entry">Entry Level (0-2 years)</option>
-                <option value="mid">Mid Level (3-5 years)</option>
-                <option value="senior">Senior Level (6-10 years)</option>
-                <option value="lead">Lead/Principal (10+ years)</option>
-              </select>
-            </div>
-
             {/* Job Description */}
-            <div>
+            <div className="space-y-0">
               <label htmlFor="jobDescription" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                 Job Description
               </label>
@@ -319,22 +332,45 @@ export default function UploadPage() {
                 name="jobDescription"
                 value={formData.jobDescription}
                 onChange={handleInputChange}
-                rows={6}
+                rows={4}
                 className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none"
                 placeholder="Paste the job description here..."
               />
             </div>
-          </div>
-          </div>
 
-          {/* Submit Button - Centered Below Both Columns */}
-          <div className="flex justify-center pt-4">
-            <button
-              type="submit"
-              className="bg-blue-600 hover:bg-blue-700 text-white text-lg font-semibold px-12 py-4 rounded-[32px] transition-colors duration-200"
-            >
-              Continue →
-            </button>
+            {/* Additional Info */}
+            <div className="space-y-0">
+              <label htmlFor="additionalInfo" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                Additional Info
+              </label>
+              <textarea
+                id="additionalInfo"
+                name="additionalInfo"
+                value={formData.additionalInfo}
+                onChange={handleInputChange}
+                rows={4}
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none"
+                placeholder="Any additional information (e.g., experience level, location, etc.)..."
+              />
+            </div>
+
+            {/* Bottom Row - Go Back Button and Submit Button */}
+            <div className="flex justify-between items-center">
+              <button
+                type="button"
+                onClick={() => router.push('/')}
+                className="bg-white hover:bg-gray-200 text-gray-900 text-lg font-semibold px-12 py-4 rounded-[32px] transition-colors duration-200"
+              >
+                Go Back
+              </button>
+              <button
+                type="submit"
+                className="bg-blue-600 hover:bg-blue-700 text-white text-lg font-semibold px-12 py-4 rounded-[32px] transition-colors duration-200"
+              >
+                Continue
+              </button>
+            </div>
+          </div>
           </div>
         </form>
       </div>

@@ -10,6 +10,9 @@ interface InterviewContextType {
   resumeText: string;
   setResumeText: (text: string) => void;
   
+  resumeFileName: string;
+  setResumeFileName: (name: string) => void;
+  
   jobTitle: string;
   setJobTitle: (title: string) => void;
   
@@ -37,6 +40,7 @@ const InterviewContext = createContext<InterviewContextType | undefined>(undefin
 export function InterviewProvider({ children }: { children: ReactNode }) {
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [resumeText, setResumeText] = useState('');
+  const [resumeFileName, setResumeFileName] = useState('');
   const [jobTitle, setJobTitle] = useState('');
   const [jobInfo, setJobInfo] = useState('');
   const [companyName, setCompanyName] = useState('');
@@ -52,6 +56,8 @@ export function InterviewProvider({ children }: { children: ReactNode }) {
         setSessionId,
         resumeText,
         setResumeText,
+        resumeFileName,
+        setResumeFileName,
         jobTitle,
         setJobTitle,
         jobInfo,

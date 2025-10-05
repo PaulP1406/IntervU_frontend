@@ -4,10 +4,11 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useInterview } from '@/context/InterviewContext';
 import Link from 'next/link';
+import Header from '@/components/Header';
 
 export default function WaitingRoomPage() {
   const router = useRouter();
-  const { sessionId, questions } = useInterview();
+  const { sessionId, questions, jobTitle } = useInterview();
   const videoRef = useRef<HTMLVideoElement>(null);
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [isHostReady, setIsHostReady] = useState(false);
@@ -147,123 +148,111 @@ export default function WaitingRoomPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 py-12 px-4">
-      <div className="container mx-auto max-w-7xl">
-        <div className="flex items-center justify-center gap-32">
-          {/* Countdown Timer - Far Left */}
-          <div className="w-24 h-24 flex items-center justify-center flex-shrink-0">
-            {countdown !== null && (
-              <div className="text-6xl font-bold text-indigo-600 dark:text-indigo-400 animate-pulse">
-                {countdown}
+    <div className="min-h-screen bg-[#0a0a0f] pt-24">
+      <Header />
+      
+      <div className="py-12 px-8">
+        <div className="container mx-auto max-w-3xl">
+          {/* Main Card */}
+          <div className="bg-gray-700 rounded-xl overflow-hidden shadow-xl">
+            {/* Header Section with Logo and Title */}
+            <div className="bg-gray-800 p-6 flex items-start gap-4">
+              {/* Placeholder Logo */}
+              <div className="w-24 h-16 bg-white rounded flex-shrink-0 flex items-center justify-center">
+                <span className="text-4xl">🦝</span>
               </div>
-            )}
-          </div>
-
-          {/* Main Content Card - Centered */}
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl overflow-hidden relative flex-shrink-0 w-full max-w-4xl">
-            {/* Back Button - Top Left */}
-            <div className="absolute top-4 left-4 z-10">
-              <Link href="/topics" className="text-indigo-600 dark:text-indigo-400 hover:underline text-sm">
-                ← Back
-              </Link>
+              
+              {/* Title Section */}
+              <div className="flex-1">
+                <h1 className="text-2xl font-bold text-white mb-2">
+                  {jobTitle || 'Job'} Interview
+                </h1>
+                <p className="text-gray-300 text-sm">
+                  {isHostReady 
+                    ? 'Your host has joined the room and is ready to let you in. Good luck!' 
+                    : 'Waiting for host to join...'}
+                </p>
+              </div>
             </div>
 
-            {/* Header Status - Top Center */}
-            <div className="pt-12 pb-4 text-center">
-              {!isHostReady ? (
-                <div className="flex items-center justify-center gap-3">
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-indigo-600"></div>
-                  <h1 className="text-2xl font-bold text-gray-700 dark:text-gray-300">
-                    Waiting for Host...
-                  </h1>
+            {/* Video Preview */}
+            <div className="relative bg-gray-900 aspect-video p-8">
+              {!cameraPermissionGranted ? (
+                <div className="absolute inset-8 flex flex-col items-center justify-center bg-gray-800 rounded-lg">
+                  <div className="text-center p-8">
+                    <svg
+                      className="mx-auto h-24 w-24 text-gray-400 mb-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
+                      />
+                    </svg>
+                    <h2 className="text-white text-xl font-semibold mb-2">Camera Access Required</h2>
+                    <p className="text-gray-400 mb-6">We need access to your camera and microphone</p>
+                    <button
+                      onClick={requestMediaAccess}
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors"
+                    >
+                      Enable Camera & Microphone
+                    </button>
+                  </div>
                 </div>
               ) : (
-                <div className="flex items-center justify-center gap-3">
-                  <div className="h-2.5 w-2.5 bg-green-500 rounded-full animate-pulse"></div>
-                  <h1 className="text-2xl font-bold text-green-600 dark:text-green-400">
-                    Host has joined!
-                  </h1>
-                </div>
+                <>
+                  <div className="absolute inset-8 bg-gray-800 rounded-lg overflow-hidden">
+                    <video
+                      ref={videoRef}
+                      autoPlay
+                      playsInline
+                      muted
+                      className={`w-full h-full object-cover ${!cameraEnabled ? 'hidden' : ''}`}
+                    />
+                    {!cameraEnabled && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-gray-800">
+                        <div className="text-center">
+                          <div className="w-24 h-24 rounded-full bg-blue-600 flex items-center justify-center mx-auto mb-4">
+                            <svg
+                              className="w-12 h-12 text-white"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                              />
+                            </svg>
+                          </div>
+                          <p className="text-white text-lg">Camera Off</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </>
               )}
             </div>
-          {/* Video Preview */}
-          <div className="relative bg-gray-900 aspect-video">
-            {!cameraPermissionGranted ? (
-              <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <div className="text-center p-8">
-                  <svg
-                    className="mx-auto h-24 w-24 text-gray-400 mb-4"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
-                    />
-                  </svg>
-                  <h2 className="text-white text-xl font-semibold mb-2">Camera Access Required</h2>
-                  <p className="text-gray-400 mb-6">We need access to your camera and microphone</p>
-                  <button
-                    onClick={requestMediaAccess}
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors"
-                  >
-                    Enable Camera & Microphone
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <>
-                <video
-                  ref={videoRef}
-                  autoPlay
-                  playsInline
-                  muted
-                  className={`w-full h-full object-cover ${!cameraEnabled ? 'hidden' : ''}`}
-                />
-                {!cameraEnabled && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-gray-800">
-                    <div className="text-center">
-                      <div className="w-24 h-24 rounded-full bg-indigo-600 flex items-center justify-center mx-auto mb-4">
-                        <svg
-                          className="w-12 h-12 text-white"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                          />
-                        </svg>
-                      </div>
-                      <p className="text-white text-lg">Camera Off</p>
-                    </div>
-                  </div>
-                )}
-              </>
-            )}
-          </div>
 
-          {/* Controls */}
-          <div className="p-6 space-y-6">
             {/* Audio and Video Controls */}
-            <div className="flex justify-center gap-4">
+            <div className="p-6 bg-gray-700 flex justify-center gap-4">
               <button
                 onClick={toggleAudio}
                 disabled={!cameraPermissionGranted}
                 className={`p-4 rounded-full transition-all ${
                   audioEnabled
-                    ? 'bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600'
+                    ? 'bg-gray-600 hover:bg-gray-500'
                     : 'bg-red-600 hover:bg-red-700'
                 } ${!cameraPermissionGranted ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
                 {audioEnabled ? (
-                  <svg className="w-6 h-6 text-gray-900 dark:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
                   </svg>
                 ) : (
@@ -279,12 +268,12 @@ export default function WaitingRoomPage() {
                 disabled={!cameraPermissionGranted}
                 className={`p-4 rounded-full transition-all ${
                   cameraEnabled
-                    ? 'bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600'
+                    ? 'bg-gray-600 hover:bg-gray-500'
                     : 'bg-red-600 hover:bg-red-700'
                 } ${!cameraPermissionGranted ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
                 {cameraEnabled ? (
-                  <svg className="w-6 h-6 text-gray-900 dark:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
                   </svg>
                 ) : (
@@ -294,83 +283,40 @@ export default function WaitingRoomPage() {
                 )}
               </button>
             </div>
+          </div>
 
-            {/* Device Selection */}
-            {cameraPermissionGranted && (
-              <div className="grid md:grid-cols-2 gap-4">
-                {/* Camera Selection */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Camera
-                  </label>
-                  <select
-                    value={selectedCamera}
-                    onChange={(e) => setSelectedCamera(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                  >
-                    {cameras.map((camera) => (
-                      <option key={camera.deviceId} value={camera.deviceId}>
-                        {camera.label || `Camera ${camera.deviceId.slice(0, 8)}`}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Microphone Selection */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Microphone
-                  </label>
-                  <select
-                    value={selectedMicrophone}
-                    onChange={(e) => setSelectedMicrophone(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                  >
-                    {microphones.map((mic) => (
-                      <option key={mic.deviceId} value={mic.deviceId}>
-                        {mic.label || `Microphone ${mic.deviceId.slice(0, 8)}`}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-            )}
-
-            {/* I'm Ready Button */}
-            <div className="pt-2">
-              <button
-                onClick={handleReady}
-                disabled={!isHostReady || !cameraPermissionGranted || isReady}
-                className={`w-full text-lg font-semibold py-4 rounded-xl transition-all duration-200 ${
-                  isHostReady && cameraPermissionGranted && !isReady
-                    ? 'bg-indigo-600 hover:bg-indigo-700 text-white'
-                    : 'bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed'
-                }`}
-              >
-                {!cameraPermissionGranted
-                  ? 'Enable Camera to Continue'
-                  : !isHostReady
-                  ? 'Waiting for Host...'
-                  : isReady
-                  ? '✓ Ready'
-                  : "I'm Ready"}
-              </button>
+        {/* Countdown and Action Buttons */}
+        {countdown !== null && (
+          <div className="text-center mt-4">
+            <div className="text-6xl font-bold text-blue-400 animate-pulse">
+              {countdown}
             </div>
           </div>
-        </div>
+        )}
 
-        {/* Start Button - Far Right */}
-        <div className="w-32 h-32 flex items-center justify-center flex-shrink-0">
+        <div className="flex justify-between items-center mt-4">
+          <button
+            onClick={() => router.push('/topics')}
+            className="bg-white hover:bg-gray-200 text-gray-900 text-lg font-semibold px-8 py-4 rounded-[32px] transition-colors duration-200"
+          >
+            Go Back
+          </button>
           <button
             onClick={handleStart}
             disabled={!isReady || countdown !== null}
-            className={`w-full h-full rounded-full text-xl font-bold transition-all duration-200 flex items-center justify-center ${
+            className={`text-lg font-semibold px-12 py-4 rounded-[32px] transition-colors duration-200 ${
               isReady && countdown === null
-                ? 'bg-green-600 hover:bg-green-700 text-white transform hover:scale-105 shadow-2xl'
-                : 'bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed'
+                ? 'bg-green-600 hover:bg-green-700 text-white'
+                : 'bg-gray-600 text-gray-400 cursor-not-allowed'
             }`}
           >
-            START
+            {!isHostReady 
+              ? 'Waiting for Host...' 
+              : !cameraPermissionGranted
+              ? 'Enable Camera to Start'
+              : isReady && countdown === null 
+              ? 'Start Interview' 
+              : '✓ Ready'}
           </button>
         </div>
       </div>

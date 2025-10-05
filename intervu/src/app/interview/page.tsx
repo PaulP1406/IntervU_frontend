@@ -87,6 +87,8 @@ export default function InterviewPage() {
   const [isReadyToAdvance, setIsReadyToAdvance] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [displayedQuestion, setDisplayedQuestion] = useState('');
+  const [autoStartTimer, setAutoStartTimer] = useState(10);
+  const [showTimerWarning, setShowTimerWarning] = useState(false);
 
   // Use questions from context if available, otherwise use mock
   const questions = contextQuestions.length > 0 ? contextQuestions : MOCK_QUESTIONS;
@@ -123,6 +125,9 @@ export default function InterviewPage() {
   useEffect(() => {
     let isActive = true;
     let typewriterTimeout: NodeJS.Timeout;
+    
+    // Reset timer warning for new question
+    setShowTimerWarning(false);
     
     const speakQuestion = async () => {
       if (!currentQuestion || !isActive) return;
@@ -178,7 +183,7 @@ export default function InterviewPage() {
             if (index < questionText.length && isActive) {
               setDisplayedQuestion(questionText.substring(0, index + 1));
               index++;
-              typewriterTimeout = setTimeout(typeWriter, 55); // Adjust speed here (lower = faster)
+              typewriterTimeout = setTimeout(typeWriter, 48); // Adjust speed here (lower = faster)
             }
           };
           
@@ -189,6 +194,7 @@ export default function InterviewPage() {
           if (isActive) {
             setIsSpeaking(false);
             setDisplayedQuestion(currentQuestion.question); // Ensure full question is shown
+            setShowTimerWarning(true); // Show timer warning after TTS finishes
           }
           URL.revokeObjectURL(audioUrl);
         };
@@ -198,6 +204,7 @@ export default function InterviewPage() {
           if (isActive) {
             setIsSpeaking(false);
             setDisplayedQuestion(currentQuestion.question);
+            setShowTimerWarning(true); // Show timer warning even on error
           }
           URL.revokeObjectURL(audioUrl);
         };
@@ -210,6 +217,7 @@ export default function InterviewPage() {
         if (isActive) {
           setIsSpeaking(false);
           setDisplayedQuestion(currentQuestion.question);
+          setShowTimerWarning(true); // Show timer even on error
         }
       }
     };
@@ -228,6 +236,34 @@ export default function InterviewPage() {
       }
     };
   }, [currentQuestionIndex]); // Only depend on question index, not the whole question object
+
+  // Auto-start recording timer (10 seconds after TTS finishes)
+  useEffect(() => {
+    // Don't run timer if: still speaking, already recording, already answered, or warning not shown
+    if (isSpeaking || isRecording || isReadyToAdvance || !showTimerWarning) {
+      return;
+    }
+
+    // Start countdown from 10 seconds
+    let timeLeft = 10;
+    setAutoStartTimer(timeLeft);
+    
+    const countdown = setInterval(() => {
+      timeLeft--;
+      setAutoStartTimer(timeLeft);
+      
+      if (timeLeft <= 0) {
+        clearInterval(countdown);
+        // Auto-start recording when timer reaches 0
+        if (!isRecording && !isReadyToAdvance && showTimerWarning) {
+          handleStartRecording();
+          setShowTimerWarning(false); // Hide warning after auto-start
+        }
+      }
+    }, 1000);
+
+    return () => clearInterval(countdown);
+  }, [isSpeaking, isRecording, isReadyToAdvance, showTimerWarning]);
 
   // Timer countdown
   useEffect(() => {
@@ -397,16 +433,6 @@ export default function InterviewPage() {
     }
   };
 
-  const handlePreviousQuestion = () => {
-    if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex(prev => prev - 1);
-      setTimeRemaining(120); // Default 2 minutes
-      setIsRecording(false);
-      setShowHints(false);
-      setIsReadyToAdvance(false);
-    }
-  };
-
   const handleSubmitInterview = async () => {
     // Stop any ongoing recording
     if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
@@ -567,8 +593,8 @@ export default function InterviewPage() {
                   </span>
                 )}
               </div>
-              <p className="text-white text-lg leading-relaxed">
-                {displayedQuestion}
+              <p className="text-white text-lg leading-relaxed min-h-[3.5rem]">
+                {displayedQuestion || '\u00A0'}
                 {isSpeaking && displayedQuestion.length < currentQuestion.question.length && (
                   <span className="animate-pulse">|</span>
                 )}
@@ -612,12 +638,15 @@ export default function InterviewPage() {
             <div className="flex items-center gap-3 mt-4">
               {!isRecording ? (
                 <button
-                  onClick={handleStartRecording}
-                  disabled={isTranscribing || isReadyToAdvance}
+                  onClick={() => {
+                    handleStartRecording();
+                    setShowTimerWarning(false); // Hide timer when manually starting
+                  }}
+                  disabled={isTranscribing || isReadyToAdvance || isSpeaking}
                   className="flex-1 px-6 py-3 bg-red-600 hover:bg-red-700 disabled:opacity-30 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
                 >
                   <div className="w-3 h-3 rounded-full bg-white"></div>
-                  {isReadyToAdvance ? '✓ Answer Recorded' : 'Start Answer'}
+                  {isReadyToAdvance ? '✓ Answer Recorded' : isSpeaking ? 'AI Speaking...' : 'Start Answer'}
                 </button>
               ) : (
                 <button
@@ -629,6 +658,23 @@ export default function InterviewPage() {
                 </button>
               )}
             </div>
+
+            {/* Auto-start timer warning - only shows after TTS completes */}
+            {showTimerWarning && !isRecording && !isReadyToAdvance && autoStartTimer > 0 && (
+              <div className="mt-4 bg-yellow-900/30 border border-yellow-600/50 rounded-lg p-3">
+                <div className="flex items-center gap-2">
+                  <span className="text-yellow-400 text-xl">⏱️</span>
+                  <div className="flex-1">
+                    <p className="text-yellow-200 text-sm font-semibold">
+                      Auto-starting in {autoStartTimer} second{autoStartTimer !== 1 ? 's' : ''}
+                    </p>
+                    <p className="text-yellow-300/70 text-xs mt-1">
+                      Recording will begin automatically if you don't start manually
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Live Recording Status */}
             {isRecording && (
@@ -743,13 +789,7 @@ export default function InterviewPage() {
                   className="w-full px-6 py-3 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-30 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors"
                 >
                   {isSubmitting ? '🔄 Submitting Interview...' : isTranscribing ? '⏳ Processing Answer...' : isReadyToAdvance ? (isLastQuestion ? '✓ Submit Interview' : 'Next Question →') : (isLastQuestion ? '✓ Submit Interview' : 'Next Question →')}
-                </button>              <button
-                onClick={handlePreviousQuestion}
-                disabled={currentQuestionIndex === 0}
-                className="w-full px-6 py-2 text-gray-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors text-sm"
-              >
-                ← Previous Question
-              </button>
+                </button>
 
               <button
                 onClick={() => {

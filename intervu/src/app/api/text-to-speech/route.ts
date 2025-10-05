@@ -21,9 +21,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Enhance the text to sound more natural and conversational
-    const enhancedText = `Hello! Here's your interview question: ${text}`;
-
     // Call ElevenLabs API
     const response = await fetch(
       `https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}`,
@@ -35,7 +32,7 @@ export async function POST(request: NextRequest) {
           'xi-api-key': ELEVENLABS_API_KEY,
         },
         body: JSON.stringify({
-          text: enhancedText,
+          text: text,
           model_id: 'eleven_turbo_v2_5', // Using the latest, more natural model
           voice_settings: {
             stability: 0.3, // Lower for more expression and natural variation

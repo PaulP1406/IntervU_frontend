@@ -83,6 +83,7 @@ export default function InterviewPage() {
   }[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
+  const [isReadyToAdvance, setIsReadyToAdvance] = useState(false);
 
   // Use questions from context if available, otherwise use mock
   const questions = contextQuestions.length > 0 ? contextQuestions : MOCK_QUESTIONS;
@@ -201,24 +202,8 @@ export default function InterviewPage() {
           });
           
           setIsTranscribing(false);
-          
-          // Auto-advance to next question after transcription completes
-          setTimeout(() => {
-            console.log('🔄 [AUTO-ADVANCE] Current question index:', currentQuestionIndex);
-            console.log('🔄 [AUTO-ADVANCE] Is last question:', isLastQuestion);
-            console.log('🔄 [AUTO-ADVANCE] Transcripts in ref:', transcriptsRef.current.length);
-            
-            if (isLastQuestion) {
-              // Give extra time for state to update before submitting
-              setTimeout(() => {
-                handleSubmitInterview();
-              }, 1000);
-            } else {
-              setCurrentQuestionIndex(prev => prev + 1);
-              setTimeRemaining(120);
-              setShowHints(false);
-            }
-          }, 500);
+          setIsReadyToAdvance(true);
+          console.log('✅ [READY] User can now advance to next question');
         } else {
           console.error('❌ [ERROR] Transcription failed:', data.error);
           
@@ -237,17 +222,8 @@ export default function InterviewPage() {
           ]);
           
           setIsTranscribing(false);
-          
-          // Auto-advance even on failure
-          setTimeout(() => {
-            if (isLastQuestion) {
-              handleSubmitInterview();
-            } else {
-              setCurrentQuestionIndex(prev => prev + 1);
-              setTimeRemaining(120);
-              setShowHints(false);
-            }
-          }, 500);
+          setIsReadyToAdvance(true);
+          console.log('⚠️ [READY] Transcription failed but user can advance');
         }
       } catch (error) {
         console.error('❌ [ERROR] Error calling transcription API:', error);
@@ -267,19 +243,8 @@ export default function InterviewPage() {
         ]);
         
         setIsTranscribing(false);
-        
-        // Auto-advance even on error
-        setTimeout(() => {
-          if (isLastQuestion) {
-            setTimeout(() => {
-              handleSubmitInterview();
-            }, 1000);
-          } else {
-            setCurrentQuestionIndex(prev => prev + 1);
-            setTimeRemaining(120);
-            setShowHints(false);
-          }
-        }, 500);
+        setIsReadyToAdvance(true);
+        console.log('⚠️ [READY] API error but user can advance');
       }
     };
     
@@ -300,13 +265,22 @@ export default function InterviewPage() {
     setIsRecording(false);
   };
 
-  const handleNextQuestion = () => {
-    console.log('➡️ [NAVIGATION] Manual next question clicked');
+  const handleNextQuestion = async () => {
+    if (!isReadyToAdvance) return;
     
-    // If recording, stop it first
-    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
-      handleStopRecording();
-      // Auto-advance will happen after transcription
+    console.log('➡️ [NEXT] User clicked next/submit button');
+    
+    if (isLastQuestion) {
+      // Submit interview
+      console.log('🏁 [SUBMIT] Last question - submitting interview');
+      await handleSubmitInterview();
+    } else {
+      // Go to next question
+      console.log('📄 [NEXT] Moving to next question');
+      setCurrentQuestionIndex(prev => prev + 1);
+      setTimeRemaining(120);
+      setShowHints(false);
+      setIsReadyToAdvance(false);
     }
   };
 
@@ -316,6 +290,7 @@ export default function InterviewPage() {
       setTimeRemaining(120); // Default 2 minutes
       setIsRecording(false);
       setShowHints(false);
+      setIsReadyToAdvance(false);
     }
   };
 
@@ -506,10 +481,11 @@ export default function InterviewPage() {
               {!isRecording ? (
                 <button
                   onClick={handleStartRecording}
-                  className="flex-1 px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
+                  disabled={isTranscribing || isReadyToAdvance}
+                  className="flex-1 px-6 py-3 bg-red-600 hover:bg-red-700 disabled:opacity-30 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
                 >
                   <div className="w-3 h-3 rounded-full bg-white"></div>
-                  Start Answer
+                  {isReadyToAdvance ? '✓ Answer Recorded' : 'Start Answer'}
                 </button>
               ) : (
                 <button
@@ -533,10 +509,7 @@ export default function InterviewPage() {
                 </div>
                 
                 <div className="text-gray-400 text-sm">
-                  <p className="mb-1">🎙️ Your answer is being recorded</p>
-                  <p className="text-xs text-gray-500">
-                    Audio will be transcribed using Whisper API when you finish
-                  </p>
+                  <p>🎙️ Your answer is being recorded</p>
                 </div>
               </div>
             )}
@@ -590,12 +563,12 @@ export default function InterviewPage() {
               <div className="mb-6">
                 <div className="flex justify-between text-sm text-gray-400 mb-2">
                   <span>Progress</span>
-                  <span>{Math.round(((currentQuestionIndex + 1) / questions.length) * 100)}%</span>
+                  <span>{Math.round((questionTranscripts.length / questions.length) * 100)}%</span>
                 </div>
                 <div className="w-full bg-gray-700 rounded-full h-2">
                   <div 
                     className="bg-indigo-600 h-2 rounded-full transition-all duration-300"
-                    style={{ width: `${((currentQuestionIndex + 1) / questions.length) * 100}%` }}
+                    style={{ width: `${(questionTranscripts.length / questions.length) * 100}%` }}
                   ></div>
                 </div>
               </div>
@@ -634,10 +607,10 @@ export default function InterviewPage() {
               <div className="space-y-3">
                 <button
                   onClick={handleNextQuestion}
-                  disabled={!isRecording || isSubmitting || isTranscribing}
+                  disabled={!isReadyToAdvance || isSubmitting}
                   className="w-full px-6 py-3 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-30 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors"
                 >
-                  {isSubmitting ? 'Submitting...' : isTranscribing ? '⏳ Processing answer...' : isLastQuestion ? '✓ Finish Recording' : 'Next Question →'}
+                  {isSubmitting ? '🔄 Submitting Interview...' : isTranscribing ? '⏳ Processing Answer...' : isReadyToAdvance ? (isLastQuestion ? '✓ Submit Interview' : 'Next Question →') : (isLastQuestion ? '✓ Submit Interview' : 'Next Question →')}
                 </button>              <button
                 onClick={handlePreviousQuestion}
                 disabled={currentQuestionIndex === 0}

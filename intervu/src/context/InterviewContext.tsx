@@ -1,10 +1,11 @@
 'use client';
 
 import React, { createContext, useContext, useState, ReactNode } from 'react';
+import type { InterviewQuestion } from '@/lib/api';
 
 interface InterviewContextType {
-  sessionId: number | null;
-  setSessionId: (id: number) => void;
+  sessionId: string | null;
+  setSessionId: (id: string) => void;
   
   resumeText: string;
   setResumeText: (text: string) => void;
@@ -24,8 +25,8 @@ interface InterviewContextType {
   selectedTopics: string[];
   setSelectedTopics: (topics: string[]) => void;
   
-  questions: Array<{ question: string; topic: string }>;
-  setQuestions: (questions: Array<{ question: string; topic: string }>) => void;
+  questions: InterviewQuestion[];
+  setQuestions: (questions: InterviewQuestion[]) => void;
   
   transcripts: Array<{ question: string; answer: string }>;
   setTranscripts: (transcripts: Array<{ question: string; answer: string }>) => void;
@@ -34,14 +35,14 @@ interface InterviewContextType {
 const InterviewContext = createContext<InterviewContextType | undefined>(undefined);
 
 export function InterviewProvider({ children }: { children: ReactNode }) {
-  const [sessionId, setSessionId] = useState<number | null>(null);
+  const [sessionId, setSessionId] = useState<string | null>(null);
   const [resumeText, setResumeText] = useState('');
   const [jobTitle, setJobTitle] = useState('');
   const [jobInfo, setJobInfo] = useState('');
   const [companyName, setCompanyName] = useState('');
   const [additionalInfo, setAdditionalInfo] = useState('');
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
-  const [questions, setQuestions] = useState<Array<{ question: string; topic: string }>>([]);
+  const [questions, setQuestions] = useState<InterviewQuestion[]>([]);
   const [transcripts, setTranscripts] = useState<Array<{ question: string; answer: string }>>([]);
 
   return (

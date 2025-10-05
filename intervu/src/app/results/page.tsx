@@ -182,19 +182,27 @@ export default function ResultsPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Load feedback from localStorage
+    // Protect route - redirect to upload if no feedback data
     const storedFeedback = localStorage.getItem('interviewFeedback');
-    if (storedFeedback) {
-      try {
-        const feedback = JSON.parse(storedFeedback);
-        setFeedbackData(feedback);
-        console.log('Loaded feedback:', feedback);
-      } catch (error) {
-        console.error('Failed to parse feedback:', error);
-      }
+    if (!storedFeedback) {
+      console.log('No interview feedback found, redirecting to upload...');
+      router.push('/upload');
+      return;
+    }
+    
+    // Load feedback from localStorage
+    try {
+      const feedback = JSON.parse(storedFeedback);
+      setFeedbackData(feedback);
+      console.log('Loaded feedback:', feedback);
+      console.log('hireAbilityScore:', feedback.hireAbilityScore);
+      console.log('overallFeedback:', feedback.overallFeedback);
+    } catch (error) {
+      console.error('Failed to parse feedback:', error);
+      router.push('/upload');
     }
     setIsLoading(false);
-  }, []);
+  }, [router]);
 
   const toggleQuestion = (questionId: number) => {
     setExpandedQuestions(prev => 
@@ -208,9 +216,13 @@ export default function ResultsPage() {
   const results = feedbackData || null;
 
   // Calculate hiring probability category based on hireAbilityScore
-  const hiringProbability = results?.hireAbilityScore || MOCK_RESULTS.hiringProbability;
-  const overallScore = results ? results.hireAbilityScore / 10 : MOCK_RESULTS.overallScore;
+  const hiringProbability = results?.hireAbilityScore ?? MOCK_RESULTS.hiringProbability;
+  const overallScore = results ? (results.hireAbilityScore / 10) : MOCK_RESULTS.overallScore;
   const maxScore = 10;
+  
+  console.log('Results:', results);
+  console.log('hiringProbability:', hiringProbability);
+  console.log('overallScore:', overallScore);
   
   const getHiringCategory = (probability: number) => {
     if (probability >= 70) return { text: "High Chance", color: "text-green-400", bgColor: "bg-green-600" };
@@ -398,6 +410,14 @@ export default function ResultsPage() {
                       </div>
                       <p className="text-gray-400 text-sm mb-3 italic">"{qf.question}"</p>
                       
+                      {/* User's Answer */}
+                      {qf.userAnswer && (
+                        <div className="mb-3 bg-gray-800 rounded-lg p-3 border-l-4 border-indigo-600">
+                          <h5 className="text-indigo-400 font-semibold text-xs mb-2">💬 You said:</h5>
+                          <p className="text-gray-300 text-sm italic">"{qf.userAnswer}"</p>
+                        </div>
+                      )}
+                      
                       {/* Strengths */}
                       <div className="mb-3">
                         <h5 className="text-green-400 font-semibold text-sm mb-2">✅ Strengths:</h5>
@@ -456,27 +476,42 @@ export default function ResultsPage() {
                 Key Takeaways
               </h3>
               <div className="space-y-3">
-                <div className="bg-indigo-900/20 border border-indigo-700/30 rounded-lg p-4">
-                  <p className="text-gray-300">
-                    {results ? (
-                      hiringProbability >= 70 ? (
+                {results && results.overallFeedback && results.overallFeedback.length > 0 ? (
+                  results.overallFeedback.map((feedback, index) => (
+                    <div key={index} className="bg-indigo-900/20 border border-indigo-700/30 rounded-lg p-4">
+                      <div className="flex items-start gap-3 text-gray-300">
+                        <span className="text-indigo-400 font-bold mt-1">{index + 1}.</span>
+                        <p>{feedback}</p>
+                      </div>
+                    </div>
+                  ))
+                ) : results ? (
+                  <div className="bg-indigo-900/20 border border-indigo-700/30 rounded-lg p-4">
+                    <p className="text-gray-300">
+                      {hiringProbability >= 70 ? (
                         "Strong performance! Continue practicing with the STAR method and focus on providing specific examples with measurable outcomes."
                       ) : hiringProbability >= 40 ? (
                         "Good foundation. Work on structuring your answers more clearly and providing specific, quantifiable results from your experiences."
                       ) : (
                         "Focus on providing professional, relevant responses using the STAR method. Practice with specific examples from your experience and avoid unprofessional language."
-                      )
-                    ) : (
-                      "Practice using the STAR method consistently across all answers and work on reducing filler words."
-                    )}
-                  </p>
-                </div>
-                {!results && MOCK_RESULTS.areasForImprovement.slice(0, 3).map((area, index) => (
-                  <div key={index} className="flex items-start gap-3 text-gray-300">
-                    <span className="text-indigo-400 font-bold mt-1">{index + 1}.</span>
-                    <span>{area.suggestions[0]}</span>
+                      )}
+                    </p>
                   </div>
-                ))}
+                ) : (
+                  <>
+                    <div className="bg-indigo-900/20 border border-indigo-700/30 rounded-lg p-4">
+                      <p className="text-gray-300">
+                        Practice using the STAR method consistently across all answers and work on reducing filler words.
+                      </p>
+                    </div>
+                    {MOCK_RESULTS.areasForImprovement.slice(0, 3).map((area, index) => (
+                      <div key={index} className="flex items-start gap-3 text-gray-300">
+                        <span className="text-indigo-400 font-bold mt-1">{index + 1}.</span>
+                        <span>{area.suggestions[0]}</span>
+                      </div>
+                    ))}
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -519,7 +554,7 @@ export default function ResultsPage() {
                                 Question {questionId} • {topic}
                               </span>
                             </div>
-                            <h4 className="text-white font-semibold line-clamp-2">{question}</h4>
+                            <h4 className="text-white font-semibold">{question}</h4>
                           </div>
                         </div>
                         <div className="ml-4">
@@ -537,6 +572,21 @@ export default function ResultsPage() {
                       {/* Expanded Content */}
                       {isExpanded && (
                         <div className="border-t border-gray-700 p-6 space-y-6">
+                          {/* You Said - Show transcribed answer from backend */}
+                          {results && results.interviewQuestionFeedback[index] && (
+                            <div>
+                              <h5 className="text-white font-semibold mb-3 flex items-center gap-2">
+                                <span className="text-lg">💬</span>
+                                You Said
+                              </h5>
+                              <div className="bg-gray-800 rounded-lg p-4 border-l-4 border-indigo-600">
+                                <p className="text-gray-300 leading-relaxed italic">
+                                  "{results.interviewQuestionFeedback[index].userAnswer || 'No answer recorded'}"
+                                </p>
+                              </div>
+                            </div>
+                          )}
+                          
                           {/* Your Answer - Only show if we have it (mock data) */}
                           {hasAnswer && (
                             <div>

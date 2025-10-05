@@ -2,10 +2,12 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import { useInterview } from '@/context/InterviewContext';
 import Link from 'next/link';
 
 export default function WaitingRoomPage() {
   const router = useRouter();
+  const { sessionId, questions } = useInterview();
   const videoRef = useRef<HTMLVideoElement>(null);
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [isHostReady, setIsHostReady] = useState(false);
@@ -18,6 +20,14 @@ export default function WaitingRoomPage() {
   const [microphones, setMicrophones] = useState<MediaDeviceInfo[]>([]);
   const [isReady, setIsReady] = useState(false);
   const [countdown, setCountdown] = useState<number | null>(null);
+
+  // Protect route - redirect to upload if no session or questions
+  useEffect(() => {
+    if (!sessionId || questions.length === 0) {
+      console.log('No session or questions found, redirecting to upload...');
+      router.push('/upload');
+    }
+  }, [sessionId, questions, router]);
 
   // Simulate backend readiness (replace with actual API call later)
   useEffect(() => {

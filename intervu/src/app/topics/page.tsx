@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useInterview } from '@/context/InterviewContext';
-import { createInterviewSession } from '@/lib/api';
+import { createInterviewSession, getInterviewQuestions } from '@/lib/api';
 
 // Define available interview topics
 const INTERVIEW_TOPICS = [
@@ -62,7 +62,7 @@ const MAX_SELECTIONS = 3;
 
 export default function TopicsPage() {
   const router = useRouter();
-  const { resumeText, jobTitle, jobInfo, companyName, additionalInfo, setSelectedTopics: setContextTopics, setSessionId } = useInterview();
+  const { resumeText, jobTitle, jobInfo, companyName, additionalInfo, setSelectedTopics: setContextTopics, setSessionId, setQuestions } = useInterview();
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
   const [isCreatingSession, setIsCreatingSession] = useState(false);
 
@@ -95,21 +95,30 @@ export default function TopicsPage() {
     setIsCreatingSession(true);
     try {
       const sessionData = {
-        sessionId: Date.now(), // Use timestamp as unique session ID
         parsedResumeText: resumeText,
         jobTitle: jobTitle,
         jobInfo: jobInfo,
         companyName: companyName || undefined,
         additionalInfo: additionalInfo || undefined,
+        typeOfInterview: 'behavioral' as const,
         behaviouralTopics: topicTitles,
       };
 
       console.log('Creating interview session:', sessionData);
       
-      const response = await createInterviewSession(sessionData);
-      setSessionId(response.sessionId);
+      // Step 1: Create session
+      const sessionResponse = await createInterviewSession(sessionData);
+      const newSessionId = sessionResponse.sessionId;
+      setSessionId(newSessionId);
       
-      console.log('Session created successfully:', response.sessionId);
+      console.log('Session created successfully:', newSessionId);
+      
+      // Step 2: Fetch AI-customized questions
+      console.log('Fetching interview questions...');
+      const questionsResponse = await getInterviewQuestions(newSessionId);
+      setQuestions(questionsResponse.questions);
+      
+      console.log('Questions fetched:', questionsResponse.questions);
       console.log('Selected topics:', topicTitles);
       
       router.push('/waiting-room');
@@ -140,20 +149,27 @@ export default function TopicsPage() {
       setIsCreatingSession(true);
       try {
         const sessionData = {
-          sessionId: Date.now(),
           parsedResumeText: resumeText,
           jobTitle: jobTitle,
           jobInfo: jobInfo,
           companyName: companyName || undefined,
           additionalInfo: additionalInfo || undefined,
+          typeOfInterview: 'behavioral' as const,
           behaviouralTopics: topicTitles,
         };
 
-        const response = await createInterviewSession(sessionData);
-        setSessionId(response.sessionId);
+        // Step 1: Create session
+        const sessionResponse = await createInterviewSession(sessionData);
+        const newSessionId = sessionResponse.sessionId;
+        setSessionId(newSessionId);
+        
+        // Step 2: Fetch questions
+        const questionsResponse = await getInterviewQuestions(newSessionId);
+        setQuestions(questionsResponse.questions);
         
         console.log('Randomly selected topics:', topicTitles);
-        console.log('Session created:', response.sessionId);
+        console.log('Session created:', newSessionId);
+        console.log('Questions fetched:', questionsResponse.questions);
         
         router.push('/waiting-room');
       } catch (error) {

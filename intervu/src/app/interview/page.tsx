@@ -70,11 +70,11 @@ export default function InterviewPage() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
+  const transcriptsRef = useRef<{ question: string; answer: string }[]>([]);
   
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [timeRemaining, setTimeRemaining] = useState(120); // Default 2 minutes
   const [isRecording, setIsRecording] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [showHints, setShowHints] = useState(false);
   const [questionTranscripts, setQuestionTranscripts] = useState<{
@@ -82,6 +82,7 @@ export default function InterviewPage() {
     answer: string;
   }[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isTranscribing, setIsTranscribing] = useState(false);
 
   // Use questions from context if available, otherwise use mock
   const questions = contextQuestions.length > 0 ? contextQuestions : MOCK_QUESTIONS;
@@ -116,13 +117,13 @@ export default function InterviewPage() {
 
   // Timer countdown
   useEffect(() => {
-    if (!isRecording || isPaused) return;
+    if (!isRecording) return;
 
     const timer = setInterval(() => {
       setTimeRemaining(prev => {
         if (prev <= 1) {
           clearInterval(timer);
-          handleNextQuestion();
+          handleStopRecording();
           return 0;
         }
         return prev - 1;
@@ -130,7 +131,7 @@ export default function InterviewPage() {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [isRecording, isPaused, currentQuestionIndex]);
+  }, [isRecording, currentQuestionIndex]);
 
   const handleStartRecording = () => {
     if (!stream) return;
@@ -156,7 +157,8 @@ export default function InterviewPage() {
     mediaRecorder.onstop = async () => {
       const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
       
-      console.log('Audio recorded, sending to Whisper API for transcription...');
+      setIsTranscribing(true);
+      console.log('[AUDIO] Recorded, sending to Whisper API for transcription...');
       
       // Send audio to backend for transcription
       try {
@@ -173,43 +175,111 @@ export default function InterviewPage() {
         if (data.success) {
           const whisperTranscript = data.transcript;
           
-          // Save transcript in backend API format
-          setQuestionTranscripts(prev => [
-            ...prev,
-            {
-              question: currentQuestion.question,
-              answer: whisperTranscript
-            }
-          ]);
+          console.log('✅ [TRANSCRIPTION] Success! Length:', whisperTranscript.length, 'chars');
           
-          console.log('Question answered:', {
+          // Save transcript in backend API format
+          const newTranscript = {
             question: currentQuestion.question,
-            answer: whisperTranscript,
+            answer: whisperTranscript
+          };
+          
+          // Update both ref and state
+          transcriptsRef.current = [...transcriptsRef.current, newTranscript];
+          
+          setQuestionTranscripts(prev => {
+            const updated = [...prev, newTranscript];
+            console.log('📝 [SAVED] Total transcripts:', updated.length);
+            console.log('📝 [REF] Total in ref:', transcriptsRef.current.length);
+            return updated;
+          });
+          
+          console.log('📋 [QUESTION] Answered:', {
+            questionNumber: currentQuestionIndex + 1,
+            question: currentQuestion.question,
+            answerLength: whisperTranscript.length,
             audioSize: audioBlob.size
           });
+          
+          setIsTranscribing(false);
+          
+          // Auto-advance to next question after transcription completes
+          setTimeout(() => {
+            console.log('🔄 [AUTO-ADVANCE] Current question index:', currentQuestionIndex);
+            console.log('🔄 [AUTO-ADVANCE] Is last question:', isLastQuestion);
+            console.log('🔄 [AUTO-ADVANCE] Transcripts in ref:', transcriptsRef.current.length);
+            
+            if (isLastQuestion) {
+              // Give extra time for state to update before submitting
+              setTimeout(() => {
+                handleSubmitInterview();
+              }, 1000);
+            } else {
+              setCurrentQuestionIndex(prev => prev + 1);
+              setTimeRemaining(120);
+              setShowHints(false);
+            }
+          }, 500);
         } else {
-          console.error('Transcription failed:', data.error);
+          console.error('❌ [ERROR] Transcription failed:', data.error);
+          
+          const placeholderTranscript = {
+            question: currentQuestion.question,
+            answer: '[Transcription failed - please answer verbally]'
+          };
+          
+          // Update both ref and state
+          transcriptsRef.current = [...transcriptsRef.current, placeholderTranscript];
           
           // Save with placeholder if transcription fails
           setQuestionTranscripts(prev => [
             ...prev,
-            {
-              question: currentQuestion.question,
-              answer: '[Transcription failed - please answer verbally]'
-            }
+            placeholderTranscript
           ]);
+          
+          setIsTranscribing(false);
+          
+          // Auto-advance even on failure
+          setTimeout(() => {
+            if (isLastQuestion) {
+              handleSubmitInterview();
+            } else {
+              setCurrentQuestionIndex(prev => prev + 1);
+              setTimeRemaining(120);
+              setShowHints(false);
+            }
+          }, 500);
         }
       } catch (error) {
-        console.error('Error calling transcription API:', error);
+        console.error('❌ [ERROR] Error calling transcription API:', error);
+        
+        const placeholderTranscript = {
+          question: currentQuestion.question,
+          answer: '[Transcription failed - please answer verbally]'
+        };
+        
+        // Update both ref and state
+        transcriptsRef.current = [...transcriptsRef.current, placeholderTranscript];
         
         // Save with placeholder if API call fails
         setQuestionTranscripts(prev => [
           ...prev,
-          {
-            question: currentQuestion.question,
-            answer: '[Transcription failed - please answer verbally]'
-          }
+          placeholderTranscript
         ]);
+        
+        setIsTranscribing(false);
+        
+        // Auto-advance even on error
+        setTimeout(() => {
+          if (isLastQuestion) {
+            setTimeout(() => {
+              handleSubmitInterview();
+            }, 1000);
+          } else {
+            setCurrentQuestionIndex(prev => prev + 1);
+            setTimeRemaining(120);
+            setShowHints(false);
+          }
+        }, 500);
       }
     };
     
@@ -220,41 +290,23 @@ export default function InterviewPage() {
     console.log('Started recording audio for question:', currentQuestion.question);
   };
 
-  const handlePauseRecording = () => {
-    if (!mediaRecorderRef.current) return;
-
-    if (isPaused) {
-      // Resume
-      if (mediaRecorderRef.current.state === 'paused') {
-        mediaRecorderRef.current.resume();
-      }
-    } else {
-      // Pause
-      if (mediaRecorderRef.current.state === 'recording') {
-        mediaRecorderRef.current.pause();
-      }
-    }
-
-    setIsPaused(!isPaused);
-    console.log(isPaused ? 'Resumed recording' : 'Paused recording');
+  const handleStopRecording = () => {
+    if (!mediaRecorderRef.current || mediaRecorderRef.current.state === 'inactive') return;
+    
+    console.log('⏹️ [RECORDING] Stopping recording...');
+    
+    // Stop the recording (transcription will happen in onstop callback)
+    mediaRecorderRef.current.stop();
+    setIsRecording(false);
   };
 
   const handleNextQuestion = () => {
-    // Stop recording
-    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
-      mediaRecorderRef.current.stop();
-    }
-
-    console.log('Moving to next question. Current answer will be transcribed...');
+    console.log('➡️ [NAVIGATION] Manual next question clicked');
     
-    if (isLastQuestion) {
-      handleSubmitInterview();
-    } else {
-      setCurrentQuestionIndex(prev => prev + 1);
-      setTimeRemaining(120); // Default 2 minutes
-      setIsRecording(false);
-      setIsPaused(false);
-      setShowHints(false);
+    // If recording, stop it first
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+      handleStopRecording();
+      // Auto-advance will happen after transcription
     }
   };
 
@@ -263,7 +315,6 @@ export default function InterviewPage() {
       setCurrentQuestionIndex(prev => prev - 1);
       setTimeRemaining(120); // Default 2 minutes
       setIsRecording(false);
-      setIsPaused(false);
       setShowHints(false);
     }
   };
@@ -272,28 +323,36 @@ export default function InterviewPage() {
     // Stop any ongoing recording
     if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
       mediaRecorderRef.current.stop();
-      // Wait a bit for the recording to process
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Wait for transcription to complete
+      console.log('⏳ [SUBMIT] Waiting for transcription to complete...');
+      await new Promise(resolve => setTimeout(resolve, 3000));
     }
 
-    console.log('Interview completed! Submitting all answers...');
-    console.log('All transcripts:', questionTranscripts);
+    // Use ref to get the latest transcripts (not stale state)
+    const finalTranscripts = transcriptsRef.current.length > 0 ? transcriptsRef.current : questionTranscripts;
+    
+    console.log('📝 [INTERVIEW] Interview completed! Submitting all answers...');
+    console.log('📊 [STATS] Transcripts from ref:', transcriptsRef.current.length);
+    console.log('📊 [STATS] Transcripts from state:', questionTranscripts.length);
+    console.log('📊 [STATS] Using transcripts:', finalTranscripts.length);
+    console.log('📋 [ALL TRANSCRIPTS]:', JSON.stringify(finalTranscripts, null, 2));
 
     // Save transcripts to context
-    setContextTranscripts(questionTranscripts);
+    setContextTranscripts(finalTranscripts);
 
     // Send to backend for feedback
-    if (sessionId && questionTranscripts.length > 0) {
+    if (sessionId && finalTranscripts.length > 0) {
       setIsSubmitting(true);
       try {
-        console.log('Sending to backend:', {
+        console.log('🚀 [API] Sending to backend...');
+        console.log('📦 [PAYLOAD]:', JSON.stringify({
           sessionId,
-          interviewQuestionsWithAnswers: questionTranscripts
-        });
+          interviewQuestionsWithAnswers: finalTranscripts
+        }, null, 2));
 
         const feedback = await getInterviewFeedback({
           sessionId,
-          interviewQuestionsWithAnswers: questionTranscripts
+          interviewQuestionsWithAnswers: finalTranscripts
         });
 
         console.log('Received feedback:', feedback);
@@ -338,7 +397,7 @@ export default function InterviewPage() {
               Mock Interview Session
             </h1>
             <p className="text-gray-400 text-sm">
-              Question {currentQuestionIndex + 1} of {MOCK_QUESTIONS.length} • {currentQuestion.topic}
+              Question {currentQuestionIndex + 1} of 3 • {currentQuestion.topic}
             </p>
           </div>
           
@@ -454,10 +513,11 @@ export default function InterviewPage() {
                 </button>
               ) : (
                 <button
-                  onClick={handlePauseRecording}
-                  className="flex-1 px-6 py-3 bg-yellow-600 hover:bg-yellow-700 text-white font-semibold rounded-lg transition-colors"
+                  onClick={handleStopRecording}
+                  disabled={isTranscribing}
+                  className="flex-1 px-6 py-3 bg-red-600 hover:bg-red-700 disabled:opacity-30 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors"
                 >
-                  {isPaused ? '▶ Resume' : '⏸ Pause'}
+                  {isTranscribing ? '⏳ Processing...' : '⏹ Stop'}
                 </button>
               )}
             </div>
@@ -574,10 +634,10 @@ export default function InterviewPage() {
               <div className="space-y-3">
                 <button
                   onClick={handleNextQuestion}
-                  disabled={!isRecording || isSubmitting}
+                  disabled={!isRecording || isSubmitting || isTranscribing}
                   className="w-full px-6 py-3 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-30 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors"
                 >
-                  {isSubmitting ? 'Submitting...' : isLastQuestion ? '✓ Submit Interview' : 'Next Question →'}
+                  {isSubmitting ? 'Submitting...' : isTranscribing ? '⏳ Processing answer...' : isLastQuestion ? '✓ Finish Recording' : 'Next Question →'}
                 </button>              <button
                 onClick={handlePreviousQuestion}
                 disabled={currentQuestionIndex === 0}

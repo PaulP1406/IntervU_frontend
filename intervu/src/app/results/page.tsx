@@ -4,7 +4,6 @@ import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import type { FeedbackResponse } from '@/lib/api';
 import { useInterview } from '@/context/InterviewContext';
-import Header from '@/components/Header';
 
 // Mock data - will be replaced with backend response
 const MOCK_RESULTS = {
@@ -249,144 +248,121 @@ export default function ResultsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] pt-24">
-      <Header />
-      <div className="max-w-6xl mx-auto p-6">
-        {/* Page Title */}
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 p-6">
+      <div className="max-w-6xl mx-auto">
+        {/* Header */}
         <div className="mb-8 text-center">
           <h1 className="text-4xl font-bold text-white mb-2">
             Interview Complete! 🎉
           </h1>
-          <p className="text-gray-400">
+          <p className="text-xl text-slate-300">
             {isLoading ? 'Loading your results...' : 'Here\'s your performance analysis and insights'}
           </p>
         </div>
 
         {isLoading ? (
-          <div className="text-center py-20">
-            <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
-            <p className="text-gray-400 mt-4">Analyzing your responses...</p>
+          <div className="flex items-center justify-center py-32">
+            <LoadingSpinner 
+              message="Analyzing your interview responses..."
+              size="large"
+            />
           </div>
         ) : (
           <>
             {/* Overall Score Card */}
-            <div className="bg-gradient-to-br from-indigo-900 to-purple-900 rounded-2xl p-8 shadow-xl border border-indigo-500/50 mb-8">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="bg-gradient-to-br from-blue-900/30 to-purple-900/30 rounded-3xl p-10 shadow-2xl border border-slate-700 mb-12 backdrop-blur-sm">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                 {/* Left: Overall Score */}
                 <div className="text-center">
-                  <h2 className="text-gray-300 text-lg mb-4">Overall Score</h2>
-                  <div className="relative w-48 h-48 mx-auto">
+                  <h2 className="text-slate-300 text-xl mb-6 font-semibold">Overall Score</h2>
+                  <div className="relative w-56 h-56 mx-auto">
                     {/* Circular progress */}
-                    <svg className="w-48 h-48 transform -rotate-90">
+                    <svg className="w-56 h-56 transform -rotate-90">
                       <circle
-                        cx="96"
-                        cy="96"
-                        r="88"
-                        stroke="rgba(255,255,255,0.1)"
-                        strokeWidth="12"
+                        cx="112"
+                        cy="112"
+                        r="100"
+                        stroke="rgba(148, 163, 184, 0.2)"
+                        strokeWidth="14"
                         fill="none"
                       />
                       <circle
-                        cx="96"
-                        cy="96"
-                        r="88"
+                        cx="112"
+                        cy="112"
+                        r="100"
                         stroke="url(#gradient)"
-                        strokeWidth="12"
+                        strokeWidth="14"
                         fill="none"
-                        strokeDasharray={`${(overallScore / maxScore) * 553} 553`}
+                        strokeDasharray={`${(overallScore / maxScore) * 628} 628`}
                         strokeLinecap="round"
                         className="transition-all duration-1000"
                       />
                       <defs>
                         <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                          <stop offset="0%" stopColor="#818CF8" />
-                          <stop offset="100%" stopColor="#C084FC" />
+                          <stop offset="0%" stopColor="#3B82F6" />
+                          <stop offset="100%" stopColor="#8B5CF6" />
                         </linearGradient>
                       </defs>
                     </svg>
                     <div className="absolute inset-0 flex flex-col items-center justify-center">
-                      <span className="text-5xl font-bold text-white">
+                      <span className="text-6xl font-bold text-white">
                         {overallScore.toFixed(1)}
                       </span>
-                      <span className="text-gray-300 text-lg">/ {maxScore}</span>
+                      <span className="text-slate-400 text-lg">out of {maxScore}</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Right: Hiring Probability */}
                 <div className="flex flex-col justify-center">
-                  <h2 className="text-gray-300 text-lg mb-4 text-center">
-                    Would You Get Hired?
-                  </h2>
-                  
-                  {/* Probability Graph */}
-                  <div className="mb-6">
-                    <div className="relative h-32 bg-gray-800/50 rounded-lg p-4">
-                      {/* Bell curve visualization */}
-                      <div className="absolute inset-0 flex items-end justify-center px-4 pb-4">
-                        <div className="w-full h-24 relative">
-                          {/* Red zone (0-39%) */}
-                          <div className="absolute left-0 bottom-0 w-[30%] h-full bg-gradient-to-t from-red-600/30 to-transparent rounded-l-lg border-l-2 border-b-2 border-red-600/50"></div>
-                          
-                          {/* Yellow zone (40-69%) */}
-                          <div className="absolute left-[30%] bottom-0 w-[40%] h-full bg-gradient-to-t from-yellow-600/30 to-transparent border-b-2 border-yellow-600/50"></div>
-                          
-                          {/* Green zone (70-100%) */}
-                          <div className="absolute right-0 bottom-0 w-[30%] h-full bg-gradient-to-t from-green-600/30 to-transparent rounded-r-lg border-r-2 border-b-2 border-green-600/50"></div>
-                          
-                          {/* Indicator */}
-                          <div 
-                            className="absolute bottom-0 transform -translate-x-1/2 transition-all duration-1000"
-                            style={{ left: `${hiringProbability}%` }}
-                          >
-                            <div className="flex flex-col items-center">
-                              <div className={`w-3 h-3 rounded-full ${hiringCategory.bgColor} animate-pulse mb-1`}></div>
-                              <div className="w-0.5 h-20 bg-white"></div>
-                            </div>
-                          </div>
-                        </div>
+                  <h2 className="text-slate-300 text-xl mb-6 font-semibold">Hiring Probability</h2>
+                  <div className="space-y-6">
+                    <div>
+                      <div className="flex justify-between mb-3">
+                        <span className="text-white font-semibold text-3xl">{hiringProbability}%</span>
+                        <span className={`font-bold text-xl ${hiringCategory.color}`}>
+                          {hiringCategory.text}
+                        </span>
+                      </div>
+                      <div className="w-full bg-slate-700/50 rounded-full h-5 overflow-hidden">
+                        <div
+                          className={`h-5 rounded-full transition-all duration-1000 ${
+                            hiringProbability >= 75
+                              ? 'bg-gradient-to-r from-green-500 to-emerald-600'
+                              : hiringProbability >= 50
+                              ? 'bg-gradient-to-r from-yellow-500 to-orange-500'
+                              : 'bg-gradient-to-r from-red-500 to-rose-600'
+                          }`}
+                          style={{ width: `${hiringProbability}%` }}
+                        ></div>
                       </div>
                     </div>
-                    
-                    {/* Labels */}
-                    <div className="flex justify-between text-xs text-gray-400 mt-2 px-2">
-                      <span></span>
-                      <span className={`font-bold ${hiringCategory.color}`}>
-                        {hiringProbability}%
-                      </span>
-                      <span></span>
-                    </div>
-                  </div>
-
-                  <div className="text-center">
-                    <div className={`inline-flex items-center gap-2 px-6 py-3 ${hiringCategory.bgColor} rounded-full`}>
-                      <span className="text-white font-bold text-lg">
-                        {hiringCategory.text}
-                      </span>
-                    </div>
+                    <p className="text-slate-300 leading-relaxed text-lg">
+                      Based on your interview performance, communication skills, and answer quality.
+                    </p>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Tabs */}
-            <div className="flex gap-4 mb-6">
+            <div className="flex gap-4 mb-8">
           <button
             onClick={() => setActiveTab('overview')}
-            className={`flex-1 py-3 px-6 rounded-lg font-semibold transition-colors ${
+            className={`flex-1 py-4 px-8 rounded-[32px] font-semibold text-lg transition-all duration-200 ${
               activeTab === 'overview'
-                ? 'bg-indigo-600 text-white'
-                : 'bg-gray-800 text-gray-400 hover:text-white'
+                ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30'
+                : 'bg-slate-800/50 text-slate-400 hover:text-white hover:bg-slate-800'
             }`}
           >
             📊 Overview
           </button>
           <button
             onClick={() => setActiveTab('detailed')}
-            className={`flex-1 py-3 px-6 rounded-lg font-semibold transition-colors ${
+            className={`flex-1 py-4 px-8 rounded-[32px] font-semibold text-lg transition-all duration-200 ${
               activeTab === 'detailed'
-                ? 'bg-indigo-600 text-white'
-                : 'bg-gray-800 text-gray-400 hover:text-white'
+                ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30'
+                : 'bg-slate-800/50 text-slate-400 hover:text-white hover:bg-slate-800'
             }`}
           >
             📝 Detailed Feedback
@@ -395,27 +371,27 @@ export default function ResultsPage() {
 
         {/* Overview Tab */}
         {activeTab === 'overview' && (
-          <div className="space-y-6">         
+          <div className="space-y-8">         
 
             {/* Key Takeaways */}
-            <div className="bg-gray-800 rounded-2xl p-6 shadow-xl border border-gray-700">
-              <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                <span className="text-2xl">🎯</span>
+            <div className="bg-slate-800/30 rounded-3xl p-8 shadow-2xl border border-slate-700 backdrop-blur-sm">
+              <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+                <span className="text-3xl">🎯</span>
                 Key Takeaways
               </h3>
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {results && results.overallFeedback && results.overallFeedback.length > 0 ? (
                   results.overallFeedback.map((feedback, index) => (
-                    <div key={index} className="bg-indigo-900/20 border border-indigo-700/30 rounded-lg p-4">
-                      <div className="flex items-start gap-3 text-gray-300">
-                        <span className="text-indigo-400 font-bold mt-1">{index + 1}.</span>
-                        <p>{feedback}</p>
+                    <div key={index} className="bg-blue-900/20 border border-blue-700/40 rounded-xl p-5 backdrop-blur-sm">
+                      <div className="flex items-start gap-4 text-slate-300">
+                        <span className="text-blue-400 font-bold text-xl mt-1">{index + 1}.</span>
+                        <p className="text-base leading-relaxed">{feedback}</p>
                       </div>
                     </div>
                   ))
                 ) : results ? (
-                  <div className="bg-indigo-900/20 border border-indigo-700/30 rounded-lg p-4">
-                    <p className="text-gray-300">
+                  <div className="bg-blue-900/20 border border-blue-700/40 rounded-xl p-5 backdrop-blur-sm">
+                    <p className="text-slate-300 text-base leading-relaxed">
                       {hiringProbability >= 70 ? (
                         "Strong performance! Continue practicing with the STAR method and focus on providing specific examples with measurable outcomes."
                       ) : hiringProbability >= 40 ? (
@@ -427,15 +403,15 @@ export default function ResultsPage() {
                   </div>
                 ) : (
                   <>
-                    <div className="bg-indigo-900/20 border border-indigo-700/30 rounded-lg p-4">
-                      <p className="text-gray-300">
+                    <div className="bg-blue-900/20 border border-blue-700/40 rounded-xl p-5 backdrop-blur-sm">
+                      <p className="text-slate-300 text-base leading-relaxed">
                         Practice using the STAR method consistently across all answers and work on reducing filler words.
                       </p>
                     </div>
                     {MOCK_RESULTS.areasForImprovement.slice(0, 3).map((area, index) => (
-                      <div key={index} className="flex items-start gap-3 text-gray-300">
-                        <span className="text-indigo-400 font-bold mt-1">{index + 1}.</span>
-                        <span>{area.suggestions[0]}</span>
+                      <div key={index} className="flex items-start gap-4 text-slate-300">
+                        <span className="text-blue-400 font-bold text-xl mt-1">{index + 1}.</span>
+                        <span className="text-base">{area.suggestions[0]}</span>
                       </div>
                     ))}
                   </>
@@ -466,23 +442,23 @@ export default function ResultsPage() {
                   const hasAnswer = !results && (item as any).yourAnswer;
                   
                   return (
-                    <div key={questionId} className="bg-gray-900 rounded-lg border border-gray-700 overflow-hidden">
+                    <div key={questionId} className="bg-slate-800/30 rounded-2xl border border-slate-700 overflow-hidden backdrop-blur-sm hover:border-slate-600 transition-all">
                       {/* Question Header - Clickable */}
                       <button
                         onClick={() => toggleQuestion(questionId)}
-                        className="w-full p-4 flex items-center justify-between hover:bg-gray-800/50 transition-colors"
+                        className="w-full p-6 flex items-center justify-between hover:bg-slate-800/50 transition-colors"
                       >
                         <div className="flex items-center gap-4 flex-1 text-left">
                           <div className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 ${getScoreBg(score)}`}>
                             <span className="text-white font-bold">{score}</span>
                           </div>
                           <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-1">
-                              <span className="text-xs font-semibold text-indigo-400 uppercase">
+                            <div className="flex items-center gap-2 mb-2">
+                              <span className="text-xs font-semibold text-blue-400 uppercase tracking-wide">
                                 Question {questionId} • {topic}
                               </span>
                             </div>
-                            <h4 className="text-white font-semibold">{question}</h4>
+                            <h4 className="text-white font-semibold text-lg">{question}</h4>
                           </div>
                         </div>
                         <div className="ml-4">
@@ -499,16 +475,16 @@ export default function ResultsPage() {
 
                       {/* Expanded Content */}
                       {isExpanded && (
-                        <div className="border-t border-gray-700 p-6 space-y-6">
+                        <div className="border-t border-slate-700 p-6 space-y-6 bg-[#0a0a0f]/50">
                           {/* You Said - Show transcribed answer from context */}
                           {(results || hasAnswer) && (
                             <div>
-                              <h5 className="text-white font-semibold mb-3 flex items-center gap-2">
-                                <span className="text-lg">💬</span>
+                              <h5 className="text-white font-semibold mb-3 flex items-center gap-2 text-lg">
+                                <span className="text-xl">💬</span>
                                 You Said
                               </h5>
-                              <div className="bg-gray-800 rounded-lg p-4 border-l-4 border-indigo-600">
-                                <p className="text-gray-300 leading-relaxed italic">
+                              <div className="bg-slate-800/50 rounded-xl p-5 border-l-4 border-blue-600">
+                                <p className="text-slate-300 leading-relaxed italic text-base">
                                   "{transcripts[index]?.answer || (item as any).yourAnswer || 'No answer recorded'}"
                                 </p>
                               </div>
@@ -516,56 +492,56 @@ export default function ResultsPage() {
                           )}
 
                           {/* Score Breakdown */}
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {/* Strengths */}
-                            <div className="bg-green-900/20 border border-green-700/30 rounded-lg p-4">
-                              <h5 className="text-green-400 font-semibold mb-3 flex items-center gap-2">
+                            <div className="bg-green-900/20 border border-green-700/40 rounded-xl p-5 backdrop-blur-sm">
+                              <h5 className="text-green-400 font-semibold mb-4 flex items-center gap-2 text-lg">
                                 <span>✅</span>
                                 What You Did Well
                               </h5>
                               {strengths.length > 0 && strengths[0] !== "No strengths demonstrated - the response was inappropriate." ? (
-                                <ul className="space-y-2">
+                                <ul className="space-y-3">
                                   {strengths.map((strength: string, idx: number) => (
-                                    <li key={idx} className="text-gray-300 text-sm flex items-start gap-2">
-                                      <span className="text-green-400 mt-1">•</span>
+                                    <li key={idx} className="text-slate-300 text-sm flex items-start gap-3">
+                                      <span className="text-green-400 mt-1 text-base">•</span>
                                       <span>{strength}</span>
                                     </li>
                                   ))}
                                 </ul>
                               ) : (
-                                <p className="text-gray-500 text-sm italic">No strengths identified for this response.</p>
+                                <p className="text-slate-500 text-sm italic">No strengths identified for this response.</p>
                               )}
                             </div>
 
                             {/* Areas for Improvement */}
-                            <div className="bg-yellow-900/20 border border-yellow-700/30 rounded-lg p-4">
-                              <h5 className="text-yellow-400 font-semibold mb-3 flex items-center gap-2">
+                            <div className="bg-yellow-900/20 border border-yellow-700/40 rounded-xl p-5 backdrop-blur-sm">
+                              <h5 className="text-yellow-400 font-semibold mb-4 flex items-center gap-2 text-lg">
                                 <span>💡</span>
                                 Areas to Improve
                               </h5>
                               {improvements.length > 0 ? (
-                                <ul className="space-y-2">
+                                <ul className="space-y-3">
                                   {improvements.map((improvement: string, idx: number) => (
-                                    <li key={idx} className="text-gray-300 text-sm flex items-start gap-2">
-                                      <span className="text-yellow-400 mt-1">•</span>
+                                    <li key={idx} className="text-slate-300 text-sm flex items-start gap-3">
+                                      <span className="text-yellow-400 mt-1 text-base">•</span>
                                       <span>{improvement}</span>
                                     </li>
                                   ))}
                                 </ul>
                               ) : (
-                                <p className="text-gray-500 text-sm italic">No areas for improvement identified.</p>
+                                <p className="text-slate-500 text-sm italic">No areas for improvement identified.</p>
                               )}
                             </div>
                           </div>
 
                           {/* Suggestions - Only show if we have them (mock data) */}
                           {!results && (item as any).suggestions && (item as any).suggestions.length > 0 && (
-                            <div className="bg-indigo-900/20 border border-indigo-700/30 rounded-lg p-4">
-                              <h5 className="text-indigo-400 font-semibold mb-3 flex items-center gap-2">
+                            <div className="bg-blue-900/20 border border-blue-700/40 rounded-xl p-5 backdrop-blur-sm">
+                              <h5 className="text-blue-400 font-semibold mb-4 flex items-center gap-2 text-lg">
                                 <span>🎯</span>
                                 How to Improve This Answer
                               </h5>
-                              <ul className="space-y-2">
+                              <ul className="space-y-3">
                                 {(item as any).suggestions.map((suggestion: string, idx: number) => (
                                   <li key={idx} className="text-gray-300 text-sm flex items-start gap-2">
                                     <span className="text-indigo-400 mt-1">→</span>
@@ -624,22 +600,22 @@ export default function ResultsPage() {
         )}
 
             {/* Action Buttons */}
-            <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="mt-12 flex flex-col sm:flex-row gap-6 justify-center">
           <button
             onClick={() => router.push('/technical')}
-            className="px-8 py-4 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
+            className="px-10 py-4 bg-green-600 hover:bg-green-700 text-white font-semibold text-lg rounded-[32px] transition-all duration-200 shadow-lg shadow-green-600/30 hover:shadow-green-600/50 flex items-center justify-center gap-2"
           >
             💻 Start Technical Interview
           </button>
           <button
             onClick={() => router.push('/upload')}
-            className="px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2"
+            className="px-10 py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-lg rounded-[32px] transition-all duration-200 shadow-lg shadow-blue-600/30 hover:shadow-blue-600/50 flex items-center justify-center gap-2"
           >
             🔄 Try Another Interview
           </button>
           <button
             onClick={() => router.push('/')}
-            className="px-8 py-4 bg-gray-800 hover:bg-gray-700 text-white font-semibold rounded-lg transition-colors"
+            className="px-10 py-4 bg-slate-700 hover:bg-slate-600 text-white font-semibold text-lg rounded-[32px] transition-all duration-200"
           >
             🏠 Back to Home
           </button>

@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
-import type { InterviewQuestion } from '@/lib/api';
+import React, { createContext, useContext, useState, ReactNode } from "react";
+import type { InterviewQuestion } from "@/lib/api";
 
 interface InterviewContextType {
   sessionId: string | null;
@@ -9,9 +9,6 @@ interface InterviewContextType {
   
   resumeText: string;
   setResumeText: (text: string) => void;
-  
-  resumeFileName: string;
-  setResumeFileName: (name: string) => void;
   
   jobTitle: string;
   setJobTitle: (title: string) => void;
@@ -35,12 +32,13 @@ interface InterviewContextType {
   setTranscripts: (transcripts: Array<{ question: string; answer: string }>) => void;
 }
 
-const InterviewContext = createContext<InterviewContextType | undefined>(undefined);
+const InterviewContext = createContext<InterviewContextType | undefined>(
+    undefined
+);
 
 export function InterviewProvider({ children }: { children: ReactNode }) {
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [resumeText, setResumeText] = useState('');
-  const [resumeFileName, setResumeFileName] = useState('');
   const [jobTitle, setJobTitle] = useState('');
   const [jobInfo, setJobInfo] = useState('');
   const [companyName, setCompanyName] = useState('');
@@ -56,8 +54,6 @@ export function InterviewProvider({ children }: { children: ReactNode }) {
         setSessionId,
         resumeText,
         setResumeText,
-        resumeFileName,
-        setResumeFileName,
         jobTitle,
         setJobTitle,
         jobInfo,
@@ -80,9 +76,11 @@ export function InterviewProvider({ children }: { children: ReactNode }) {
 }
 
 export function useInterview() {
-  const context = useContext(InterviewContext);
-  if (context === undefined) {
-    throw new Error('useInterview must be used within an InterviewProvider');
-  }
-  return context;
+    const context = useContext(InterviewContext);
+    if (context === undefined) {
+        throw new Error(
+            "useInterview must be used within an InterviewProvider"
+        );
+    }
+    return context;
 }

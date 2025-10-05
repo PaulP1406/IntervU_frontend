@@ -536,12 +536,11 @@ export default function InterviewPage() {
       
       {/* Loading Overlay for Transcription */}
       {isTranscribing && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[100]">
-          <div className="bg-gray-800 rounded-2xl p-8 flex flex-col items-center gap-4">
-            <LoadingSpinner />
-            <div className="text-white text-xl font-semibold">Transcribing your answer...</div>
-            <div className="text-gray-400 text-sm">Please wait while we process your response</div>
-          </div>
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
+          <LoadingSpinner 
+            message="Transcribing your answer..."
+            size="large"
+          />
         </div>
       )}
       

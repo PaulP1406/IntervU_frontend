@@ -187,34 +187,32 @@ export default function UploadPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] pt-24">
+    <div className="min-h-screen bg-[#0a0a0f] pt-24 sm:pt-28 md:pt-32">
       <Header />
 
       {/* Top Leaves Decoration with Title */}
-      <section className="flex justify-between items-center w-full relative">
+      <section className="flex justify-between items-center w-full relative mb-8 md:mb-0">
         <img 
           src="/leavesLeft.svg"
           alt="Decorative leaves"
-          className="h-auto"
-          style={{ width: '15%' }}
+          className="h-auto w-[10%] md:w-[15%]"
         />
-        <div className="absolute left-1/2 transform -translate-x-1/2 text-center">
-          <h1 className="text-4xl font-bold text-white">
+        <div className="absolute left-1/2 transform -translate-x-1/2 text-center px-4">
+          <h1 className="text-2xl md:text-4xl font-bold text-white">
             Upload Your Resume
           </h1>
         </div>
         <img 
           src="/leavesRight.svg"
           alt="Decorative leaves"
-          className="h-auto"
-          style={{ width: '15%' }}
+          className="h-auto w-[10%] md:w-[15%]"
         />
       </section>
 
-      <div className="container mx-auto max-w-5xl py-12 px-4">
+      <div className="container mx-auto max-w-5xl py-6 md:py-12 px-4">
 
         <form onSubmit={handleSubmit}>
-          <div className="grid md:grid-cols-2 gap-8">
+          <div className="grid md:grid-cols-2 gap-6 md:gap-8">
           {/* Left Column - Resume Upload */}
           <div className="flex flex-col">
             <label className="block text-sm font-medium text-gray-200 mb-2">
@@ -234,10 +232,10 @@ export default function UploadPage() {
                 <img
                   src="/raccoonUpload.svg"
                   alt="Upload"
-                  className="mx-auto h-48 w-48"
+                  className="mx-auto h-32 w-32 md:h-48 md:w-48"
                 />
               </div>
-              <p className="text-xl font-semibold text-gray-700 dark:text-gray-200 mb-2">
+              <p className="text-lg md:text-xl font-semibold text-gray-700 dark:text-gray-200 mb-2">
                 Drop Files Here
               </p>
               <p className="text-gray-500 dark:text-gray-400 mb-4">
@@ -355,17 +353,17 @@ export default function UploadPage() {
             </div>
 
             {/* Bottom Row - Go Back Button and Submit Button */}
-            <div className="flex justify-between items-center">
+            <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
               <button
                 type="button"
                 onClick={() => router.push('/')}
-                className="bg-white hover:bg-gray-200 text-gray-900 text-lg font-semibold px-12 py-4 rounded-[32px] transition-colors duration-200"
+                className="w-full sm:w-auto bg-white hover:bg-gray-200 text-gray-900 text-base md:text-lg font-semibold px-8 md:px-12 py-3 md:py-4 rounded-[32px] transition-colors duration-200"
               >
                 Go Back
               </button>
               <button
                 type="submit"
-                className="bg-blue-600 hover:bg-blue-700 text-white text-lg font-semibold px-12 py-4 rounded-[32px] transition-colors duration-200"
+                className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white text-base md:text-lg font-semibold px-8 md:px-12 py-3 md:py-4 rounded-[32px] transition-colors duration-200"
               >
                 Continue
               </button>
@@ -376,18 +374,16 @@ export default function UploadPage() {
       </div>
 
       {/* Bottom Leaves Decoration */}
-      <section className="flex justify-between w-full mt-12">
+      <section className="flex justify-between w-full mt-8 md:mt-12">
         <img 
           src="/leavesLeft.svg"
           alt="Decorative leaves"
-          className="h-auto"
-          style={{ width: '40%' }}
+          className="h-auto w-[25%] md:w-[40%]"
         />
         <img 
           src="/leavesRight.svg"
           alt="Decorative leaves"
-          className="h-auto"
-          style={{ width: '40%' }}
+          className="h-auto w-[25%] md:w-[40%]"
         />
       </section>
     </div>

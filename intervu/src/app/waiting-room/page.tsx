@@ -156,33 +156,31 @@ export default function WaitingRoomPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] pt-24">
+    <div className="min-h-screen bg-[#0a0a0f] pt-24 sm:pt-28 md:pt-32">
       <Header />
       
-      <div className="py-12 px-8 relative">
+      <div className="py-6 md:py-12 px-4 md:px-8 relative">
         {/* Left Leaves */}
         <img 
           src="/leavesLeft.svg"
           alt="Decorative leaves"
-          className="absolute left-0 top-0 h-auto pointer-events-none"
-          style={{ width: '15%' }}
+          className="absolute left-0 top-0 h-auto pointer-events-none w-[10%] md:w-[15%]"
         />
         
         {/* Right Leaves */}
         <img 
           src="/leavesRight.svg"
           alt="Decorative leaves"
-          className="absolute right-0 top-0 h-auto pointer-events-none"
-          style={{ width: '15%' }}
+          className="absolute right-0 top-0 h-auto pointer-events-none w-[10%] md:w-[15%]"
         />
         
-        <div className="container mx-auto max-w-3xl relative z-10">
+        <div className="container mx-auto max-w-3xl relative z-10 px-2">
           {/* Main Card */}
           <div className="bg-gray-700 rounded-xl overflow-hidden shadow-xl">
             {/* Header Section with Logo and Title */}
-            <div className="bg-gray-800 p-6 flex items-start gap-4">
+            <div className="bg-gray-800 p-4 md:p-6 flex flex-col sm:flex-row items-start gap-4">
               {/* Logo */}
-              <div className="w-32 h-20 bg-gradient-to-br from-purple-500 to-indigo-600 rounded flex-shrink-0 flex items-end justify-center overflow-hidden">
+              <div className="w-24 h-16 md:w-32 md:h-20 bg-gradient-to-br from-purple-500 to-indigo-600 rounded flex-shrink-0 flex items-end justify-center overflow-hidden">
                 <Image
                   src="/raccoonWave1.svg"
                   alt="IntervU Logo"
@@ -194,10 +192,10 @@ export default function WaitingRoomPage() {
               
               {/* Title Section */}
               <div className="flex-1">
-                <h1 className="text-3xl font-bold text-white mb-4">
+                <h1 className="text-2xl md:text-3xl font-bold text-white mb-2 md:mb-4">
                   {jobTitle ? jobTitle.charAt(0).toUpperCase() + jobTitle.slice(1) : 'Job'} Interview
                 </h1>
-                <p className="text-gray-300 text-md">
+                <p className="text-gray-300 text-sm md:text-md">
                   {isHostReady 
                     ? 'Your host has joined the room and is ready to let you in. Good luck!' 
                     : 'Waiting for host to join...'}
@@ -206,12 +204,12 @@ export default function WaitingRoomPage() {
             </div>
 
             {/* Video Preview */}
-            <div className="relative bg-gray-900 aspect-video p-8">
+            <div className="relative bg-gray-900 aspect-video p-4 md:p-8">
               {!cameraPermissionGranted ? (
-                <div className="absolute inset-8 flex flex-col items-center justify-center bg-gray-800 rounded-lg">
-                  <div className="text-center p-8">
+                <div className="absolute inset-4 md:inset-8 flex flex-col items-center justify-center bg-gray-800 rounded-lg">
+                  <div className="text-center p-4 md:p-8">
                     <svg
-                      className="mx-auto h-24 w-24 text-gray-400 mb-4"
+                      className="mx-auto h-16 w-16 md:h-24 md:w-24 text-gray-400 mb-4"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -223,11 +221,11 @@ export default function WaitingRoomPage() {
                         d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
                       />
                     </svg>
-                    <h2 className="text-white text-xl font-semibold mb-2">Camera Access Required</h2>
-                    <p className="text-gray-400 mb-6">We need access to your camera and microphone</p>
+                    <h2 className="text-white text-lg md:text-xl font-semibold mb-2">Camera Access Required</h2>
+                    <p className="text-gray-400 text-sm md:text-base mb-4 md:mb-6">We need access to your camera and microphone</p>
                     <button
                       onClick={requestMediaAccess}
-                      className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors"
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-6 md:px-8 py-2 md:py-3 rounded-lg font-semibold transition-colors text-sm md:text-base"
                     >
                       Enable Camera & Microphone
                     </button>
@@ -235,7 +233,7 @@ export default function WaitingRoomPage() {
                 </div>
               ) : (
                 <>
-                  <div className="absolute inset-8 bg-gray-800 rounded-lg overflow-hidden">
+                  <div className="absolute inset-4 md:inset-8 bg-gray-800 rounded-lg overflow-hidden">
                     <video
                       ref={videoRef}
                       autoPlay
@@ -246,9 +244,9 @@ export default function WaitingRoomPage() {
                     {!cameraEnabled && (
                       <div className="absolute inset-0 flex items-center justify-center bg-gray-800">
                         <div className="text-center">
-                          <div className="w-24 h-24 rounded-full bg-blue-600 flex items-center justify-center mx-auto mb-4">
+                          <div className="w-16 h-16 md:w-24 md:h-24 rounded-full bg-blue-600 flex items-center justify-center mx-auto mb-4">
                             <svg
-                              className="w-12 h-12 text-white"
+                              className="w-8 h-8 md:w-12 md:h-12 text-white"
                               fill="none"
                               viewBox="0 0 24 24"
                               stroke="currentColor"
@@ -261,7 +259,7 @@ export default function WaitingRoomPage() {
                               />
                             </svg>
                           </div>
-                          <p className="text-white text-lg">Camera Off</p>
+                          <p className="text-white text-base md:text-lg">Camera Off</p>
                         </div>
                       </div>
                     )}
@@ -316,17 +314,17 @@ export default function WaitingRoomPage() {
           </div>
 
         {/* Countdown and Action Buttons */}
-        <div className="flex justify-between items-center mt-4">
+        <div className="flex flex-col sm:flex-row justify-between items-center mt-4 gap-4">
           <button
             onClick={() => router.push('/topics')}
-            className="bg-white hover:bg-gray-200 text-gray-900 text-lg font-semibold px-8 py-4 rounded-[32px] transition-colors duration-200"
+            className="w-full sm:w-auto bg-white hover:bg-gray-200 text-gray-900 text-base md:text-lg font-semibold px-6 md:px-8 py-3 md:py-4 rounded-[32px] transition-colors duration-200"
           >
             Go Back
           </button>
           
           {/* Countdown */}
           {countdown !== null && (
-            <div className="text-6xl font-bold text-blue-400 animate-pulse">
+            <div className="text-4xl md:text-6xl font-bold text-blue-400 animate-pulse">
               {countdown}
             </div>
           )}
@@ -334,7 +332,7 @@ export default function WaitingRoomPage() {
           <button
             onClick={handleStart}
             disabled={!isReady || countdown !== null}
-            className={`text-lg font-semibold px-8 py-4 rounded-[32px] transition-colors duration-200 ${
+            className={`w-full sm:w-auto text-base md:text-lg font-semibold px-6 md:px-8 py-3 md:py-4 rounded-[32px] transition-colors duration-200 ${
               isReady && countdown === null
                 ? 'bg-green-600 hover:bg-green-700 text-white'
                 : 'bg-gray-600 text-gray-400 cursor-not-allowed'

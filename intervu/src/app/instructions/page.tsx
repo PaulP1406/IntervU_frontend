@@ -142,31 +142,33 @@ export default function InstructionsPage() {
   }, [isSpeaking]);
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] pt-24 relative overflow-hidden">
+    <div className="min-h-screen bg-[#0a0a0f] pt-24 sm:pt-28 md:pt-32 relative overflow-hidden">
       <Header />
       
       {/* Decorative Leaves - Background */}
-      <div className="absolute top-20 left-0 pointer-events-none z-0">
+      <div className="absolute top-20 left-0 pointer-events-none z-0 w-[15%] md:w-auto">
         <Image
           src="/leavesLeft.svg"
           alt=""
           width={350}
           height={350}
+          className="w-full h-auto"
         />
       </div>
-      <div className="absolute top-20 right-0 pointer-events-none z-0">
+      <div className="absolute top-20 right-0 pointer-events-none z-0 w-[15%] md:w-auto">
         <Image
           src="/leavesRight.svg"
           alt=""
           width={350}
           height={350}
+          className="w-full h-auto"
         />
       </div>
       
-      <div className="max-w-4xl mx-auto p-6 relative z-10">
+      <div className="max-w-4xl mx-auto p-4 md:p-6 relative z-10">
         {/* Page Title */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 flex items-center justify-center gap-3">
+        <div className="text-center mb-8 md:mb-12">
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 flex items-center justify-center gap-3">
             How It Works
             {/* <Image
               src="/logo.svg"
@@ -179,7 +181,7 @@ export default function InstructionsPage() {
         </div>
 
         {/* Carousel */}
-        <div className="mb-8 relative">
+        <div className="mb-6 md:mb-8 relative">
           <div className="overflow-hidden">
             <div 
               className="flex transition-transform duration-500 ease-in-out"
@@ -188,21 +190,21 @@ export default function InstructionsPage() {
               {steps.map((step, index) => (
                 <div
                   key={index}
-                  className="w-full flex-shrink-0 px-4"
+                  className="w-full flex-shrink-0 px-2 md:px-4"
                 >
-                  <div className="bg-gray-800 rounded-2xl p-12 shadow-xl border border-gray-700 min-h-[400px] flex flex-col items-center justify-center text-center">
+                  <div className="bg-gray-800 rounded-2xl p-6 md:p-12 shadow-xl border border-gray-700 min-h-[350px] md:min-h-[400px] flex flex-col items-center justify-center text-center">
                     {/* Step Number */}
-                    <div className="w-20 h-20 bg-indigo-600 rounded-full flex items-center justify-center mb-6">
-                      <span className="text-white font-bold text-3xl">{step.number}</span>
+                    <div className="w-16 h-16 md:w-20 md:h-20 bg-indigo-600 rounded-full flex items-center justify-center mb-4 md:mb-6">
+                      <span className="text-white font-bold text-2xl md:text-3xl">{step.number}</span>
                     </div>
                     
                     {/* Step Title */}
-                    <h3 className="text-3xl font-semibold text-white mb-4">
+                    <h3 className="text-2xl md:text-3xl font-semibold text-white mb-3 md:mb-4">
                       {step.title}
                     </h3>
                     
                     {/* Step Description */}
-                    <p className="text-gray-300 text-lg leading-relaxed max-w-2xl">
+                    <p className="text-gray-300 text-base md:text-lg leading-relaxed max-w-2xl">
                       {step.description}
                     </p>
                   </div>
@@ -214,20 +216,20 @@ export default function InstructionsPage() {
           {/* Navigation Buttons */}
           <button
             onClick={prevStep}
-            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 md:-translate-x-12 bg-indigo-600 hover:bg-indigo-700 text-white w-12 h-12 rounded-full flex items-center justify-center transition-colors shadow-lg z-10"
+            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2 sm:-translate-x-4 md:-translate-x-12 bg-indigo-600 hover:bg-indigo-700 text-white w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center transition-colors shadow-lg z-10"
             aria-label="Previous step"
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
           
           <button
             onClick={nextStep}
-            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 md:translate-x-12 bg-indigo-600 hover:bg-indigo-700 text-white w-12 h-12 rounded-full flex items-center justify-center transition-colors shadow-lg z-10"
+            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-2 sm:translate-x-4 md:translate-x-12 bg-indigo-600 hover:bg-indigo-700 text-white w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center transition-colors shadow-lg z-10"
             aria-label="Next step"
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </button>
@@ -250,11 +252,11 @@ export default function InstructionsPage() {
         </div>
 
         {/* Tips Card */}
-        <div className="bg-gradient-to-r from-indigo-900/50 to-purple-900/50 rounded-2xl p-6 shadow-xl border border-indigo-700/50 mb-8">
-          <h3 className="text-2xl font-semibold text-white mb-4 flex items-center gap-2">
+        <div className="bg-gradient-to-r from-indigo-900/50 to-purple-900/50 rounded-2xl p-4 md:p-6 shadow-xl border border-indigo-700/50 mb-6 md:mb-8">
+          <h3 className="text-xl md:text-2xl font-semibold text-white mb-3 md:mb-4 flex items-center gap-2">
             💡 Pro Tips for Success
           </h3>
-          <ul className="space-y-3 text-gray-200">
+          <ul className="space-y-2 md:space-y-3 text-gray-200 text-sm md:text-base">
             <li className="flex items-start gap-2">
               <span className="text-yellow-400 mt-1">•</span>
               <span>Find a quiet space with good lighting for your video recording</span>
@@ -271,16 +273,16 @@ export default function InstructionsPage() {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+        <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center">
           <button
             onClick={() => router.push('/')}
-            className="px-12 py-4 bg-gray-700 hover:bg-gray-600 text-white text-lg font-semibold rounded-[32px] transition-colors duration-200"
+            className="w-full sm:w-auto px-8 md:px-12 py-3 md:py-4 bg-gray-700 hover:bg-gray-600 text-white text-base md:text-lg font-semibold rounded-[32px] transition-colors duration-200"
           >
             Back to Home
           </button>
           <button
             onClick={() => router.push('/upload')}
-            className="px-12 py-4 bg-blue-600 hover:bg-blue-700 text-white text-lg font-semibold rounded-[32px] transition-colors duration-200"
+            className="w-full sm:w-auto px-8 md:px-12 py-3 md:py-4 bg-blue-600 hover:bg-blue-700 text-white text-base md:text-lg font-semibold rounded-[32px] transition-colors duration-200"
           >
             Get Started
           </button>
@@ -289,13 +291,13 @@ export default function InstructionsPage() {
       </div>
 
       {/* Fixed Raccoon Mascot - Bottom Right */}
-      <div className="hidden md:block fixed bottom-0 right-6 z-50">
+      <div className="hidden md:block fixed bottom-0 right-2 lg:right-6 z-50">
         <Image
           src="/raccoonWave1.svg"
           alt="IntervU Mascot"
           width={300}
           height={300}
-          className="drop-shadow-2xl"
+          className="drop-shadow-2xl w-48 h-48 lg:w-[300px] lg:h-[300px]"
         />
       </div>
     </div>

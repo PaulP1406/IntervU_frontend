@@ -600,12 +600,7 @@ export default function TechnicalInterview() {
             {/* Header */}
             <div className="bg-gray-800 border-b border-gray-700 px-4 py-3 flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                    <button
-                        onClick={() => router.push("/results")}
-                        className="text-gray-400 hover:text-white transition-colors"
-                    >
-                        ← Back
-                    </button>
+                    
                     <h1 className="text-white font-semibold text-lg">
                         Technical Interview
                     </h1>
@@ -1102,33 +1097,41 @@ export default function TechnicalInterview() {
                                 </span>
                             )}
                         </div>
-                        <div className="flex gap-3">
+                        <div className="flex w-full items-center justify-between">
                             <button
-                                onClick={handleRunCode}
-                                disabled={isRunning || !problem}
-                                className="px-6 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-md transition-colors disabled:opacity-50"
+                                onClick={() => router.push("/results")}
+                                className="px-6 py-2 bg-white hover:bg-amber-50 text-black rounded-md transition-colors"
                             >
-                                {isRunning ? "Running..." : "Run"}
+                                Quit
                             </button>
-                            <button
-                                onClick={handleSubmit}
-                                disabled={isRunning || !problem}
-                                className="px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-md transition-colors disabled:opacity-50"
-                            >
-                                Submit
-                            </button>
-                            <button
-                                onClick={handleFinishInterview}
-                                disabled={!hasSuccessfulSubmission || isFinishing}
-                                className={`px-6 py-2 font-semibold rounded-md transition-colors ${
-                                    hasSuccessfulSubmission
-                                        ? 'bg-blue-600 hover:bg-blue-700 text-white'
-                                        : 'bg-gray-600 text-gray-400 cursor-not-allowed'
-                                } disabled:opacity-50`}
-                                title={!hasSuccessfulSubmission ? 'Complete at least one successful submission first' : 'Finish interview and see results'}
-                            >
-                                {isFinishing ? 'Finishing...' : 'Finish Interview'}
-                            </button>
+                    <       div className="flex gap-3">
+                                <button
+                                    onClick={handleRunCode}
+                                    disabled={isRunning || !problem}
+                                    className="px-6 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-md transition-colors disabled:opacity-50"
+                                >
+                                    {isRunning ? "Running..." : "Run"}
+                                </button>
+                                <button
+                                    onClick={handleSubmit}
+                                    disabled={isRunning || !problem}
+                                    className="px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-md transition-colors disabled:opacity-50"
+                                >
+                                    Submit
+                                </button>
+                                <button
+                                    onClick={handleFinishInterview}
+                                    disabled={!hasSuccessfulSubmission || isFinishing}
+                                    className={`px-6 py-2 font-semibold rounded-md transition-colors ${
+                                        hasSuccessfulSubmission
+                                            ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                                            : 'bg-gray-600 text-gray-400 cursor-not-allowed'
+                                    } disabled:opacity-50`}
+                                    title={!hasSuccessfulSubmission ? 'Complete at least one successful submission first' : 'Finish interview and see results'}
+                                >
+                                    {isFinishing ? 'Finishing...' : 'Finish Interview'}
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

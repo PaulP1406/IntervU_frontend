@@ -12,6 +12,11 @@ const rethinkSans = Rethink_Sans({
 export const metadata: Metadata = {
   title: "IntervU - AI Interview Preparation",
   description: "Prepare for your next interview with AI-powered mock interviews",
+  icons: {
+    icon: '/raccoonSmile.svg',
+    shortcut: '/raccoonSmile.svg',
+    apple: '/raccoonSmile.svg',
+  },
 };
 
 export default function RootLayout({

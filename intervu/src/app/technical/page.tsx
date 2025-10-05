@@ -153,7 +153,14 @@ export default function TechnicalInterview() {
         setIsLoading(true);
         try {
             // Use difficulty from context (selected in upload form)
-            const question = await getTechnicalQuestion(technicalDifficulty);
+            const difficultyMap: Record<string, "Easy" | "Medium" | "Hard"> = {
+                easy: "Easy",
+                medium: "Medium",
+                hard: "Hard",
+            };
+            const question = await getTechnicalQuestion(
+                difficultyMap[technicalDifficulty.toLowerCase()] || "Easy"
+            );
             setProblem(question);
             setCode(getStarterCode(language, question.question.functionName));
             setTestResults(null);

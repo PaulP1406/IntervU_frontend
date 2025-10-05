@@ -33,6 +33,9 @@ interface InterviewContextType {
   
   transcripts: Array<{ question: string; answer: string }>;
   setTranscripts: (transcripts: Array<{ question: string; answer: string }>) => void;
+
+  technicalDifficulty: string;
+  
 }
 
 const InterviewContext = createContext<InterviewContextType | undefined>(undefined);

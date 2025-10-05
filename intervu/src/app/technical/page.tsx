@@ -10,6 +10,7 @@ import {
     createInterviewSession,
     type TechnicalQuestion,
     type ExecuteCodeResponse,
+    type TechnicalFeedbackRequest,
 } from "@/lib/api";
 import { useInterview } from "@/context/InterviewContext";
 import { INTERVIEWER_VOICE } from "@/lib/constants";
@@ -592,7 +593,7 @@ export default function TechnicalInterview() {
                                     </div>
 
                                     {/* Description */}
-                                    <div className="text-gray-300 leading-relaxed text-xl whitespace-pre-line">
+                                    <div className="text-gray-300 leading-relaxed text-lg whitespace-pre-line">
                                         {problem.question.description}
                                     </div>
 
@@ -632,7 +633,7 @@ export default function TechnicalInterview() {
                                     </div>
 
                                     {/* AI Interviewer Section */}
-                                    <div className="space-y-4 mt-6 w-1/2">
+                                    <div className="space-y-4 w-1/3">
                                         <p className="text-white font-semibold text-lg">
                                             AI Interviewer
                                         </p>
@@ -1000,6 +1001,37 @@ export default function TechnicalInterview() {
                                 className="px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-md transition-colors disabled:opacity-50"
                             >
                                 Submit
+                            </button>
+                            <button
+                                onClick={() => {
+                                    if (!testResults?.success || !problem)
+                                        return;
+                                    try {
+                                        const payload: TechnicalFeedbackRequest =
+                                            {
+                                                sessionId: sessionId || "",
+                                                questionId: problem.id,
+                                                userCode: code,
+                                                hintsUsed: previousHints.length,
+                                                isCompleted: true,
+                                                timeTaken: timer,
+                                            };
+                                        sessionStorage.setItem(
+                                            "technicalFeedbackPayload",
+                                            JSON.stringify(payload)
+                                        );
+                                    } catch (e) {
+                                        console.error(
+                                            "Failed to persist technical feedback payload:",
+                                            e
+                                        );
+                                    }
+                                    router.push("/technical-feedback");
+                                }}
+                                disabled={!testResults?.success}
+                                className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-md transition-colors disabled:opacity-50"
+                            >
+                                Finish
                             </button>
                         </div>
                     </div>

@@ -21,6 +21,12 @@ declare global {
         webkitSpeechRecognition: any;
     }
 }
+import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import Editor from '@monaco-editor/react';
+import { getTechnicalQuestion, executeCode, getHint, type TechnicalQuestion, type ExecuteCodeResponse } from '@/lib/api';
+import { useInterview } from '@/context/InterviewContext';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 // Generate starter code based on function name
 const getStarterCode = (language: string, functionName: string) => {
@@ -472,6 +478,129 @@ export default function TechnicalInterview() {
                     <h1 className="text-white font-semibold text-lg">
                         Technical Interview
                     </h1>
+  const handleReset = () => {
+    if (problem) {
+      setCode(getStarterCode(language, problem.question.functionName));
+    }
+    setTestResults(null);
+  };
+
+  const getMonacoLanguage = (lang: string) => {
+    switch (lang) {
+      case 'python': return 'python';
+      case 'javascript': return 'javascript';
+      case 'cpp': return 'cpp';
+      case 'java': return 'java';
+      default: return 'python';
+    }
+  };
+
+  const getDifficultyColor = (difficulty: string) => {
+    switch (difficulty.toLowerCase()) {
+      case 'easy': return 'text-green-500';
+      case 'medium': return 'text-yellow-500';
+      case 'hard': return 'text-red-500';
+      default: return 'text-gray-500';
+    }
+  };
+
+  return (
+    <div className="h-screen bg-gray-900 flex flex-col relative">
+      {/* Loading Overlay */}
+      {(isLoading || isRunning || isGettingHint) && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
+          <LoadingSpinner 
+            message={
+              isLoading ? 'Loading technical question...' :
+              isRunning ? 'Executing your code...' :
+              'Getting hint...'
+            }
+            size="large"
+          />
+        </div>
+      )}
+
+      {/* Header */}
+      <div className="bg-gray-800 border-b border-gray-700 px-4 py-3 flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() => router.push('/results')}
+            className="text-gray-400 hover:text-white transition-colors"
+          >
+            ← Back
+          </button>
+          <h1 className="text-white font-semibold text-lg">Technical Interview</h1>
+          <select
+            value={difficulty}
+            onChange={(e) => handleDifficultyChange(e.target.value as any)}
+            className="bg-gray-700 text-white px-3 py-1.5 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+          >
+            <option value="Easy">Easy</option>
+            <option value="Medium">Medium</option>
+            <option value="Hard">Hard</option>
+          </select>
+        </div>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={handleGetHint}
+            disabled={isGettingHint}
+            className="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-md transition-colors text-sm disabled:opacity-50"
+          >
+            💡 {isGettingHint ? 'Getting Hint...' : 'Get Hint'}
+          </button>
+          <button
+            onClick={() => router.push('/')}
+            className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-md transition-colors text-sm"
+          >
+            🏠 Home
+          </button>
+        </div>
+      </div>
+
+      {/* Main Content - Split Panel */}
+      <div className="flex-1 flex overflow-hidden">
+        {/* Left Panel - Problem Description */}
+        <div className="w-1/2 border-r border-gray-700 flex flex-col bg-gray-900">
+          {/* Tabs */}
+          <div className="flex border-b border-gray-700 bg-gray-800">
+            <button
+              onClick={() => setSelectedTab('description')}
+              className={`px-4 py-3 text-sm font-medium transition-colors ${
+                selectedTab === 'description'
+                  ? 'text-white border-b-2 border-green-500'
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              Description
+            </button>
+            <button
+              onClick={() => setSelectedTab('submissions')}
+              className={`px-4 py-3 text-sm font-medium transition-colors ${
+                selectedTab === 'submissions'
+                  ? 'text-white border-b-2 border-green-500'
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              Submissions
+            </button>
+            <button
+              onClick={() => setSelectedTab('notes')}
+              className={`px-4 py-3 text-sm font-medium transition-colors ${
+                selectedTab === 'notes'
+                  ? 'text-white border-b-2 border-green-500'
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              Notes
+            </button>
+          </div>
+
+          {/* Tab Content */}
+          <div className="flex-1 overflow-y-auto p-6">
+            {selectedTab === 'description' && (
+              isLoading ? (
+                <div className="text-center py-12">
+                  <p className="text-gray-400">Loading question...</p>
                 </div>
                 <div className="flex items-center gap-3">
                     <div className="px-4 py-2 bg-gray-700 text-white rounded-md text-sm font-mono">

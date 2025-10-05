@@ -105,13 +105,39 @@ export default function InstructionsPage() {
   }, [isSpeaking]);
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] pt-24">
+    <div className="min-h-screen bg-[#0a0a0f] pt-24 relative overflow-hidden">
       <Header />
-      <div className="max-w-4xl mx-auto p-6">
+      
+      {/* Decorative Leaves - Background */}
+      <div className="absolute top-20 left-0 pointer-events-none z-0">
+        <Image
+          src="/leavesLeft.svg"
+          alt=""
+          width={350}
+          height={350}
+        />
+      </div>
+      <div className="absolute top-40 right-0 pointer-events-none z-0">
+        <Image
+          src="/leavesRight.svg"
+          alt=""
+          width={350}
+          height={350}
+        />
+      </div>
+      
+      <div className="max-w-4xl mx-auto p-6 relative z-10">
         {/* Page Title */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-            How IntervU Works
+          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 flex items-center justify-center gap-3">
+            How It Works
+            {/* <Image
+              src="/logo.svg"
+              alt="IntervU"
+              width={180}
+              height={45}
+              className="inline-block"
+            /> */}
           </h1>
         </div>
 
@@ -128,8 +154,7 @@ export default function InstructionsPage() {
                   Upload Your Resume
                 </h3>
                 <p className="text-gray-300 leading-relaxed">
-                  Start by uploading your resume in PDF format. Our AI will analyze your experience, 
-                  skills, and background to create personalized interview questions that match your profile.
+                  Upload your resume in PDF format. Our AI analyzes your experience, skills, and background to create personalized interview questions tailored to your profile.
                 </p>
               </div>
             </div>
@@ -144,8 +169,7 @@ export default function InstructionsPage() {
                   Provide Job Details
                 </h3>
                 <p className="text-gray-300 leading-relaxed">
-                  Enter the job title, company name, and job description you're applying for. 
-                  This helps us tailor the interview questions to be relevant to your target role.
+                  Enter the job title, company name, and job description you're applying for. This helps us generate interview questions that are directly relevant to your target position.
                 </p>
               </div>
             </div>
@@ -160,8 +184,7 @@ export default function InstructionsPage() {
                   Select Interview Topics
                 </h3>
                 <p className="text-gray-300 leading-relaxed">
-                  Choose the areas you want to focus on, such as Technical Skills, Leadership, 
-                  Problem Solving, or Communication. Select at least 3 topics for a comprehensive practice session.
+                  Choose at least 3 focus areas such as Technical Skills, Leadership, Problem Solving, or Communication. This ensures a comprehensive practice session covering all important aspects.
                 </p>
               </div>
             </div>
@@ -176,9 +199,7 @@ export default function InstructionsPage() {
                   Practice Your Interview
                 </h3>
                 <p className="text-gray-300 leading-relaxed">
-                  Answer AI-generated questions via video recording. You'll have 2 minutes per question. 
-                  Click "Start Answer" to begin recording, and "Stop" when you're done. Your responses 
-                  will be automatically transcribed and analyzed.
+                  Answer AI-generated questions via video recording. You have 2 minutes per question to provide thoughtful responses. Click "Start Answer" to begin and "Stop" when finished. Your answers are automatically transcribed and analyzed.
                 </p>
               </div>
             </div>
@@ -193,26 +214,8 @@ export default function InstructionsPage() {
                   Receive Detailed Feedback
                 </h3>
                 <p className="text-gray-300 leading-relaxed">
-                  After completing all questions, you'll receive comprehensive feedback including:
+                  After completing all questions, receive comprehensive feedback including your overall score, question-by-question analysis, strengths and areas for improvement, plus actionable tips to enhance your interview skills.
                 </p>
-                <ul className="mt-3 space-y-2 text-gray-300">
-                  <li className="flex items-start gap-2">
-                    <span className="text-green-400 font-bold">•</span>
-                    <span><strong>Overall Score:</strong> Your hiring probability and performance rating</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-green-400 font-bold">•</span>
-                    <span><strong>Question-by-Question Analysis:</strong> Detailed breakdown of each answer</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-green-400 font-bold">•</span>
-                    <span><strong>Strengths & Areas for Improvement:</strong> Personalized recommendations</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-green-400 font-bold">•</span>
-                    <span><strong>Key Takeaways:</strong> Actionable tips to improve your interview skills</span>
-                  </li>
-                </ul>
               </div>
             </div>
           </div>
@@ -236,14 +239,6 @@ export default function InstructionsPage() {
               <span className="text-yellow-400 mt-1">•</span>
               <span>Speak clearly and maintain eye contact with the camera</span>
             </li>
-            <li className="flex items-start gap-2">
-              <span className="text-yellow-400 mt-1">•</span>
-              <span>Take your time to think before answering - quality over speed</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-yellow-400 mt-1">•</span>
-              <span>Review the hints if you need guidance on how to approach a question</span>
-            </li>
           </ul>
         </div>
 
@@ -262,13 +257,6 @@ export default function InstructionsPage() {
             Get Started
           </button>
           
-        </div>
-
-        {/* Footer Note */}
-        <div className="mt-8 text-center">
-          <p className="text-gray-400 text-sm">
-            Your data is secure and private. We use AI to provide feedback, but your information is never shared.
-          </p>
         </div>
       </div>
 

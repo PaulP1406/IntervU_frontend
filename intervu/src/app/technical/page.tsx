@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import Editor from "@monaco-editor/react";
+import Header from "@/components/Header";
 import {
     getTechnicalQuestion,
     executeCode,
@@ -223,10 +224,10 @@ export default function TechnicalInterview() {
 
             if (result.success) {
                 setHasSuccessfulSubmission(true);
-                alert("✅ All test cases passed! Great job! You can now finish the interview.");
+                alert("All test cases passed! Great job! You can now finish the interview.");
                 setSelectedTab("submissions");
             } else {
-                alert("❌ Some test cases failed. Check the results below.");
+                alert("Some test cases failed. Check the results below.");
             }
         } catch (error) {
             console.error("Failed to submit code:", error);
@@ -569,7 +570,10 @@ export default function TechnicalInterview() {
     };
 
     return (
-        <div className="h-screen bg-gray-900 flex flex-col relative">
+        <div className="min-h-screen bg-[#0a0a0f] text-white">
+            <Header />
+            
+            <div className="h-screen bg-[#0a0a0f] flex flex-col relative pt-24">
             {/* Loading Overlay */}
             {(isLoading || isRunning || isGettingHint) && (
                 <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
@@ -608,7 +612,6 @@ export default function TechnicalInterview() {
                 </div>
                 <div className="flex items-center gap-3">
                     <div className="px-4 py-2 bg-gray-700 text-white rounded-md text-sm font-mono">
-                        ⏱️{" "}
                         {Math.floor(timer / 60)
                             .toString()
                             .padStart(2, "0")}
@@ -672,7 +675,7 @@ export default function TechnicalInterview() {
                                         : "text-sm"
                                 }`}
                             >
-                                💡 Hints ({previousHints.length})
+                                Hints ({previousHints.length})
                             </span>
                         </button>
                     </div>
@@ -838,7 +841,6 @@ export default function TechnicalInterview() {
                                                     }
                                                     className="px-6 py-3 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg transition-colors disabled:opacity-50 flex items-center gap-2"
                                                 >
-                                                    🎤{" "}
                                                     {isCreatingSession
                                                         ? "Creating Session..."
                                                         : isPlaying
@@ -846,7 +848,7 @@ export default function TechnicalInterview() {
                                                         : isGettingHint
                                                         ? "Processing Answer..."
                                                         : isRecording
-                                                        ? "🔴 Recording... (Click to Stop)"
+                                                        ? "Recording... (Click to Stop)"
                                                         : "Talk to Interviewer"}
                                                 </button>
                                             </div>
@@ -885,7 +887,7 @@ export default function TechnicalInterview() {
                         {selectedTab === "hints" && (
                             <div className="space-y-4">
                                 <h3 className="text-xl font-bold text-white mb-4">
-                                    💡 Interviewer Hints
+                                    Interviewer Hints
                                 </h3>
                                 {previousHints.length === 0 ? (
                                     <div className="text-center py-12">
@@ -920,7 +922,7 @@ export default function TechnicalInterview() {
                                                         ] && (
                                                             <div className="bg-gray-900 rounded-lg p-3 mb-3">
                                                                 <p className="text-gray-400 text-sm mb-2">
-                                                                    💬 Full
+                                                                    Full
                                                                     Response:
                                                                 </p>
                                                                 <p className="text-gray-200 leading-relaxed text-sm">
@@ -951,7 +953,6 @@ export default function TechnicalInterview() {
                                                                     }
                                                                     className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs rounded-md transition-colors disabled:opacity-50 flex items-center gap-1"
                                                                 >
-                                                                    🔊{" "}
                                                                     {isPlaying
                                                                         ? "Playing..."
                                                                         : "Play Audio"}
@@ -1043,8 +1044,8 @@ export default function TechnicalInterview() {
                             <div className="flex items-center justify-between mb-3">
                                 <h3 className="text-white font-semibold">
                                     {testResults.success
-                                        ? "✅ All Tests Passed!"
-                                        : "❌ Test Failed"}
+                                        ? "All Tests Passed!"
+                                        : "Test Failed"}
                                 </h3>
                                 <button
                                     onClick={() => setTestResults(null)}
@@ -1097,7 +1098,7 @@ export default function TechnicalInterview() {
                         <div className="text-gray-400 text-sm">
                             {previousHints.length > 0 && (
                                 <span>
-                                    💡 Hints used: {previousHints.length}
+                                    Hints used: {previousHints.length}
                                 </span>
                             )}
                         </div>
@@ -1107,7 +1108,7 @@ export default function TechnicalInterview() {
                                 disabled={isRunning || !problem}
                                 className="px-6 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-md transition-colors disabled:opacity-50"
                             >
-                                {isRunning ? "Running..." : "▶ Run"}
+                                {isRunning ? "Running..." : "Run"}
                             </button>
                             <button
                                 onClick={handleSubmit}
@@ -1126,11 +1127,12 @@ export default function TechnicalInterview() {
                                 } disabled:opacity-50`}
                                 title={!hasSuccessfulSubmission ? 'Complete at least one successful submission first' : 'Finish interview and see results'}
                             >
-                                {isFinishing ? '⏳ Finishing...' : '✓ Finish Interview'}
+                                {isFinishing ? 'Finishing...' : 'Finish Interview'}
                             </button>
                         </div>
                     </div>
                 </div>
+            </div>
             </div>
         </div>
     );
